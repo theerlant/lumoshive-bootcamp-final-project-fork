@@ -48,8 +48,9 @@ export default function ComponentSandbox() {
 			{/* ========================================= */}
 			<section className="p-6 bg-white rounded-lg shadow-sm border border-green-200">
 				<h2 className="text-xl font-bold mb-4 text-green-600">SECT 4</h2>
-
-				<p className="text-gray-500 italic">{/* Taruh component disini */}</p>
+				<div className="flex flex-col gap-6 max-w-md">
+					{/* Taruh component disini */}
+				</div>
 			</section>
 		</div>
 	);
