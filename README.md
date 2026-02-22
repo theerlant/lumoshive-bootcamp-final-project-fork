@@ -4,7 +4,7 @@ This project is built using React, Vite, Tailwind CSS, Redux Toolkit, and React 
 
 ## Project Architecture
 
-The project utilizes a **Domain-driven and Role-based architecture**. This is an excellent, scalable approach for applications that have distinct user segments—in this case, an **Admin Panel** and a **Public-facing E-Commerce**. 
+The project utilizes a **Domain-driven and Role-based architecture**. This is an excellent, scalable approach for applications that have distinct user segments. In this case, an **Admin Panel** and a **Public-facing E-Commerce**. 
 
 ### Directory Structure
 
