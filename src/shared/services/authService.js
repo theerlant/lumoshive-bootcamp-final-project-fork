@@ -3,72 +3,78 @@ import { request } from "./client";
 // abstraksi api call untuk otentikasi
 export const AuthService = {
   register: (email, password, fullname) => {
-    request({
-      url: '/auth/register',
-      method: 'POST',
+    return request({
+      url: "/auth/register",
+      method: "POST",
       data: {
-        email, password, fullname
-      }
+        email,
+        password,
+        fullname,
+      },
     });
   },
   login: (email, password) => {
-    request({
-      url: '/auth/login',
-      method: 'POST',
+    return request({
+      url: "/auth/login",
+      method: "POST",
       data: {
-        email, password
-      }
-    })
+        email,
+        password,
+      },
+    });
   },
   verifyOtp: (email, otp) => {
-    request({
-      url: '/auth/verify-otp',
-      method: 'POST',
+    return request({
+      url: "/auth/verify-otp",
+      method: "POST",
       data: {
-        email, otp
-      }
+        email,
+        otp,
+      },
     });
   },
   resendOtp: (email) => {
-    request({
-      url: '/auth/resend-otp',
-      method: 'POST',
+    return request({
+      url: "/auth/resend-otp",
+      method: "POST",
       data: {
-        email
-      }
+        email,
+      },
     });
   },
   forgotPassword: (email) => {
-    request({
-      url: '/auth/forgot-password',
-      method: 'POST',
+    return request({
+      url: "/auth/forgot-password",
+      method: "POST",
       data: {
-        email
-      }
+        email,
+      },
     });
   },
   resetPassword: (email, otp, password) => {
-    request({
-      url: '/auth/reset-password',
-      method: 'POST',
+    return request({
+      url: "/auth/reset-password",
+      method: "POST",
       data: {
-        email, otp, password
-      }
+        email,
+        otp,
+        password,
+      },
     });
   },
   refreshToken: (refreshToken) => {
-    request({
-      url: '/auth/refresh-token',
-      method: 'POST',
+    return request({
+      url: "/auth/refresh-token",
+      method: "POST",
       data: {
-        refreshToken
-      }
+        refreshToken,
+      },
     });
   },
   logout: () => {
-    request({
-      url: '/auth/logout',
-      method: 'POST'
+    return request({
+      url: "/auth/logout",
+      method: "POST",
     });
-  }
-}
+  },
+};
