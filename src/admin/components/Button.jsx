@@ -11,29 +11,28 @@ const baseClasses = "";
 
 // deklarasi class tailwind untuk variant
 const variantClasses = {
-	primary: "",
-	secondary: "",
-	outlined: "",
-	transparent: "",
+  primary: "",
+  secondary: "",
+  outlined: "",
 };
 
 export default function Button({
-	variant = "primary",
-	disabled = false,
-	onClick = () => {},
-	children,
+  variant = "primary",
+  disabled = false,
+  onClick = () => {},
+  children,
 }) {
-	return (
-		<button
-			type="button"
-			className={`${baseClasses} ${variantClasses[variant]}`}
-			disabled={disabled}
-			onClick={(e) => {
-				e.preventDefault();
-				onClick();
-			}}
-		>
-			{children}
-		</button>
-	);
+  return (
+    <button
+      type="button"
+      className={`${baseClasses} ${variantClasses[variant]}`}
+      disabled={disabled}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
+    >
+      {children}
+    </button>
+  );
 }
