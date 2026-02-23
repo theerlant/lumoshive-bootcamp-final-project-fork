@@ -3,13 +3,14 @@ import AdminAuthLayout from "./layouts/AdminAuthLayout";
 import AdminAuthMiscLayout from "./layouts/AdminAuthMiscLayout";
 import AdminProtectedRoutes from "./adminProtectedRoutes";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
+import AdminLoginPage from "./pages/auth/AdminLoginPage";
 
 export default function AdminRoutes() {
   return (
     <Routes>
       <Route path="auth">
         <Route element={<AdminAuthLayout />}>
-          <Route path="login" element={<>TODO</>} />
+          <Route path="login" element={<AdminLoginPage />} />
           <Route path="register" element={<>TODO</>} />
         </Route>
         <Route element={<AdminAuthMiscLayout />}>
