@@ -1,4 +1,8 @@
+import { useState } from "react";
 import Button from "../admin/components/Button";
+import Switch from "../admin/components/Switch";
+
+import Navbar from "../admin/components/Navbar";
 
 /*
 	CATATAN:
@@ -6,6 +10,8 @@ import Button from "../admin/components/Button";
 	- Jangan mengubah style, menambah elemen diluar zona
 */
 export default function ComponentSandbox() {
+  const [active, setActive] = useState(false);
+
   return (
     <div className="flex flex-col gap-8 p-10 min-h-screen bg-gray-50">
       <div className="w-full bg-red-600 text-white rounded-lg">
@@ -22,6 +28,8 @@ export default function ComponentSandbox() {
         <div className="flex flex-wrap gap-4 items-end">
           {/* Taruh component disini */}
           <Button>TEST</Button>
+          <Switch on={active} onChange={() => setActive(!active)} />
+          <Navbar />
         </div>
       </section>
 
