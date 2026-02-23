@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 
-// Layout forgot password & OTP
-export default function AdminAuthMiscLayout() {
+// Layout semua dashboard
+export default function AdminDashboardLayout() {
   return (
     <div>
       <Outlet />

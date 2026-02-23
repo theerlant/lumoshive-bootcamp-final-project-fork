@@ -1,3 +1,5 @@
+import Button from "../admin/components/Button";
+
 /*
 	CATATAN:
 	- Test component hanya di section masing-masing agar tidak terjadi merge conflict
@@ -19,6 +21,7 @@ export default function ComponentSandbox() {
         <h2 className="text-xl font-bold mb-4 text-red-600">SECT 1</h2>
         <div className="flex flex-wrap gap-4 items-end">
           {/* Taruh component disini */}
+          <Button>TEST</Button>
         </div>
       </section>
 

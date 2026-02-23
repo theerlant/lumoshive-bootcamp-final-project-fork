@@ -62,7 +62,7 @@ export const AuthService = {
       },
     });
   },
-  refreshToken: (refreshToken) => {
+  refresh: (refreshToken) => {
     return request({
       url: "/auth/refresh-token",
       method: "POST",

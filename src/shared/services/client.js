@@ -1,39 +1,136 @@
 import axios from "axios";
+import store from "../features/store";
+
+const BASE_URL = "http:/103.150.116.241:8082/api/v1";
 
 // Axios instance
 const api = axios.create({
-  baseURL: 'https://api.domain-anda.com/api/v1',
+  baseURL: BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
-  }
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
 // Auth token request interceptor
 api.interceptors.request.use(
   (config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+    const token = store.getState().auth.accessToken;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
   },
   (error) => Promise.reject(error),
 );
 
+let isRefreshing = false;
+const queue = [];
+
+const retryQueue = (error, token = null) => {
+  queue.forEach((callback) => {
+    if (error) {
+      callback.reject(error);
+    } else {
+      callback.resolve(token);
+    }
+  });
+};
+
 /// Response error handling & token refresh
-/// TODO!
+api.interceptors.response.use(
+  (response) => response, // forward success
+  async (error) => {
+    const originalRequest = error.config;
+
+    // catch 401 error
+    if (error.response.status === 401 && originalRequest.retry !== true) {
+      // if already doing refresh token
+      // make a promise object and push it to the queue
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          queue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      // If no refresh in progress
+      originalRequest.retry = true;
+      isRefreshing = true;
+
+      try {
+        // get refresh token
+        const refreshToken = localStorage.getItem("refresh_token");
+
+        if (!refreshToken) {
+          store.dispatch(logout());
+          Promise.reject(new Error("Refresh token is not available"));
+        }
+
+        //not use the client to prevent interceptor loops
+        const response = await axios.post("/auth/refresh-token", {
+          refreshToken,
+        });
+
+        const { access_token, refresh_token } = response.data;
+
+        // save new token
+        store.dispatch(
+          set({
+            accessToken: access_token,
+            refreshToken: refresh_token,
+          }),
+        );
+
+        // retry all queue with new token
+        retryQueue(null, access_token);
+
+        // retry original request
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token failed", refreshError);
+        // errors to all queue
+        retryQueue(refreshError, null);
+        store.dispatch(logout());
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // return other error
+    return Promise.reject(error);
+  },
+);
 
 export default api;
 
 // Request wrapper
-export const request = async ({...options}) => {
+/**
+ *
+ * @param {import("axios").AxiosRequestConfig} options
+ * @returns data if success, throw error if failed
+ */
+export const request = async (options) => {
   try {
     const response = await api(options);
     return response.data;
-  } catch (err) {
-    console.error("API Error:", error.message, error.errors);
-    throw err; // re-throw error for components
+  } catch (error) {
+    console.error(
+      "API Error:",
+      error.message,
+      error.errors,
+      "Backend message:",
+      error.response?.data?.message, // log message error dari be
+      "Backend errors: ",
+      error.response?.data?.errors, // log list error jika ada
+    );
+    throw error; // re-throw error for components
   }
 };
-
