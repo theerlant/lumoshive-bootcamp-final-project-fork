@@ -4,7 +4,7 @@ export const UserService = {
   /**
    * Get user profile
    */
-  getProfile: () => {
+  get: () => {
     return request({
       url: "/users/profile",
       method: "GET",
@@ -16,16 +16,15 @@ export const UserService = {
    * @param {string} [phone] phone to change
    * @param {*} [avatar] avatar file to change
    */
-  updateProfile: (fullName, phone, avatar) => {
-    const updateData = {};
-    if (fullName) updateData.full_name = fullName;
-    if (phone) updateData.phone = phone;
-    if (avatar) updateData.avatar = avatar;
-
+  update: (fullName, phone, avatar) => {
     return request({
       url: "/users/profile",
       method: "PUT",
-      data: updateData,
+      data: {
+        full_name: fullName,
+        phone,
+        avatar,
+      },
     });
   },
   /**
