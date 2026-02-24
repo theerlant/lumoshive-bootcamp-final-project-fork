@@ -1,18 +1,21 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ComponentSandbox from "./sandbox/Sandbox";
 import AdminRoutes from "./admin/adminRoutes";
+import { Provider } from "react-redux";
+import store from "./shared/features/store";
 
 function App() {
-  // Sandboxing routes
   return (
-    <BrowserRouter>
-      <Routes>
-        {process.env.NODE_ENV === "development" && (
-          <Route path="/sandbox" element={<ComponentSandbox />} />
-        )}
-        <Route path="/admin/*" element={<AdminRoutes />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          {process.env.NODE_ENV === "development" && (
+            <Route path="/sandbox" element={<ComponentSandbox />} />
+          )}
+          <Route path="/admin/*" element={<AdminRoutes />} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
 }
 

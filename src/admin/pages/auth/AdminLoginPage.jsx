@@ -1,29 +1,39 @@
 import Button from "../../components/Button";
 import { useState } from "react";
-import axios from "axios";
+import { AuthService } from "../../../shared/services/authService";
 import { InputLabel, InputField } from "../../components/InputField";
 import { LucideEye } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../../shared/features/authSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        "https://jsonplaceholder.typicode.com/posts",
-        {
-          email: email,
-          password: password,
-        },
-      );
-      //console.log("Response dari backend:", response.data);
-      alert("Login berhasil! Data dikirim ke backend.");
-    } catch (error) {
-      //console.error("Error saat login:", error);
-      alert("Login gagal!" + error.message);
-    }
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    AuthService.login(email, password)
+      .then((response) => {
+        if (response.data) {
+          console.log(response);
+
+          dispatch(
+            setCredentials({
+              user: response.data.user,
+              accessToken: response.data.access_token,
+              refreshToken: response.data.refresh_token,
+            }),
+          );
+          navigate("/admin"); // Redirect to admin dashboard
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Login failed! Please check your credentials.");
+      });
   };
 
   return (
@@ -31,7 +41,7 @@ export default function AdminLoginPage() {
       <h1 className="text-2xl font-bold mb-2">Login</h1>
       <p className="text-gray-400 text-sm mb-8">Get into your account</p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
         <div>
           <InputLabel htmlFor="email" text="Email" />
           <InputField
@@ -58,16 +68,15 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="text-right">
-          <a
-            href="/admin/auth/forgot-password"
-            className="text-[#DB4444] text-sm"
-          >
+          <a href="/admin/auth/forgot" className="text-[#DB4444] text-sm">
             Forgot password?
           </a>
         </div>
 
         <div className="place-self-center">
-          <Button variant="primary">Sign in</Button>
+          <Button variant="primary" onClick={() => handleSubmit()}>
+            Sign in
+          </Button>
         </div>
 
         <p className="text-center text-sm mt-4">

@@ -1,7 +1,18 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import gambar_admin from "../../assets/gambar_admin.png";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 export default function AdminAuthLayout() {
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && user.role === "admin") {
+      navigate("/admin");
+    }
+  }, [isAuthenticated, user]);
+
   return (
     <div className="flex justify-center items-center lg:h-screen lg:p-28 xl:px-64 bg-[#F5F5F5] font-poppins">
       <div className=" bg-white lg:rounded-[40px] flex flex-col-reverse lg:flex-row items-center lg:justify-center shadow-sm w-full h-full overflow-hidden lg:p-2">
