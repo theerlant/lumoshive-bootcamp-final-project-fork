@@ -1,6 +1,8 @@
 import Button from "../../components/Button";
 import { useState } from "react";
 import axios from "axios";
+import { InputLabel, InputField } from "../../components/InputField";
+import { LucideEye } from "lucide-react";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -27,12 +29,13 @@ export default function AdminLoginPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-2">Login</h1>
-      <p className="text-gray-400 text-sm mb-8">How do i get started ?</p>
+      <p className="text-gray-400 text-sm mb-8">Get into your account</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
-          <input
+          <InputLabel htmlFor="email" text="Email" />
+          <InputField
+            id="email"
             type="email"
             placeholder="Enter your email"
             value={email}
@@ -42,25 +45,30 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium mb-1">Password</label>
-          <input
+          <InputLabel htmlFor="password" text="Password" />
+          <InputField
+            id="password"
             type="password"
-            placeholder="..."
+            placeholder="●●●●●●●●"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-[#DB4444]"
+            actions={<LucideEye />}
           />
         </div>
 
         <div className="text-right">
-          <a href="#" className="text-[#DB4444] text-sm">
+          <a
+            href="/admin/auth/forgot-password"
+            className="text-[#DB4444] text-sm"
+          >
             Forgot password?
           </a>
         </div>
 
-        <Button variant="primary" className="w-full" type="submit">
-          Sign in
-        </Button>
+        <div className="place-self-center">
+          <Button variant="primary">Sign in</Button>
+        </div>
 
         <p className="text-center text-sm mt-4">
           Don't have an account?{" "}

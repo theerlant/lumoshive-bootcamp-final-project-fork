@@ -70,8 +70,8 @@ export default function AdminSignupPage() {
           <span className="absolute right-4 top-10 text-gray-400 cursor-pointer flex gap-1"></span>
         </div>
 
-        <div className="pt-2">
-          <Button variant="primary" className="w-full" type="submit">
+        <div className="place-self-center pt-4">
+          <Button variant="primary" type="submit">
             Get started
           </Button>
         </div>

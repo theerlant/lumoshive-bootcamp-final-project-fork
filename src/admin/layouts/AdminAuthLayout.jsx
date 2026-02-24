@@ -3,33 +3,25 @@ import gambar_admin from "../../assets/gambar_admin.png";
 
 export default function AdminAuthLayout() {
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-6 font-poppins">
-      <div className="bg-white rounded-[40px] shadow-sm flex max-w-[1000px] w-full overflow-hidden min-h-[600px]">
+    <div className="flex justify-center items-center lg:h-screen lg:p-28 xl:px-64 bg-[#F5F5F5] font-poppins">
+      <div className=" bg-white lg:rounded-[40px] flex flex-col-reverse lg:flex-row items-center lg:justify-center shadow-sm w-full h-full overflow-hidden lg:p-2">
         {/* ini flex di sisi kiri */}
-        <div className="w-full md:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
+        <div className="w-full lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
           <Outlet />
         </div>
 
         {/* ini sisi kanan */}
-        <div className="hidden md:flex w-1/2 bg-[#DB4444] p-12 flex-col justify-center text-white relative overflow-hidden px- py-70 mx-2 my-2 rounded-[32px]">
-          <div className="relative z-10">
-            <h2 className="text-4xl font-semibold leading-tight mb-0 -mt-60">
-              Very good works are waiting for you Sign up Now
-            </h2>
-            {/* ini garis putih */}
-            <div className="w-1 h-35 bg-white/40 rounded-full mt-10"></div>
-          </div>
-
+        <div className="flex flex-col w-full lg:w-1/2 lg:h-full relative bg-[#DB4444] pb-0 p-12 text-white overflow-hidden rounded-b-[32px] lg:rounded-t-[32px]">
+          <h2 className="text-2xl md:text-4xl lg:text-4xl text-center lg:text-left font-semibold leading-tight mb-0 mt-0">
+            Very good works are waiting for you. Sign up Now
+          </h2>
+          {/* Ternyata garis nya bikin susah bang @ wkwkwk */}
           <img
-            // src="/path-ke-gambar-wanita.png"
             src={gambar_admin}
             alt="Admin Banner"
             // className="absolute bottom-0 right-0 h-[85%] object-contain py-0 px-9"
-            className="absolute bottom-[-20px] right-0 h-[85%] object-contain px-9"
+            className="lg:translate-x-8 max-h-100 lg:h-[90%] object-contain lg:object-cover"
           />
-
-          {/* Garis putih bawah*/}
-          <div className="w-20 h-1 bg-white opacity-40 rounded-full translate-y-55"></div>
         </div>
       </div>
     </div>
