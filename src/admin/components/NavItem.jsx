@@ -5,6 +5,8 @@
  * @param {string} href - url untuk menuju nav tujuan
  */
 
+import { Link } from "react-router-dom";
+
 const baseClasses = "flex items-center h-[40px]"; // class tailwind base
 const activeClasses = "text-[#DB4444] font-semibold"; // tambahan jika sedang active
 
@@ -15,12 +17,12 @@ export default function NavItem({
   href = "#",
 }) {
   return (
-    <a href={href} className={`${baseClasses} ${active ? activeClasses : ""}`}>
+    <Link to={href} className={`${baseClasses} ${active ? activeClasses : ""}`}>
       {/* Active pill di kiri, refer ke figma */}
       {active ? <ActivePill /> : <div className="w-[6px] mr-4" />}
       {icon}
       <span className="ml-2">{title}</span>
-    </a>
+    </Link>
   );
 }
 
