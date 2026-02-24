@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "../admin/components/Button";
 import Switch from "../admin/components/Switch";
-
 import Navbar from "../admin/components/Navbar";
 import PromotionStatusChip from "../admin/components/PromotionStatusChip";
 import OrderStatusChip from "../admin/components/OrderStatusChip";
@@ -149,8 +148,13 @@ export default function ComponentSandbox() {
       {/* ========================================= */}
       <section className="p-6 bg-white rounded-lg shadow-sm border border-green-200">
         <h2 className="text-xl font-bold mb-4 text-green-600">SECT 4</h2>
-        <div className="flex flex-col gap-6 max-w-md">
+        <div className="grid grid-cols-3 max-w-md">
           {/* Taruh component disini */}
+          <div className="btn flex flex-col gap-3">
+          <Button variant="primary" onClick={()=>alert("Primary!")}>primary</Button>
+          <Button variant="secondary">secondary</Button>
+          <Button variant="outlined" >outlined</Button>
+          </div>
         </div>
       </section>
     </div>
