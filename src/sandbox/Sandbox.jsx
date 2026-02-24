@@ -3,6 +3,19 @@ import Button from "../admin/components/Button";
 import Switch from "../admin/components/Switch";
 
 import Navbar from "../admin/components/Navbar";
+import PromotionStatusChip from "../admin/components/PromotionStatusChip";
+import OrderStatusChip from "../admin/components/OrderStatusChip";
+import {
+  TableBody,
+  TableCell,
+  TableColGroup,
+  TableHead,
+  TableHeadCol,
+  TableRow,
+  TableWrapper,
+} from "../admin/components/Table";
+import { LucideCheck, LucideEye, LucideX } from "lucide-react";
+import IconButton from "../admin/components/IconButton";
 
 /*
 	CATATAN:
@@ -29,7 +42,84 @@ export default function ComponentSandbox() {
           {/* Taruh component disini */}
           <Button>TEST</Button>
           <Switch on={active} onChange={() => setActive(!active)} />
+        </div>
+        <div className="border p-2">
+          <span>Navbar Components (UserCard, NavItem)</span>
           <Navbar />
+        </div>
+        <div className="flex gap-2">
+          <p>Promotion Status</p>
+          <PromotionStatusChip active />
+          <PromotionStatusChip />
+        </div>
+        <div className="flex gap-2">
+          <p>Order Status Chip</p>
+          <OrderStatusChip status="created" />
+          <OrderStatusChip status="processing" />
+          <OrderStatusChip status="canceled" />
+          <OrderStatusChip status="completed" />
+        </div>
+        <div className="p-2 border">
+          <TableWrapper caption="order table">
+            {/** Opsional untuk menentukan ukuran kolom */}
+            <TableColGroup
+              colSizes={["15%", "20%", "20%", "15%", "15%", "auto"]}
+            />
+            <TableHead>
+              <TableHeadCol title="User Name" sort="none" />
+              <TableHeadCol title="Address" />
+              <TableHeadCol title="Payment Method" />
+              <TableHeadCol title="Amount" />
+              <TableHeadCol title="Status" />
+              <TableHeadCol title="Actions" />
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>kevindebruyne</TableCell>
+                <TableCell>Jl. Pangeran Antasari No.13</TableCell>
+                <TableCell>Online Debit</TableCell>
+                <TableCell>Rp 1.000.000</TableCell>
+                <TableCell>
+                  <div className="flex">
+                    <OrderStatusChip status="created" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <IconButton>
+                      <div className="bg-green-400 rounded-full p-1 *:size-4 *:stroke-3 text-white">
+                        <LucideCheck />
+                      </div>
+                    </IconButton>
+                    <IconButton>
+                      <div className="bg-red-500 rounded-full p-1 *:size-4 *:stroke-3 text-white">
+                        <LucideX />
+                      </div>
+                    </IconButton>
+                  </div>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>kevindebruyne</TableCell>
+                <TableCell>Jl. Pangeran Antasari No.13</TableCell>
+                <TableCell>Gopay</TableCell>
+                <TableCell>Rp 1.000.000</TableCell>
+                <TableCell>
+                  <div className="flex">
+                    <OrderStatusChip status="canceled" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {" "}
+                  <IconButton>
+                    <div className="*:size-5">
+                      <LucideEye />
+                    </div>
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </TableWrapper>
         </div>
       </section>
 

@@ -1,3 +1,10 @@
+/**
+ *
+ * @param {string} avatarUrl
+ * @param {string} name
+ * @param {string} email
+ * @param {string} role - 'admin' | 'staff' | 'customer'
+ */
 export default function UserCard({ avatarUrl = "", name = "", email = "" }) {
   return (
     <div className="grid grid-cols-[auto_1fr] items-center gap-2.5">

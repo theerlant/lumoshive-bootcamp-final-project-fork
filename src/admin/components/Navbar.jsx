@@ -13,12 +13,13 @@ import {
 
 export default function Navbar() {
   return (
-    <div className="flex flex-col gap-4 w-60">
+    <aside className="sticky top-0 left-0 flex flex-col gap-4 w-60 min-h-screen bg-white">
       <div className="bg-black text-white p-4">
         <UserCard
           avatarUrl="https://i.pravatar.cc/300"
           name="Theerlan"
           email="contoh@gmail.com"
+          userRole="admin"
         />
       </div>
       <NavItem icon={<LucideHome />} title="Home" active href="#" />
@@ -29,6 +30,6 @@ export default function Navbar() {
       <NavItem icon={<LucideImage />} title="Banners" href="#" />
       <NavItem icon={<LucideStar />} title="Ratings" href="#" />
       <NavItem icon={<LucidePackage />} title="Stock" href="#" />
-    </div>
+    </aside>
   );
 }

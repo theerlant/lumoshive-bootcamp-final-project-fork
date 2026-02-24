@@ -20,7 +20,10 @@ export default function AdminRoutes() {
       </Route>
       <Route element={<AdminProtectedRoutes />}>
         <Route element={<AdminDashboardLayout />}>
-          <Route index element={<>TODO DASHBOARD</>} />
+          <Route
+            index
+            element={<div className="h-[200vh]">TODO DASHBOARD</div>}
+          />
           <Route path="products">
             <Route index element={<>TODO PRODUCT LIST PAGE</>} />
             <Route path=":id" element={<>TODO DETAIL PRODUCT</>} />
