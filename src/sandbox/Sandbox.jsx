@@ -152,7 +152,8 @@ export default function ComponentSandbox() {
           {/* Taruh component disini */}
           <div className="btn flex flex-col gap-3">
           <Button variant="primary" onClick={()=>alert("Primary!")}>primary</Button>
-          <Button variant="secondary">secondary</Button>
+          <Button variant="primary" onClick={()=>alert("Primary!")} disabled>primary</Button>
+          <Button variant="secondary" disabled>secondary</Button>
           <Button variant="outlined" >outlined</Button>
           </div>
         </div>
