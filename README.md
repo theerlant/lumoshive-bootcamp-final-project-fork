@@ -28,8 +28,14 @@ The `src/` directory is logically divided into four main buckets:
 - **`sandbox/`**: 
   - `Sandbox.jsx`: An isolated environment for UI development, testing components, or experimenting without affecting the main application. The route is available at `/sandbox` in development environments.
 
-## Getting Started
+## Cloning Guide
+1. clone using: `git clone https://github.com/lumoshive-final-project-batch-III/Frontend-project-app-ecommerce-frontend-tim-Fedora.git`
+2. go to project file `cd Frontend-project-app-ecommerce-frontend-tim-Fedora`
+3. fetch all branch updates `git fetch origin`
+4. go to the correct branch / make new branch `git checkout <branch_name>`
+5. if existing branch, fetch latest update `git pull origin <branch_name>`
 
+## Getting Started
 1. Install dependencies: `npm install`
 2. Start the development server: `npm run dev`
 3. Access the component sandbox in development: `http://localhost:5173/sandbox`

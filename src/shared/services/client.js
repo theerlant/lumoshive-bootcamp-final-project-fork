@@ -113,7 +113,7 @@ export default api;
 
 // Request wrapper
 /**
- *
+ * wrapper for request with basic error logging
  * @param {import("axios").AxiosRequestConfig} options
  * @returns data if success, throw error if failed
  */
