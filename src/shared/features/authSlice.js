@@ -1,36 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const savedToken = localStorage.getItem("access_token");
-const savedUser = JSON.parse(localStorage.getItem("user"));
-
-const initialState = {
-  user: savedUser || null,
-  accessToken: savedToken || null,
-  isAuthenticated: Boolean(savedToken),
+const getInitialState = () => {
+  const accessToken = localStorage.getItem("access_token");
+  const storedUser = localStorage.getItem("user");
+  try {
+    return {
+      user: storedUser ? JSON.parse(storedUser) : null,
+      accessToken: accessToken || null,
+      isAuthenticated: Boolean(accessToken),
+    };
+  } catch (error) {
+    return {
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+    };
+  }
 };
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     setCredentials: (state, action) => {
-      const { user, access_token, refresh_token } = action.payload;
+      const { user, accessToken, refreshToken } = action.payload;
 
       // update state
       state.user = user;
-      state.accessToken = access_token;
+      state.accessToken = accessToken;
       state.isAuthenticated = true;
 
-      // persist
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("refresh_token", refresh_token);
-      localStorage.setItem("user", JSON.stringify(user));
+      // persist (local storage, unknown if backend send cookies or not)
+      if (accessToken) localStorage.setItem("access_token", accessToken);
+      if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+      if (user) localStorage.setItem("user", JSON.stringify(user));
     },
     setTokens: (state, action) => {
       const { accessToken, refreshToken } = action.payload;
-      state.accessToken = accessToken;
-      localStorage.setItem("access_token", accessToken);
-      localStorage.setItem("refresh_token", refreshToken);
+      if (accessToken) {
+        state.accessToken = accessToken;
+        localStorage.setItem("access_token", accessToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem("refresh_token", refreshToken);
+      }
     },
     logout: (state) => {
       // update state
