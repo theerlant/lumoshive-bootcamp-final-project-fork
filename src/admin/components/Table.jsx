@@ -83,5 +83,5 @@ export const TableRow = ({ children }) => {
 };
 
 export const TableCell = ({ children }) => {
-  return <td className="text-xs">{children}</td>;
+  return <td className="text-xs font-medium text-[#111]">{children}</td>;
 };
