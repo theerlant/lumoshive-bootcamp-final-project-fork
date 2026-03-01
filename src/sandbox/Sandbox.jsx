@@ -149,8 +149,22 @@ export default function ComponentSandbox() {
       {/* ========================================= */}
       <section className="p-6 bg-white rounded-lg shadow-sm border border-green-200">
         <h2 className="text-xl font-bold mb-4 text-green-600">SECT 4</h2>
-        <div className="flex flex-col gap-6 max-w-md">
+        <div className="grid grid-cols-3 max-w-md">
           {/* Taruh component disini */}
+          <div className="btn flex flex-col gap-3">
+          
+              <Button baseClasses="product" size="large" variant="outlined" disabled>Primary Large</Button>
+              <Button baseClasses="product"size="medium" variant="primary">Primary Medium</Button>
+              <Button baseClasses="product" size="small" variant="primary">Primary Small</Button>
+
+            <Button baseClasses="product" variant="outlined">Outlined</Button>
+          <Button baseClasses="auth" variant="primary" onClick={()=>alert("Primary!")}>primary</Button>
+          <Button baseClasses="product" variant="primary"  disabled>primary</Button>
+          <Button baseClasses="product" variant="secondary" onClick={()=>alert("Secondary!")}disabled>secondary</Button>
+          <Button baseClasses="product" variant="primary" >primary</Button>
+            <Button baseClasses="product" variant="secondary" onClick={()=>alert("Secondary!")}>secondary</Button>
+          <Button variant="outlined" onClick={()=>alert("Outlined!")}>outlined</Button>
+          </div>
         </div>
       </section>
     </div>

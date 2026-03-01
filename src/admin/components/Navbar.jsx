@@ -29,49 +29,52 @@ export default function Navbar() {
       <NavItem
         icon={<LucideHome />}
         title="Home"
-        active={currentPath === "/admin"}
+        active={
+          currentPath.split("/")[1] === "admin" &&
+          currentPath.split("/").length === 2
+        }
         href="/admin"
       />
       <NavItem
         icon={<LucideFileText />}
         title="Products"
-        active={currentPath === "/admin/products"}
+        active={currentPath.split("/")[2] === "products"}
         href="/admin/products"
       />
       <NavItem
         icon={<LucideLayers />}
         title="Categories"
-        active={currentPath === "/admin/categories"}
+        active={currentPath.split("/")[2] === "categories"}
         href="/admin/categories"
       />
       <NavItem
         icon={<LucideClipboardList />}
         title="Orders"
-        active={currentPath === "/admin/orders"}
+        active={currentPath.split("/")[2] === "orders"}
         href="/admin/orders"
       />
       <NavItem
         icon={<LucideMegaphone />}
         title="Promotions"
-        active={currentPath === "/admin/promotions"}
+        active={currentPath.split("/")[2] === "promotions"}
         href="/admin/promotions"
       />
       <NavItem
         icon={<LucideImage />}
         title="Banners"
-        active={currentPath === "/admin/banners"}
+        active={currentPath.split("/")[2] === "banners"}
         href="/admin/banners"
       />
       <NavItem
         icon={<LucideStar />}
         title="Ratings"
-        active={currentPath === "/admin/ratings"}
+        active={currentPath.split("/")[2] === "ratings"}
         href="/admin/ratings"
       />
       <NavItem
         icon={<LucidePackage />}
         title="Stock"
-        active={currentPath === "/admin/stocks"}
+        active={currentPath.split("/")[2] === "stocks"}
         href="/admin/stocks"
       />
     </aside>

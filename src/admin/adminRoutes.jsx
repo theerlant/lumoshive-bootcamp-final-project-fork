@@ -4,6 +4,8 @@ import AdminAuthMiscLayout from "./layouts/AdminAuthMiscLayout";
 import AdminProtectedRoutes from "./adminProtectedRoutes";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import AdminLoginPage from "./pages/auth/AdminLoginPage";
+import AdminSignupPage from "./pages/auth/AdminSignupPage";
+import AdminDashboardPage from "./pages/protected/AdminDashboardPage";
 
 export default function AdminRoutes() {
   return (
@@ -12,7 +14,7 @@ export default function AdminRoutes() {
         <Route element={<AdminAuthLayout />}>
           <Route index element={<AdminLoginPage />} />
           <Route path="login" element={<AdminLoginPage />} />
-          <Route path="register" element={<>TODO</>} />
+          <Route path="register" element={<AdminSignupPage />} />
         </Route>
         <Route element={<AdminAuthMiscLayout />}>
           <Route path="forgot" element={<>TODO</>} />
@@ -21,10 +23,7 @@ export default function AdminRoutes() {
       </Route>
       <Route element={<AdminProtectedRoutes />}>
         <Route element={<AdminDashboardLayout />}>
-          <Route
-            index
-            element={<div className="h-[200vh]">TODO DASHBOARD</div>}
-          />
+          <Route index element={<AdminDashboardPage />} />
           <Route path="products">
             <Route index element={<>TODO PRODUCT LIST PAGE</>} />
             <Route path=":id" element={<>TODO DETAIL PRODUCT</>} />

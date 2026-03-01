@@ -1,7 +1,9 @@
 import axios from "axios";
 import store from "../features/store";
 
-const BASE_URL = "http:/103.150.116.241:8082/api/v1";
+import { logout, setTokens } from "../features/authSlice";
+
+const BASE_URL = "/api";
 
 // Axios instance
 const api = axios.create({
@@ -69,11 +71,11 @@ api.interceptors.response.use(
 
         if (!refreshToken) {
           store.dispatch(logout());
-          Promise.reject(new Error("Refresh token is not available"));
+          return Promise.reject(new Error("Refresh token is not available"));
         }
 
         //not use the client to prevent interceptor loops
-        const response = await axios.post("/auth/refresh-token", {
+        const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {
           refreshToken,
         });
 
@@ -81,7 +83,7 @@ api.interceptors.response.use(
 
         // save new token
         store.dispatch(
-          set({
+          setTokens({
             accessToken: access_token,
             refreshToken: refresh_token,
           }),
@@ -118,6 +120,7 @@ export default api;
  * @returns data if success, throw error if failed
  */
 export const request = async (options) => {
+  console.log("running api call: ", options);
   try {
     const response = await api(options);
     return response.data;

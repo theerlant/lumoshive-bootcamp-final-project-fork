@@ -3,6 +3,7 @@
  * @param {string} avatarUrl
  * @param {string} name
  * @param {string} email
+ * @param {string} role - 'admin' | 'staff' | 'customer'
  */
 export default function UserCard({ avatarUrl = "", name = "", email = "" }) {
   return (
