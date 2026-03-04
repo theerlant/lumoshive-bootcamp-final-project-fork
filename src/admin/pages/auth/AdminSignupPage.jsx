@@ -1,74 +1,110 @@
 import Button from "../../components/Button";
 import React, { useState } from "react";
-import axios from "axios";
+import { InputField, InputLabel } from "../../components/InputField";
+import { IconButton } from "../../components/IconButton";
+import { LucideEye, LucideEyeOff } from "lucide-react";
+import { registerSchema } from "../../../shared/schema/authSchema";
+import { AuthService } from "../../../shared/services/authService";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+// Ini bingung fungsinya apa, soalnya API nya kan satu login trus cuma admin yang bisa ganti role user?
+// Jadi harusnya register lewat page utama? Tapi ini disimpen aja dulu..
 export default function AdminSignupPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisibility] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post(
-        "https://jsonplaceholder.typicode.com/posts",
-        {
-          name: name,
-          email: email,
-          password: password,
-        },
-      );
+  const navigate = useNavigate();
 
-      console.log("Response dari backend:", response.data);
-      alert("Sign up berhasil! Data dikirim ke backend.");
-    } catch (error) {
-      console.error("Error saat sign up:", error);
-      alert("Sign up gagal!" + error.message);
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const onSubmit = (data) => {
+    setApiError(null);
+    AuthService.register(data)
+      .then(() => {
+        navigate("/admin/auth/otp", { state: { email: data.email } });
+      })
+      .catch((error) => {
+        if (error.status === 400) {
+          navigate("/admin/auth/otp", {
+            state: { email: data.email },
+          });
+        } else {
+          setApiError(error.message || "An error occurred during sign up");
+        }
+      });
   };
+
   return (
-    <div>
+    <div className="flex flex-col my-6">
       <h1 className="text-2xl font-bold mb-2">Sign up</h1>
-      <p className="text-gray-400 text-sm mb-8">
+      <p className="text-gray-400 text-sm mb-6">
         Start your 30-day free trial.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Full Name</label>
-          <input
+          <InputLabel text="Full Name" htmlFor="fullname"></InputLabel>
+          <InputField
+            id="fullname"
             type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#DB4444]"
+            placeholder="John Doe"
+            {...register("fullname")}
           />
+          {errors.fullname && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.fullname.message}
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Email Address
-          </label>
-          <input
+          <InputLabel text="Email Address" htmlFor="email" />
+          <InputField
+            id="email"
             type="email"
             placeholder="Email Address"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#DB4444]"
+            {...register("email")}
           />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+          )}
         </div>
 
-        <div className="relative">
-          <label className="block text-sm font-medium mb-1">Password</label>
-          <input
-            type="password"
+        <div>
+          <InputLabel text="Password" htmlFor="password" />
+          <InputField
+            id="password"
+            type={passwordVisible ? "text" : "password"}
             placeholder="Password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#DB4444]"
+            {...register("password")}
+            actions={
+              <IconButton
+                size="small"
+                onClick={() => setPasswordVisibility((prev) => !prev)}
+                type="button"
+              >
+                {passwordVisible ? <LucideEyeOff /> : <LucideEye />}
+              </IconButton>
+            }
           />
-          <span className="absolute right-4 top-10 text-gray-400 cursor-pointer flex gap-1"></span>
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.password.message}
+            </p>
+          )}
         </div>
+
+        {apiError && (
+          <p className="text-red-500 text-sm text-center">{apiError}</p>
+        )}
 
         <div className="place-self-center pt-4">
           <Button variant="primary" type="submit">

@@ -2,7 +2,7 @@ import { LucideChevronDown, LucideChevronUp } from "lucide-react";
 
 export const TableWrapper = ({ caption = "", children }) => {
   return (
-    <table className="w-full font-admin">
+    <table className="w-full font-admin border-collapse">
       {caption && <caption className="hidden">{caption}</caption>}
       {children}
     </table>
@@ -35,7 +35,7 @@ export const TableHead = ({ children }) => {
 /**
  * Table header column with optional sorting
  * @param {string} title - column title
- * @param {string} sort - 'asc' | 'desc' | 'none' | null
+ * @param {string} sort - 'asc' | 'desc' | 'none'. Null disables the button
  * @param {function} onSort - callback when sorting button clicked
  */
 export const TableHeadCol = ({
@@ -71,12 +71,16 @@ export const TableHeadCol = ({
 };
 
 export const TableBody = ({ children }) => {
-  return <tbody>{children}</tbody>;
+  return (
+    <tbody className="divide-y divide-gray-300 border-b border-gray-300">
+      {children}
+    </tbody>
+  );
 };
 
 export const TableRow = ({ children }) => {
   return (
-    <tr className="*:py-4 not-first:border-t last:border-b border-gray-300">
+    <tr className="*:py-4 border-b border-gray-300 last:border-0">
       {children}
     </tr>
   );

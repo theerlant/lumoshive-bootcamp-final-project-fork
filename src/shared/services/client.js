@@ -10,7 +10,6 @@ const api = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
@@ -93,7 +92,7 @@ api.interceptors.response.use(
         retryQueue(null, access_token);
 
         // retry original request
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return api(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed", refreshError);
@@ -123,17 +122,25 @@ export const request = async (options) => {
   console.log("running api call: ", options);
   try {
     const response = await api(options);
-    return response.data;
+    return response.data.data; // immediately unwrap data
   } catch (error) {
-    console.error(
-      "API Error:",
-      error.message,
-      error.errors,
-      "Backend message:",
-      error.response?.data?.message, // log message error dari be
-      "Backend errors: ",
-      error.response?.data?.errors, // log list error jika ada
-    );
-    throw error; // re-throw error for components
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "An unexpected error occurred";
+    const serverErrors = error.response?.data?.errors || null;
+
+    console.error("API Error Detailed:", {
+      status: error.response?.status,
+      message,
+      serverErrors,
+      path: options.url,
+    });
+
+    // Attach the backend message to the error object before throwing
+    error.message = message;
+    error.serverErrors = serverErrors;
+
+    throw error;
   }
 };

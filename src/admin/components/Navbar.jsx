@@ -19,12 +19,7 @@ export default function Navbar() {
   return (
     <aside className="sticky top-0 left-0 flex flex-col gap-4 w-60 min-h-screen bg-white">
       <div className="bg-black text-white p-4">
-        <UserCard
-          avatarUrl="https://i.pravatar.cc/300"
-          name="Theerlan"
-          email="contoh@gmail.com"
-          userRole="admin"
-        />
+        <UserCard />
       </div>
       <NavItem
         icon={<LucideHome />}

@@ -2,7 +2,20 @@ import { request } from "./client";
 
 export const productService = {
   public: {
-    getAll: (
+    /**
+     * Get all products
+     * @param {number} page
+     * @param {number} limit
+     * @param {string} search
+     * @param {string} categoryId
+     * @param {boolean} isNew
+     * @param {number} minPrice
+     * @param {number} maxPrice
+     * @param {string} sortBy - name | price | created_at | updated_at
+     * @param {boolean} inStock - filter by stock availability
+     * @param {string} sortOrder - asc | desc
+     */
+    getAll: ({
       page = 1,
       limit = 10,
       search,
@@ -13,7 +26,7 @@ export const productService = {
       sortBy,
       inStock,
       sortOrder,
-    ) => {
+    }) => {
       return request({
         url: "/products",
         method: "GET",
@@ -27,7 +40,7 @@ export const productService = {
           max_price: maxPrice,
           in_stock: inStock,
           sort_by: sortBy,
-          sort: sortOrder,
+          sort_order: sortOrder,
         },
       });
     },
@@ -64,69 +77,24 @@ export const productService = {
     },
   },
   admin: {
-    create: (
-      name,
-      sku,
-      categoryId,
-      description,
-      price,
-      stock,
-      variants,
-      isPublished,
-      isNew,
-      images,
-    ) => {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("sku", sku);
-      formData.append("category_id", categoryId);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("stock", stock);
-      formData.append("variants", JSON.stringify(variants));
-      formData.append("is_published", isPublished);
-      formData.append("is_new", isNew);
-      images.forEach((image) => {
-        formData.append("images", image);
-      });
-
+    create: (formData) => {
       return request({
         url: "/products",
         method: "POST",
         data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data", // Overrides the global JSON default
+        },
       });
     },
-    update: (
-      id,
-      name,
-      sku,
-      categoryId,
-      description,
-      price,
-      stock,
-      variants,
-      isPublished,
-      isNew,
-      images,
-    ) => {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("sku", sku);
-      formData.append("category_id", categoryId);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("stock", stock);
-      formData.append("variants", JSON.stringify(variants));
-      formData.append("is_published", isPublished);
-      formData.append("is_new", isNew);
-      images.forEach((image) => {
-        formData.append("images", image);
-      });
-
+    update: (id, formData) => {
       return request({
         url: `/products/${id}`,
         method: "PUT",
         data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data", // Overrides the global JSON default
+        },
       });
     },
     delete: (id) => {
@@ -177,13 +145,7 @@ export const productService = {
         },
       });
     },
-    uploadImages: (id, images) => {
-      const formData = new FormData();
-      images.forEach((image) => {
-        formData.append("images", image);
-      });
-      formData.append("product_id", id);
-
+    uploadImages: (id, formData) => {
       return request({
         url: `/products/images/upload`,
         method: "POST",

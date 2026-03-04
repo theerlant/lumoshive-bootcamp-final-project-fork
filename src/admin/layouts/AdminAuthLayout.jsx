@@ -14,10 +14,10 @@ export default function AdminAuthLayout() {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="flex justify-center items-center lg:h-screen lg:p-28 xl:px-64 bg-[#F5F5F5] font-poppins">
+    <div className="flex justify-center items-center lg:h-screen lg:p-12 lg:px-24 xl:px-32 bg-[#F5F5F5] font-poppins">
       <div className=" bg-white lg:rounded-[40px] flex flex-col-reverse lg:flex-row items-center lg:justify-center shadow-sm w-full h-full overflow-hidden lg:p-2">
         {/* ini flex di sisi kiri */}
-        <div className="w-full lg:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
+        <div className="w-full lg:w-1/2 px-12 lg:px-16 overflow-y-auto h-full">
           <Outlet />
         </div>
 
