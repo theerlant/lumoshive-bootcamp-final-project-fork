@@ -6,6 +6,7 @@ import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import AdminLoginPage from "./pages/auth/AdminLoginPage";
 import AdminSignupPage from "./pages/auth/AdminSignupPage";
 import AdminDashboardPage from "./pages/protected/AdminDashboardPage";
+import AdminOrderListPage from "./pages/protected/orders/AdminOrderListPage";
 
 export default function AdminRoutes() {
   return (
@@ -31,7 +32,7 @@ export default function AdminRoutes() {
             <Route path="edit/:id" element={<>TODO EDIT PRODUCT</>} />
           </Route>
           <Route path="categories" element={<>TODO CATEGORIES</>} />
-          <Route path="orders" element={<>TODO ORDERS</>} />
+          <Route path="orders" element={<AdminOrderListPage />} />
           <Route path="promotions">
             <Route index element={<>TODO PROMOTION LIST PAGE</>} />
             <Route path=":id" element={<>TODO DETAIL PROMOTION</>} />
