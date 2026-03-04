@@ -60,11 +60,11 @@ export const categoryService = {
         method: "DELETE",
       });
     },
-  },
-  togglePublish: (id) => {
-    return request({
-      url: `/categories/${id}/toggle-publish`,
-      method: "PATCH",
-    });
+    togglePublish: (id) => {
+      return request({
+        url: `/categories/${id}/toggle-publish`,
+        method: "PATCH",
+      });
+    },
   },
 };

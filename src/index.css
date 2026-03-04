@@ -4,6 +4,30 @@
   --font-title: 'Inter', sans-serif;
   --font-public: 'Poppins', sans-serif;
   --font-admin: 'Lato', sans-serif;
+
+  @keyframes spinalt {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    25% {
+      transform: rotate(90deg);
+    }
+
+    50% {
+      transform: rotate(180deg);
+    }
+
+    75% {
+      transform: rotate(270deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  --animate-spinalt: spinalt 3s ease-in-out infinite;
 }
 
 * {

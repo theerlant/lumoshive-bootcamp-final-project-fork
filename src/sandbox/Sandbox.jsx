@@ -15,7 +15,7 @@ import {
   TableWrapper,
 } from "../admin/components/Table";
 import { LucideCheck, LucideEye, LucideX } from "lucide-react";
-import IconButton from "../admin/components/IconButton";
+import { IconButton } from "../admin/components/IconButton";
 
 /*
 	CATATAN:
@@ -152,18 +152,55 @@ export default function ComponentSandbox() {
         <div className="grid grid-cols-3 max-w-md">
           {/* Taruh component disini */}
           <div className="btn flex flex-col gap-3">
-          
-              <Button baseClasses="product" size="large" variant="outlined" disabled>Primary Large</Button>
-              <Button baseClasses="product"size="medium" variant="primary">Primary Medium</Button>
-              <Button baseClasses="product" size="small" variant="primary">Primary Small</Button>
+            <Button
+              baseClasses="product"
+              size="large"
+              variant="outlined"
+              disabled
+            >
+              Primary Large
+            </Button>
+            <Button baseClasses="product" size="medium" variant="primary">
+              Primary Medium
+            </Button>
+            <Button baseClasses="product" size="small" variant="primary">
+              Primary Small
+            </Button>
 
-            <Button baseClasses="product" variant="outlined">Outlined</Button>
-          <Button baseClasses="auth" variant="primary" onClick={()=>alert("Primary!")}>primary</Button>
-          <Button baseClasses="product" variant="primary"  disabled>primary</Button>
-          <Button baseClasses="product" variant="secondary" onClick={()=>alert("Secondary!")}disabled>secondary</Button>
-          <Button baseClasses="product" variant="primary" >primary</Button>
-            <Button baseClasses="product" variant="secondary" onClick={()=>alert("Secondary!")}>secondary</Button>
-          <Button variant="outlined" onClick={()=>alert("Outlined!")}>outlined</Button>
+            <Button baseClasses="product" variant="outlined">
+              Outlined
+            </Button>
+            <Button
+              baseClasses="auth"
+              variant="primary"
+              onClick={() => alert("Primary!")}
+            >
+              primary
+            </Button>
+            <Button baseClasses="product" variant="primary" disabled>
+              primary
+            </Button>
+            <Button
+              baseClasses="product"
+              variant="secondary"
+              onClick={() => alert("Secondary!")}
+              disabled
+            >
+              secondary
+            </Button>
+            <Button baseClasses="product" variant="primary">
+              primary
+            </Button>
+            <Button
+              baseClasses="product"
+              variant="secondary"
+              onClick={() => alert("Secondary!")}
+            >
+              secondary
+            </Button>
+            <Button variant="outlined" onClick={() => alert("Outlined!")}>
+              outlined
+            </Button>
           </div>
         </div>
       </section>

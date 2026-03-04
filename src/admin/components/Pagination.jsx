@@ -12,6 +12,7 @@ export const PaginationLimiterButton = ({
       <span>Row per page: </span>
       <select
         className="cursor-pointer font-semibold"
+        value={`${limit}`}
         onChange={(e) => {
           onLimitSet(Number(e.target.value));
         }}

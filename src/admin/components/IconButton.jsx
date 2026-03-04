@@ -3,27 +3,19 @@ const baseClasses =
 
 const sizeClasses = {
   small: "text-xs *:size-4",
-  normal: "text-sm *:size-5",
+  normal: "text-sm *:size-4.5",
   large: "text-base *:size-6",
 };
 
-export default function IconButton({
-  size = "normal",
-  children,
-  onClick = () => {},
-  disabled = false,
-}) {
+// title digunakan untuk memunculkan tip saat tombol di hover (atau untuk pengguna aksesibilitas)
+export const IconButton = ({ size = "normal", children, ...props }) => {
   return (
     <button
       type="button"
       className={`${baseClasses} ${sizeClasses[size]}`}
-      disabled={disabled}
-      onClick={(e) => {
-        e.preventDefault();
-        onClick();
-      }}
+      {...props}
     >
       {children}
     </button>
   );
-}
+};

@@ -2,7 +2,7 @@ import { request } from "./client";
 
 // abstraksi api call untuk otentikasi
 export const AuthService = {
-  register: (email, password, fullname) => {
+  register: ({ email, password, fullname }) => {
     return request({
       url: "/auth/register",
       method: "POST",
@@ -13,7 +13,7 @@ export const AuthService = {
       },
     });
   },
-  login: (email, password) => {
+  login: ({ email, password }) => {
     return request({
       url: "/auth/login",
       method: "POST",
@@ -23,7 +23,7 @@ export const AuthService = {
       },
     });
   },
-  verifyOtp: (email, otp) => {
+  verifyOtp: ({ email, otp }) => {
     return request({
       url: "/auth/verify-otp",
       method: "POST",
