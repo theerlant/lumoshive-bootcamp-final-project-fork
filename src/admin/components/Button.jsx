@@ -24,6 +24,8 @@ const variantClasses = {
     "border-[#DB4444] border not-disabled:hover:border-[#DB4444] text-[#DB4444] bg-transparent disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed",
 };
 
+
+
 export default function Button({
   size = "medium",
   variant = "primary",
