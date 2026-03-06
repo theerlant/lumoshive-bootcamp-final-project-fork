@@ -1,28 +1,13 @@
 import { request } from "./client";
 
-const promotionService = {
+export const promotionService = {
+  // Bagian Public (Section 11, Item 1-2)
   public: {
-    get: (
-      page = 1,
-      limit = 10,
-      search,
-      discountType,
-      isActive,
-      sortBy,
-      sortOrder,
-    ) => {
+    get: (params) => {
       return request({
         url: `/promotions`,
         method: "GET",
-        params: {
-          page,
-          limit,
-          search,
-          discount_type: discountType,
-          is_active: isActive,
-          sort_by: sortBy,
-          sort_order: sortOrder,
-        },
+        params,
       });
     },
     getByCode: (code) => {
@@ -32,10 +17,54 @@ const promotionService = {
       });
     },
   },
+  
+  // Bagian Admin (Section 11, Item 3-6)
   admin: {
-    create: () => {},
-    update: () => {},
-    delete: (id) => {},
-    toggleStatus: (id) => {},
+    // Karena di API.json tidak ada "Get All Admin", kita gunakan /promotions 
+    // atau jika backend mendukung /admin/promotions silakan disesuaikan
+    getAll: (params) => {
+      return request({
+        url: `/promotions`, // Sesuaikan ke /admin/promotions jika ada
+        method: "GET",
+        params,
+      });
+    },
+    // Get Detail berdasarkan ID
+    getById: (id) => {
+      return request({
+        url: `/admin/promotions/${id}`,
+        method: "GET",
+      });
+    },
+    // Create Promotion (Item 3)
+    create: (data) => {
+      return request({
+        url: `/admin/promotions`,
+        method: "POST",
+        data,
+      });
+    },
+    // Update Promotion (Item 4)
+    update: (id, data) => {
+      return request({
+        url: `/admin/promotions/${id}`,
+        method: "PUT",
+        data,
+      });
+    },
+    // Delete Promotion (Item 5)
+    delete: (id) => {
+      return request({
+        url: `/admin/promotions/${id}`,
+        method: "DELETE",
+      });
+    },
+    // Toggle Promotion Status (Item 6) -> Menggunakan PUT dan endpoint /status
+    toggleStatus: (id) => {
+      return request({
+        url: `/admin/promotions/${id}/status`,
+        method: "PUT",
+      });
+    },
   },
 };

@@ -12,6 +12,12 @@ import { AdminAddProductPage } from "./pages/protected/products/AdminAddProductP
 import { AdminInputOTPPage } from "./pages/auth-misc/AdminInputOtpPage";
 import { AdminEditProductPage } from "./pages/protected/products/AdminEditProductPage";
 import AdminOrderListPage from "./pages/protected/orders/AdminOrderListPage";
+import { AdminPromotionListPage } from "./pages/protected/promotions/AdminPromotionListPage";
+import { AdminAddPromotionPage } from "./pages/protected/promotions/AdminAddPromotionPage";
+import { AdminDetailPromotionPage } from "./pages/protected/promotions/AdminDetailPromotionPage";
+import { AdminEditPromotionPage } from "./pages/protected/promotions/AdminEditPromotionPage";
+
+
 
 export default function AdminRoutes() {
   return (
@@ -40,10 +46,10 @@ export default function AdminRoutes() {
             <Route path="categories" element={<>TODO CATEGORIES</>} />
             <Route path="orders" element={<AdminOrderListPage />} />
             <Route path="promotions">
-              <Route index element={<>TODO PROMOTION LIST PAGE</>} />
-              <Route path=":id" element={<>TODO DETAIL PROMOTION</>} />
-              <Route path="add" element={<>TODO ADD PROMOTION</>} />
-              <Route path="edit/:id" element={<>TODO EDIT PROMOTION</>} />
+              <Route index element={<AdminPromotionListPage />} />
+              <Route path=":id" element={<AdminDetailPromotionPage />} />
+              <Route path="add" element={<AdminAddPromotionPage />} />
+              <Route path="edit/:id" element={<AdminEditPromotionPage />} />
             </Route>
             <Route path="banners">
               <Route index element={<>TODO BANNER LIST PAGE</>} />
