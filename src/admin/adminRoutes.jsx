@@ -11,6 +11,9 @@ import { AdminDetailProductPage } from "./pages/protected/products/AdminDetailPr
 import { AdminAddProductPage } from "./pages/protected/products/AdminAddProductPage";
 import { AdminInputOTPPage } from "./pages/auth-misc/AdminInputOtpPage";
 import { AdminEditProductPage } from "./pages/protected/products/AdminEditProductPage";
+import AdminStockListPage from "./pages/protected/stocks/AdminStockListPage";
+import AdminStockDetailPage from "./pages/protected/stocks/AdminStockDetailPage";
+import AdminStockFormPage from "./pages/protected/stocks/AdminStockFormPage";
 
 export default function AdminRoutes() {
   return (
@@ -52,10 +55,10 @@ export default function AdminRoutes() {
             </Route>
             <Route path="ratings" element={<>TODO USERS PAGE</>} />
             <Route path="stocks">
-              <Route index element={<>TODO STOCK LIST PAGE</>} />
-              <Route path=":id" element={<>TODO DETAIL STOCK</>} />
-              <Route path="add" element={<>TODO ADD STOCK</>} />
-              <Route path="edit/:id" element={<>TODO EDIT STOCK</>} />
+              <Route index element={<AdminStockListPage />} />
+              <Route path="add" element={<AdminStockFormPage mode="add" />} />
+              <Route path="edit/:id" element={<AdminStockFormPage mode="edit" />} />
+              <Route path="detail/:id" element={<AdminStockDetailPage />} />
             </Route>
           </Route>
         </Route>
