@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Modal } from "../../../components/Modal";
 import Button from "../../../components/Button";
-import InputField from "../../../components/InputField";
+import {InputField} from "../../../components/InputField";
 
 export default function CategoryEditModal({
   isOpen,
