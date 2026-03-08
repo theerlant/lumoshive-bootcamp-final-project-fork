@@ -11,6 +11,7 @@ import { AdminDetailProductPage } from "./pages/protected/products/AdminDetailPr
 import { AdminAddProductPage } from "./pages/protected/products/AdminAddProductPage";
 import { AdminInputOTPPage } from "./pages/auth-misc/AdminInputOtpPage";
 import { AdminEditProductPage } from "./pages/protected/products/AdminEditProductPage";
+import AdminCategoryListPage from "./pages/protected/categories/AdminCategoryListPage";
 
 export default function AdminRoutes() {
   return (
@@ -36,7 +37,7 @@ export default function AdminRoutes() {
               <Route path="add" element={<AdminAddProductPage />} />
               <Route path=":id/edit" element={<AdminEditProductPage />} />
             </Route>
-            <Route path="categories" element={<>TODO CATEGORIES</>} />
+            <Route path="categories" element={<AdminCategoryListPage />} />
             <Route path="orders" element={<>TODO ORDERS</>} />
             <Route path="promotions">
               <Route index element={<>TODO PROMOTION LIST PAGE</>} />

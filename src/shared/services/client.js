@@ -3,7 +3,7 @@ import store from "../features/store";
 
 import { logout, setTokens } from "../features/authSlice";
 
-const BASE_URL = "http://103.150.116.241:8082/api/v1";
+const BASE_URL = "/api";
 
 // Axios instance
 const api = axios.create({

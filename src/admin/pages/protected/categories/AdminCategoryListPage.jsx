@@ -38,13 +38,17 @@ export default function AdminCategoryListPage() {
   // SWR fetcher
   const fetcher = async () => {
     const res = await categoryService.public.getAll();
-    return res.data.data.data;
+    //return res.data.data.data;
+    console.log(res); // data ada lgsg jika dilihat dari output ini
+    return res.data;
   };
 
-  const { data: categories = [], error, isLoading, mutate } = useSWR(
-    "categories",
-    fetcher
-  );
+  const {
+    data: categories = [],
+    error,
+    isLoading,
+    mutate,
+  } = useSWR("categories", fetcher);
 
   const handleCreate = async (data) => {
     try {
@@ -61,7 +65,7 @@ export default function AdminCategoryListPage() {
         selectedCategory.id,
         data.name,
         selectedCategory.is_published,
-        data.icon
+        data.icon,
       );
 
       mutate();
@@ -117,8 +121,9 @@ export default function AdminCategoryListPage() {
                   <TableCell>{category.name}</TableCell>
 
                   <TableCell>
+                    {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
                     <img
-                      src={category.icon_url}
+                      src={`http://103.150.116.241:8082${category.icon_url}`}
                       alt={category.name}
                       className="w-6 h-6"
                     />
@@ -129,7 +134,9 @@ export default function AdminCategoryListPage() {
                       checked={category.is_published}
                       onChange={async () => {
                         try {
-                          await categoryService.admin.togglePublish(category.id);
+                          await categoryService.admin.togglePublish(
+                            category.id,
+                          );
                           mutate();
                         } catch (err) {
                           console.log(err);
