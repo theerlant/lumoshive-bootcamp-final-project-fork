@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import Navbar from "../../../components/Navbar";
+import { useState, useEffect } from "react";
+import { categoryService } from "../../../../shared/services/categoryService"
 
 import {
   TableWrapper,
@@ -11,7 +13,7 @@ import {
 } from "../../../components/Table";
 
 import Button from "../../../components/Button";
-import IconButton from "../../../components/IconButton";
+import { IconButton } from "../../../components/IconButton";
 import Switch from "../../../components/Switch";
 
 import {
@@ -26,149 +28,201 @@ import CategoryCreateModal from "./CategoryCreateModal";
 import CategoryEditModal from "./CategoryEditModal";
 import CategoryDeleteModal from "./CategoryDeleteModal";
 
+
 export default function AdminCategoryListPage() {
-
-  const [categories, setCategories] = useState([
-    {
-      id: 1,
-      name: "Electronic",
-      icon: "electronic.svg",
-      published: true,
-    },
-    {
-      id: 2,
-      name: "Home & Lifestyle",
-      icon: "home.svg",
-      published: false,
-    },
-  ]);
-
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [showCreate,setShowCreate] = useState(false)
+  const [showEdit,setShowEdit] = useState(false)
+  const [showDelete,setShowDelete] = useState(false)
 
-  const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  const fetchCategories = async () => {
+    try {
+      const res = await categoryService.public.getAll();
+      setCategories(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleCreate = async (data) => {
+    try {
+      await categoryService.admin.create(
+        data.name,
+        true,
+        data.icon
+      );
+
+      fetchCategories();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUpdate = async (data) => {
+    try {
+      await categoryService.admin.update(
+        selectedCategory.id,
+        data.name,
+        selectedCategory.is_published,
+        data.icon
+      );
+
+      fetchCategories();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await categoryService.admin.delete(selectedCategory.id);
+      fetchCategories();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
-    <div className="p-8 bg-[#F4F5F9] min-h-screen">
+    <div className="flex min-h-screen">
 
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      {/* SIDEBAR */}
+      <Navbar />
 
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Category
-          </h2>
+      {/* CONTENT */}
+      <div className="flex-1 p-8 bg-[#F4F5F9]">
 
-          <p className="text-sm text-gray-500">
-            Home &gt; <span className="text-[#DB4444]">Category</span>
-          </p>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-6">
+
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Category
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              Home &gt; <span className="text-[#DB4444]">Category</span>
+            </p>
+          </div>
+
+          <Button onClick={() => setShowCreate(true)}>
+            <span className="text-xs">Add New Category</span>
+          </Button>
+
         </div>
 
-        <Button onClick={() => setShowCreate(true)}>
-          <span className="text-xs">Add New Category</span>
-        </Button>
+        {/* TABLE */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
 
-      </div>
+          <TableWrapper>
 
-      {/* TABLE */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
 
-        <TableWrapper>
+            <TableHead>
+              <TableHeadCol title="Category Name" />
+              <TableHeadCol title="Category Icon" />
+              <TableHeadCol title="Published" />
+              <TableHeadCol title="Action" />
+            </TableHead>
 
-          <TableColGroup
-            colSizes={["40%", "25%", "20%", "15%"]}
-          />
+            <TableBody>
 
-          <TableHead>
-            <TableHeadCol title="Category Name" />
-            <TableHeadCol title="Category Icon" />
-            <TableHeadCol title="Published" />
-            <TableHeadCol title="Action" />
-          </TableHead>
+              {categories.map((category) => (
+                <TableRow key={category.id}>
 
-          <TableBody>
+                  <TableCell>{category.name}</TableCell>
 
-            {categories.map((category) => (
-              <TableRow key={category.id}>
+                  <TableCell><img
+                    src={category.icon}
+                    alt={category.name}
+                    className="w-6 h-6"
+                  /></TableCell>
 
-                <TableCell>
-                  {category.name}
-                </TableCell>
-
-                <TableCell>
-                  {category.icon}
-                </TableCell>
-
-                <TableCell>
-                  <Switch checked={category.published} />
-                </TableCell>
-
-                <TableCell>
-
-                  <div className="flex gap-2">
-
-                    <IconButton
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        setShowEdit(true);
+                  <TableCell>
+                    <Switch
+                      checked={category.is_published}
+                      onChange={async () => {
+                        try {
+                          await categoryService.admin.togglePublish(category.id);
+                          fetchCategories();
+                        } catch (err) {
+                          console.log(err);
+                        }
                       }}
-                    >
-                      <LucidePencil size={16} />
-                    </IconButton>
+                    />
+                  </TableCell>
 
-                    <IconButton
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        setShowDelete(true);
-                      }}
-                    >
-                      <LucideTrash size={16} />
-                    </IconButton>
+                  <TableCell>
+                    <div className="flex gap-2">
 
-                  </div>
+                      <IconButton
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setShowEdit(true);
+                        }}
+                      >
+                        <LucidePencil size={16} />
+                      </IconButton>
 
-                </TableCell>
+                      <IconButton
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setShowDelete(true);
+                        }}
+                      >
+                        <LucideTrash size={16} />
+                      </IconButton>
 
-              </TableRow>
-            ))}
+                    </div>
+                  </TableCell>
 
-          </TableBody>
+                </TableRow>
+              ))}
 
-        </TableWrapper>
+            </TableBody>
 
-        {/* PAGINATION */}
+          </TableWrapper>
 
-        <div className="mt-8 flex justify-between items-center border-t pt-4">
+          {/* PAGINATION */}
+          <div className="mt-8 flex justify-between items-center border-t pt-4">
 
-          <PaginationInfo total={27} />
+            <PaginationInfo total={27} />
 
-          <div className="flex items-center gap-6">
-            <PaginationLimiterButton />
-            <PaginationNavigation currentPage={1} totalPages={2} />
+            <div className="flex items-center gap-6">
+              <PaginationLimiterButton />
+              <PaginationNavigation currentPage={1} totalPages={2} />
+            </div>
+
           </div>
 
         </div>
 
+        {/* MODALS */}
+
+        <CategoryCreateModal
+          isOpen={showCreate}
+          onClose={() => setShowCreate(false)}
+          onSubmit={handleCreate}
+        />
+
+        <CategoryEditModal
+          isOpen={showEdit}
+          category={selectedCategory}
+          onClose={() => setShowEdit(false)}
+          onSubmit={handleUpdate}
+        />
+
+        <CategoryDeleteModal
+          isOpen={showDelete}
+          category={selectedCategory}
+          onClose={() => setShowDelete(false)}
+          onDelete={handleDelete}
+        />
+
       </div>
-
-      {/* MODALS */}
-
-      <CategoryCreateModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-      />
-
-      <CategoryEditModal
-        open={showEdit}
-        category={selectedCategory}
-        onClose={() => setShowEdit(false)}
-      />
-
-      <CategoryDeleteModal
-        open={showDelete}
-        onClose={() => setShowDelete(false)}
-      />
 
     </div>
   );
