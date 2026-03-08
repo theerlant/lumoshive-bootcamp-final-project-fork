@@ -1,6 +1,7 @@
 import Navbar from "../../../components/Navbar";
-import { useState, useEffect } from "react";
-import { categoryService } from "../../../../shared/services/categoryService"
+import { useState } from "react";
+import useSWR from "swr";
+import { categoryService } from "../../../../shared/services/categoryService";
 
 import {
   TableWrapper,
@@ -28,36 +29,27 @@ import CategoryCreateModal from "./CategoryCreateModal";
 import CategoryEditModal from "./CategoryEditModal";
 import CategoryDeleteModal from "./CategoryDeleteModal";
 
-
 export default function AdminCategoryListPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [showCreate,setShowCreate] = useState(false)
-  const [showEdit,setShowEdit] = useState(false)
-  const [showDelete,setShowDelete] = useState(false)
+  const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
-  const fetchCategories = async () => {
-    try {
-      const res = await categoryService.public.getAll();
-      setCategories(res.data.data);
-    } catch (err) {
-      console.log(err);
-    }
+  // SWR fetcher
+  const fetcher = async () => {
+    const res = await categoryService.public.getAll();
+    return res.data.data.data;
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  const { data: categories = [], error, isLoading, mutate } = useSWR(
+    "categories",
+    fetcher
+  );
 
   const handleCreate = async (data) => {
     try {
-      await categoryService.admin.create(
-        data.name,
-        true,
-        data.icon
-      );
-
-      fetchCategories();
+      await categoryService.admin.create(data.name, true, data.icon);
+      mutate(); // refresh data
     } catch (err) {
       console.log(err);
     }
@@ -72,7 +64,7 @@ export default function AdminCategoryListPage() {
         data.icon
       );
 
-      fetchCategories();
+      mutate();
     } catch (err) {
       console.log(err);
     }
@@ -81,28 +73,23 @@ export default function AdminCategoryListPage() {
   const handleDelete = async () => {
     try {
       await categoryService.admin.delete(selectedCategory.id);
-      fetchCategories();
+      mutate();
     } catch (err) {
       console.log(err);
     }
   };
+
+  // if (isLoading) return <div className="p-8">Loading...</div>;
+  // if (error) return <div className="p-8">Failed to load categories</div>;
+
   return (
     <div className="flex min-h-screen">
-
-      {/* SIDEBAR */}
       <Navbar />
 
-      {/* CONTENT */}
       <div className="flex-1 p-8 bg-[#F4F5F9]">
-
-        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Category
-            </h2>
-
+            <h2 className="text-2xl font-bold text-gray-900">Category</h2>
             <p className="text-sm text-gray-500">
               Home &gt; <span className="text-[#DB4444]">Category</span>
             </p>
@@ -111,14 +98,10 @@ export default function AdminCategoryListPage() {
           <Button onClick={() => setShowCreate(true)}>
             <span className="text-xs">Add New Category</span>
           </Button>
-
         </div>
 
-        {/* TABLE */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-
           <TableWrapper>
-
             <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
 
             <TableHead>
@@ -129,17 +112,17 @@ export default function AdminCategoryListPage() {
             </TableHead>
 
             <TableBody>
-
               {categories.map((category) => (
                 <TableRow key={category.id}>
-
                   <TableCell>{category.name}</TableCell>
 
-                  <TableCell><img
-                    src={category.icon}
-                    alt={category.name}
-                    className="w-6 h-6"
-                  /></TableCell>
+                  <TableCell>
+                    <img
+                      src={category.icon_url}
+                      alt={category.name}
+                      className="w-6 h-6"
+                    />
+                  </TableCell>
 
                   <TableCell>
                     <Switch
@@ -147,7 +130,7 @@ export default function AdminCategoryListPage() {
                       onChange={async () => {
                         try {
                           await categoryService.admin.togglePublish(category.id);
-                          fetchCategories();
+                          mutate();
                         } catch (err) {
                           console.log(err);
                         }
@@ -157,7 +140,6 @@ export default function AdminCategoryListPage() {
 
                   <TableCell>
                     <div className="flex gap-2">
-
                       <IconButton
                         onClick={() => {
                           setSelectedCategory(category);
@@ -175,32 +157,22 @@ export default function AdminCategoryListPage() {
                       >
                         <LucideTrash size={16} />
                       </IconButton>
-
                     </div>
                   </TableCell>
-
                 </TableRow>
               ))}
-
             </TableBody>
-
           </TableWrapper>
 
-          {/* PAGINATION */}
           <div className="mt-8 flex justify-between items-center border-t pt-4">
-
             <PaginationInfo total={27} />
 
             <div className="flex items-center gap-6">
               <PaginationLimiterButton />
               <PaginationNavigation currentPage={1} totalPages={2} />
             </div>
-
           </div>
-
         </div>
-
-        {/* MODALS */}
 
         <CategoryCreateModal
           isOpen={showCreate}
@@ -221,9 +193,7 @@ export default function AdminCategoryListPage() {
           onClose={() => setShowDelete(false)}
           onDelete={handleDelete}
         />
-
       </div>
-
     </div>
   );
 }

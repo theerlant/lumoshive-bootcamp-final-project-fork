@@ -24,7 +24,7 @@ export const categoryService = {
   admin: {
     create: (name, isPublished, icon) => {
       return request({
-        url: "categories",
+        url: "/categories",
         method: "POST",
         data: {
           name,
