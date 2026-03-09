@@ -3,6 +3,9 @@ import ComponentSandbox from "./sandbox/Sandbox";
 import AdminRoutes from "./admin/adminRoutes";
 import { Provider } from "react-redux";
 import store from "./shared/features/store";
+import NotFoundPage from "./public/pages/errors/404";
+import UnauthorizedPage from "./public/pages/errors/401";
+import ServerErrorPage from "./public/pages/errors/500";
 
 function App() {
   return (
@@ -10,7 +13,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {process.env.NODE_ENV === "development" && (
-            <Route path="/sandbox" element={<ComponentSandbox />} />
+            <Route path="/sandbox" element={<NotFoundPage/> } />
           )}
           <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
