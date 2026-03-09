@@ -4,6 +4,7 @@ import {
   LucidePencil,
   LucideTrash,
   LucideCheckCircle,
+  LucidePlus,
 } from "lucide-react";
 import Button from "../../../components/Button";
 import Switch from "../../../components/Switch";
@@ -34,22 +35,30 @@ export const AdminPromotionListPage = () => {
   const [sortBy, setSortBy] = useState(undefined);
   const [sortOrder, setSortOrder] = useState(undefined);
   const navigate = useNavigate();
+  const [status, setStatus] = useState("");
 
-  // Memanggil API dengan SWR
   const { data, error, isLoading, mutate } = useSWR(
-    ["/admin/promotions", page, limit, sortBy, sortOrder],
-    () => promotionService.admin.getAll({ page, limit, sortBy, sortOrder })
+    ["/admin/promotions", page, limit, sortBy, sortOrder, status],
+    () => {
+      const params = { page, limit };
+      if (sortBy) params.sortBy = sortBy;
+      if (sortOrder) params.sortOrder = sortOrder;
+      if (status) params.is_active = status;
+      return promotionService.admin.getAll(params);
+    }
   );
 
-  // SAFEGUARD: Ekstraksi data agar lebih aman dari crash
-  // Jika response dibungkus "data.data", ambil itu. Jika "data" langsung berupa array, ambil itu.
-  const promotionsData = data?.data || (Array.isArray(data) ? data : []);
-  
-  // Ambil data pagination, atau sediakan fallback jika tidak ada.
-  const paginationData = data?.pagination || data?.meta || { total_items: 0, total_pages: 1 };
+  const promotionsData = data?.data || data?.promotions || (Array.isArray(data) ? data : []);
+  const paginationData = data?.pagination || data?.meta || { total_items: promotionsData.length, total_pages: 1 };
 
-  const handleTogglePublish = (id, newStatus) => {
-    promotionService.admin.togglePublish(id, newStatus).then(() => mutate());
+  const handleTogglePublish = async (id) => {
+    try {
+      await promotionService.admin.toggleStatus(id);
+      mutate(); // Refresh tabel agar status terbaru muncul
+    } catch (err) {
+      console.error("Failed to toggle status:", err);
+      alert("Gagal mengubah status promosi.");
+    }
   };
 
   const handleToggleSort = (by) => {
@@ -70,35 +79,46 @@ export const AdminPromotionListPage = () => {
 
   const handleDeleteConfirm = async () => {
     if (!idToDelete) return;
-    promotionService.admin.delete(idToDelete)
-      .then(() => {
-        mutate();
-        setDeleteConfirmVisible(true);
-      })
-      .catch((err) => alert("Failed to delete"))
-      .finally(() => setIdToDelete(null));
+    try {
+      await promotionService.admin.delete(idToDelete);
+      mutate();
+      setDeleteConfirmVisible(true);
+      setIdToDelete(null);
+    } catch (err) {
+      alert("Failed to delete promotion");
+      setIdToDelete(null);
+    }
   };
 
   return (
-    <>
+    <div className="p-6">
       <PageHeader />
-      {error ? <PageError error={error} /> : null}
-      {isLoading ? <PageLoading /> : null}
       
-      <section id="list-table">
-        {!isLoading && !error ? (
+      {error && <PageError error={error} />}
+      {isLoading && <PageLoading />}
+      
+      <section id="list-table" className="mt-6">
+      {!isLoading && !error && (
+        <div className="w-full">
+          
+          <div className="py-4 mb-2"> 
+            <select 
+              value={status} 
+              onChange={(e) => {
+                const val = e.target.value;
+                setStatus(val === "" ? undefined : Number(val));
+                setPage(1);
+              }} 
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-500 w-48 focus:outline-none focus:border-[#DB4444] bg-white"
+            >
+              <option value="">All Status</option>
+              <option value="1">Active</option>
+              <option value="0">Inactive</option>
+            </select>
+          </div>
+
           <TableWrapper>
-            {/* Header dengan Filter/Sort sesuai Figma */}
-            <div className="p-4 border-b">
-              <select className="border rounded-md px-3 py-2 text-sm text-gray-400 w-48 focus:outline-none focus:border-[#DB4444]">
-                <option>Select Filter</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-            
             <TableHeader sortBy={sortBy} sortOrder={sortOrder} onSort={handleToggleSort} />
-            
             <TableBody>
               {promotionsData.length > 0 ? (
                 promotionsData.map((promo) => (
@@ -111,44 +131,49 @@ export const AdminPromotionListPage = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10 text-gray-500">
+                  <TableCell colSpan={8} className="text-center py-10">
                     <PageEmpty />
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </TableWrapper>
-        ) : null}
-      </section>
 
-      {/* Tampilkan Pagination jika tidak loading dan tidak error */}
-      {!isLoading && !error && (
-        <TablePagination
-          page={page}
-          limit={limit}
-          totalItems={paginationData.total_items || paginationData.total || promotionsData.length}
-          totalPages={paginationData.total_pages || Math.ceil((paginationData.total || 1) / limit)}
-          onLimitSet={(l) => { setLimit(l); setPage(1); }}
-          onPageChange={(p) => setPage(p)}
-        />
+          <div className="mt-4">
+            <TablePagination
+              page={page}
+              limit={limit}
+              totalItems={paginationData.total_items}
+              totalPages={paginationData.total_pages}
+              onLimitSet={(l) => { setLimit(l); setPage(1); }}
+              onPageChange={(p) => setPage(p)}
+            />
+          </div>
+        </div>
       )}
+    </section>
 
       <DeleteModal idToDelete={idToDelete} onCancel={() => setIdToDelete(null)} onConfirm={handleDeleteConfirm} />
       <DeleteConfirmModal isVisible={deleteConfirmVisible} onSelfDelete={() => setDeleteConfirmVisible(false)} />
-    </>
+    </div>
   );
 };
 
 const PageHeader = () => {
   const navigate = useNavigate();
   return (
-    <section id="header" className="flex justify-between items-center mb-8">
+    <section id="header" className="flex justify-between items-center">
       <div>
         <h1 className="text-2xl font-bold">Promotion</h1>
         <Breadcrumbs items={[{ label: "Home", href: "/admin" }, { label: "Promotion" }]} />
       </div>
-      <Button size="medium" onClick={() => navigate("./add")} className="bg-[#DB4444] text-white">
-        <p className="text-xs">Add New Promotion</p>
+      <Button 
+        size="medium" 
+        onClick={() => navigate("./add")} 
+        className="bg-[#DB4444] text-white flex items-center gap-2 px-4 py-2 rounded-md"
+      >
+        <LucidePlus size={18} />
+        <span className="text-sm font-semibold">Add New Promotion</span>
       </Button>
     </section>
   );
@@ -156,21 +181,28 @@ const PageHeader = () => {
 
 const TableHeader = ({ sortBy, sortOrder, onSort }) => (
   <TableHead>
-    <TableHeadCol title="Promotion Name" sort={sortBy === "name" ? sortOrder : "none"} onSort={() => onSort("name")} showRetails={true} />
-    <TableHeadCol title="Start Date" showRetails={true} />
-    <TableHeadCol title="End Date" showRetails={true} />
-    <TableHeadCol title="Type" showRetails={true} />
-    <TableHeadCol title="Description" showRetails={true} />
-    <TableHeadCol title="Status" showRetails={true} />
-    <TableHeadCol title="Published" showRetails={true} />
+    <TableHeadCol title="Promotion Name" sort={sortBy === "name" ? sortOrder : "none"} onSort={() => onSort("name")} />
+    <TableHeadCol title="Start Date" sort={sortBy === "start_date" ? sortOrder : "none"} onSort={() => onSort("start_date")} />
+    <TableHeadCol title="End Date" sort={sortBy === "end_date" ? sortOrder : "none"} onSort={() => onSort("end_date")} />
+    <TableHeadCol title="Type" sort={sortBy === "type" ? sortOrder : "none"} onSort={() => onSort("type")} />
+    <TableHeadCol title="Description" sort={sortBy === "description" ? sortOrder : "none"} onSort={() => onSort("description")} />
+    <TableHeadCol title="Status" sort={sortBy === "is_active" ? sortOrder : "none"} onSort={() => onSort("is_active")} />
+    <TableHeadCol title="Published" sort={sortBy === "is_published" ? sortOrder : "none"} onSort={() => onSort("is_published")} />
     <TableHeadCol title="Action" />
   </TableHead>
 );
 
 const TableItem = ({ promo, onTogglePublish, onDelete }) => {
   const navigate = useNavigate();
-  // Asumsi status aktif bisa dilihat dari is_active (sesuaikan dengan API Anda)
   const isActive = promo.is_active ?? true; 
+
+  const displayType = (type) => {
+    const types = {
+      'direct_discount': 'Direct Discount',
+      'voucher_code': 'Voucher Code'
+    };
+    return types[type] || type || "-";
+  };
 
   return (
     <TableRow>
@@ -182,24 +214,33 @@ const TableItem = ({ promo, onTogglePublish, onDelete }) => {
         {promo.end_date ? new Date(promo.end_date).toLocaleDateString("id-ID") : "-"}
       </TableCell>
       <TableCell className="text-gray-500 text-sm capitalize">
-        {promo.type ? promo.type.replace('_', ' ') : "-"}
+        {displayType(promo.type)}
       </TableCell>
-      <TableCell className="text-gray-500 text-sm truncate max-w-[200px]">
-        {promo.description || promo.discount_value ? `Potongan Rp ${promo.discount_value}` : "-"}
+      <TableCell className="text-gray-500 text-sm">
+        {promo.description || (promo.discount_value ? `Potongan Rp ${promo.discount_value}` : "-")}
       </TableCell>
       <TableCell>
-        <span className={`px-3 py-1 rounded-full text-xs text-white ${isActive ? 'bg-[#2D9E63]' : 'bg-[#687182]'}`}>
+        <span className={`px-3 py-1 rounded-full text-[10px] text-white ${isActive ? 'bg-[#2D9E63]' : 'bg-[#687182]'}`}>
           {isActive ? "Active" : "Inactive"}
         </span>
       </TableCell>
       <TableCell>
-        <Switch on={promo.is_published} onChange={() => onTogglePublish(promo.id, !promo.is_published)} />
+        <Switch 
+          on={!!promo.is_published} 
+          onChange={() => onTogglePublish(promo.id)}
+        />
       </TableCell>
       <TableCell>
-        <div className="flex gap-2 text-gray-400">
-          <IconButton onClick={() => navigate(`detail/${promo.id}`)} title="Detail"><LucideEye size={18} /></IconButton>
-          <IconButton onClick={() => navigate(`edit/${promo.id}`)} title="Edit"><LucidePencil size={18} /></IconButton>
-          <IconButton onClick={() => onDelete()} title="Delete"><LucideTrash size={18} /></IconButton>
+        <div className="flex gap-2">
+          <IconButton onClick={() => navigate(`/admin/promotions/${promo.name}`)} title="Detail">
+            <LucideEye size={18} className="text-gray-500 hover:text-blue-500 transition-colors"/>
+          </IconButton>
+          <IconButton onClick={() => navigate(`/admin/promotions/edit/${promo.id}`)} title="Edit">
+            <LucidePencil size={18} className="text-gray-500 hover:text-orange-500 transition-colors"/>
+          </IconButton>
+          <IconButton onClick={onDelete} title="Delete">
+            <LucideTrash size={18} className="text-gray-500 hover:text-red-500 transition-colors"/>
+          </IconButton>
         </div>
       </TableCell>
     </TableRow>
@@ -207,33 +248,31 @@ const TableItem = ({ promo, onTogglePublish, onDelete }) => {
 };
 
 const TablePagination = ({ page, limit, totalItems, totalPages, onLimitSet, onPageChange }) => (
-  <section id="pagination" className="flex items-center justify-between mt-4 mb-2 mx-2 p-4 border-t border-gray-100">
-    <div className="flex-1 text-sm text-gray-500 italic">
+  <div className="flex items-center justify-between p-4 border-t border-gray-100">
+    <div className="flex-1 italic text-gray-500 text-sm">
       <PaginationInfo currentPage={page} limit={limit} total={totalItems} />
     </div>
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-4">
       <div className="flex items-center gap-2">
          <span className="text-xs text-gray-400">Rows per page:</span>
          <PaginationLimiterButton limit={limit} onLimitSet={onLimitSet} />
       </div>
       <PaginationNavigation currentPage={page} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
-  </section>
+  </div>
 );
 
 const DeleteModal = ({ idToDelete, onCancel, onConfirm }) => (
   <Modal isOpen={idToDelete !== null} onClose={() => onCancel()}>
-    <div className="flex flex-col items-center text-center gap-6 p-4">
+    <div className="flex flex-col items-center text-center gap-4 p-4">
       <div className="w-16 h-16 rounded-full border-4 border-red-500 flex items-center justify-center">
         <LucideTrash size={32} className="text-red-500" />
       </div>
-      <div>
-        <h2 className="text-2xl font-bold text-red-500 mb-2">Delete Promotion?</h2>
-        <p className="text-gray-800 text-base">Are you sure want to delete this promotion?</p>
-      </div>
-      <div className="flex gap-4 w-full justify-center mt-6">
-        <Button variant="outlined" className="w-28 border-red-500 text-red-500" onClick={() => onCancel()}>No</Button>
-        <Button className="w-28 bg-red-500 text-white" onClick={() => onConfirm()}>Yes</Button>
+      <h2 className="text-xl font-bold text-red-500">Delete Promotion?</h2>
+      <p className="text-gray-600">Are you sure want to delete this promotion?</p>
+      <div className="flex gap-4 mt-4">
+        <Button variant="outlined" onClick={() => onCancel()} className="w-24 border-red-500 text-red-500">No</Button>
+        <Button onClick={() => onConfirm()} className="w-24 bg-red-500 text-white">Yes</Button>
       </div>
     </div>
   </Modal>
@@ -247,35 +286,26 @@ const DeleteConfirmModal = ({ isVisible, onSelfDelete }) => {
       timerRef.current = setTimeout(() => onSelfDelete(), 3000);
     }
     return () => clearTimeout(timerRef.current);
-  }, [isVisible]);
+  }, [isVisible, onSelfDelete]);
 
   return (
     <Modal isOpen={isVisible} onClose={() => onSelfDelete()}>
-      <div className="flex flex-col items-center text-center gap-6 p-4">
-        <LucideCheckCircle size={64} className="text-green-500" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">This promotion is successfully deleted</h2>
+      <div className="flex flex-col items-center text-center gap-4 p-4">
+        <LucideCheckCircle size={48} className="text-green-500" />
+        <h2 className="text-lg font-bold">This promotion is successfully deleted</h2>
       </div>
     </Modal>
   );
 };
 
 const PageError = ({ error }) => (
-  <div className="bg-red-50 w-full rounded-lg p-4 font-admin border border-red-100 mt-4">
-    <section id="error" className="flex flex-col items-center text-red-600">
-      <p className="font-bold">Cannot fetch Promotions.</p>
-      <p className="text-sm italic">{error?.message || String(error)}</p>
-    </section>
-  </div>
+  <div className="p-4 text-red-500">Error: {error?.message || "Something went wrong"}</div>
 );
 
 const PageLoading = () => (
-  <div className="flex justify-center py-10 w-full">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#DB4444]"></div>
-  </div>
+  <div className="p-4 flex justify-center"><LucideTags className="animate-spin" /></div>
 );
 
 const PageEmpty = () => (
-  <div className="w-full text-center text-gray-500">
-    <p>Sadly there's no data here</p>
-  </div>
+  <div className="text-gray-500">Sadly there's no data here</div>
 );
