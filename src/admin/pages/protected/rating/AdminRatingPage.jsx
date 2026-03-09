@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import Navbar from "../../../components/Navbar";
+import useSWR from "swr";
+import { reviewService } from "../../../../shared/services/reviewService";
+
 import {
   TableWrapper,
   TableColGroup,
@@ -10,7 +14,7 @@ import {
 } from "../../../components/Table";
 
 import Button from "../../../components/Button";
-import IconButton from "../../../components/IconButton";
+import { IconButton } from "../../../components/IconButton";
 
 import {
   PaginationInfo,
@@ -20,122 +24,142 @@ import {
 
 import { LucideTrash, LucideEye } from "lucide-react";
 
-import useSWR from "swr";
-import { ratingService } from "../../../../shared/services/ratingService";
-
 export default function AdminRatingListPage() {
+  // Logic State untuk Pagination & Filter
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState(null);
 
-  const { data, error, isLoading } = useSWR("/admin/ratings", () =>
-    ratingService.admin.get()
+  // SWR dengan Key Dinamis (otomatis fetch ulang kalau page/limit berubah)
+  const { data, error, isLoading, mutate } = useSWR(
+    ["admin-reviews", page, limit, search],
+    () => reviewService.admin.getAll(page, limit, search)
   );
 
+  // Logic Hapus Review
+  const handleDelete = async (reviewId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus rating ini?")) {
+      try {
+        await reviewService.admin.delete(reviewId);
+        mutate(); // Refresh data setelah hapus
+      } catch (err) {
+        console.error("Gagal menghapus:", err.message);
+        alert("Gagal menghapus review: " + err.message);
+      }
+    }
+  };
+
   if (error) {
-    return <div>ERROR {error.message}</div>;
+    return (
+      <div className="flex min-h-screen">
+        <Navbar />
+        <div className="flex-1 p-8 bg-[#F4F5F9]">ERROR {error.message}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-8 bg-[#F4F5F9] min-h-screen">
+    <div className="flex min-h-screen">
+      <Navbar />
 
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Rating</h2>
-          <p className="text-sm text-gray-500">
-            Home &gt; <span className="text-[#DB4444]">Rating</span>
-          </p>
-        </div>
-
-        <Button variant="outlined" size="small">
-          <span className="text-xs">Export</span>
-        </Button>
-
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          <TableWrapper>
-
-            <TableColGroup
-              colSizes={["18%", "22%", "10%", "30%", "10%", "10%"]}
-            />
-
-            <TableHead>
-              <TableHeadCol title="User" sort="none" />
-              <TableHeadCol title="Product" sort="none" />
-              <TableHeadCol title="Rating" sort="none" />
-              <TableHeadCol title="Review" sort="none" />
-              <TableHeadCol title="Date" sort="none" />
-              <TableHeadCol title="Action" />
-            </TableHead>
-
-            <TableBody>
-
-              {data
-                ? Array.from(data.data).map((rating) => {
-                    return (
-                      <TableRow key={rating.id}>
-
-                        <TableCell>
-                          {rating.user.name}
-                        </TableCell>
-
-                        <TableCell>
-                          {rating.product.name}
-                        </TableCell>
-
-                        <TableCell>
-                          ⭐ {rating.rating}
-                        </TableCell>
-
-                        <TableCell>
-                          {rating.review}
-                        </TableCell>
-
-                        <TableCell>
-                          {rating.created_at}
-                        </TableCell>
-
-                        <TableCell>
-                          <div className="flex gap-2">
-
-                            <IconButton>
-                              <LucideEye size={16} />
-                            </IconButton>
-
-                            <IconButton>
-                              <LucideTrash size={16} />
-                            </IconButton>
-
-                          </div>
-                        </TableCell>
-
-                      </TableRow>
-                    );
-                  })
-                : null}
-
-            </TableBody>
-
-          </TableWrapper>
-        )}
-
-        {/* PAGINATION */}
-        <div className="mt-8 flex justify-between items-center border-t pt-4">
-
-          <PaginationInfo total={27} />
-
-          <div className="flex items-center gap-6">
-            <PaginationLimiterButton />
-            <PaginationNavigation currentPage={1} totalPages={2} />
+      <div className="flex-1 p-8 bg-[#F4F5F9]">
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Rating</h2>
+            <p className="text-sm text-gray-500">
+              Home &gt; <span className="text-[#DB4444]">Rating</span>
+            </p>
           </div>
 
+          <Button variant="outlined" size="small">
+            <span className="text-xs">Export</span>
+          </Button>
         </div>
 
+        {/* TABLE SECTION */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          {isLoading ? (
+            <div className="flex justify-center p-4">Loading...</div>
+          ) : (
+            <>
+              <TableWrapper>
+                <TableColGroup
+                  colSizes={["18%", "22%", "10%", "30%", "10%", "10%"]}
+                />
+
+                <TableHead>
+                  <TableHeadCol title="User" />
+                  <TableHeadCol title="Product" />
+                  <TableHeadCol title="Rating" />
+                  <TableHeadCol title="Review" />
+                  <TableHeadCol title="Date" />
+                  <TableHeadCol title="Action" />
+                </TableHead>
+
+                <TableBody>
+                  {/* data?.data karena wrapper request lo biasanya unwrap hasil axios */}
+                  {data?.data?.map((rating) => (
+                    <TableRow key={rating.id}>
+                      <TableCell>{rating.user?.name || "Unknown"}</TableCell>
+                      <TableCell>{rating.product?.name}</TableCell>
+                      <TableCell>
+                         <span className="text-yellow-500 font-medium">⭐ {rating.rating}</span>
+                      </TableCell>
+                      <TableCell>
+                        <p className="line-clamp-2 text-sm text-gray-600">{rating.comment}</p>
+                      </TableCell>
+                      <TableCell>{new Date(rating.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <IconButton>
+                            <LucideEye size={16} />
+                          </IconButton>
+                          <IconButton 
+                            className="text-red-500 hover:bg-red-50"
+                            onClick={() => handleDelete(rating.id)}
+                          >
+                            <LucideTrash size={16} />
+                          </IconButton>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </TableWrapper>
+
+              {/* PAGINATION LOGIC */}
+              <div className="mt-8 flex justify-between items-center border-t pt-4">
+                <PaginationInfo 
+                  total={data?.meta?.total ?? 0} 
+                />
+
+                <div className="flex items-center gap-6">
+                  {/* Limit per page */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Rows per page:</span>
+                    <select 
+                      value={limit}
+                      onChange={(e) => {
+                        setLimit(Number(e.target.value));
+                        setPage(1); // Balik ke page 1 kalau limit ganti
+                      }}
+                      className="text-xs border rounded p-1 outline-none"
+                    >
+                      {[10, 20, 50].map(val => <option key={val} value={val}>{val}</option>)}
+                    </select>
+                  </div>
+
+                  <PaginationNavigation
+                    currentPage={data?.meta?.current_page ?? 1}
+                    totalPages={data?.meta?.last_page ?? 1}
+                    onPageChange={(p) => setPage(p)} // Pastikan komponen ini terima prop onPageChange
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
