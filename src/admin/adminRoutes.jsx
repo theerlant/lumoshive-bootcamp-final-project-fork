@@ -14,6 +14,7 @@ import { AdminEditProductPage } from "./pages/protected/products/AdminEditProduc
 import AdminStockListPage from "./pages/protected/stocks/AdminStockListPage";
 import AdminStockDetailPage from "./pages/protected/stocks/AdminStockDetailPage";
 import AdminStockFormPage from "./pages/protected/stocks/AdminStockFormPage";
+import AdminOrderListPage from "./pages/protected/orders/AdminOrderListPage";
 
 export default function AdminRoutes() {
   return (
@@ -40,7 +41,7 @@ export default function AdminRoutes() {
               <Route path=":id/edit" element={<AdminEditProductPage />} />
             </Route>
             <Route path="categories" element={<>TODO CATEGORIES</>} />
-            <Route path="orders" element={<>TODO ORDERS</>} />
+            <Route path="orders" element={<AdminOrderListPage />} />
             <Route path="promotions">
               <Route index element={<>TODO PROMOTION LIST PAGE</>} />
               <Route path=":id" element={<>TODO DETAIL PROMOTION</>} />
