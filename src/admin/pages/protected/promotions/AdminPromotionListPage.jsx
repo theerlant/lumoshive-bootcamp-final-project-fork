@@ -28,6 +28,7 @@ import { promotionService } from "../../../../shared/services/promotionService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@/admin/components/Modal";
+import { toTitleCase } from "../../../../shared/utils/toTitleCase";
 
 export const AdminPromotionListPage = () => {
   const [page, setPage] = useState(1);
@@ -41,15 +42,17 @@ export const AdminPromotionListPage = () => {
     ["/admin/promotions", page, limit, sortBy, sortOrder, status],
     () => {
       const params = { page, limit };
-      if (sortBy) params.sortBy = sortBy;
-      if (sortOrder) params.sortOrder = sortOrder;
+      if (sortBy) params.sort_by = sortBy;
+      if (sortOrder) params.sort_order = sortOrder;
       if (status) params.is_active = status;
       return promotionService.admin.getAll(params);
-    }
+    },
   );
 
-  const promotionsData = data?.data || data?.promotions || (Array.isArray(data) ? data : []);
-  const paginationData = data?.pagination || data?.meta || { total_items: promotionsData.length, total_pages: 1 };
+  const promotionsData =
+    data?.data || data?.promotions || (Array.isArray(data) ? data : []);
+  const paginationData = data?.pagination ||
+    data?.meta || { total_items: promotionsData.length, total_pages: 1 };
 
   const handleTogglePublish = async (id) => {
     try {
@@ -93,68 +96,65 @@ export const AdminPromotionListPage = () => {
   return (
     <div className="p-6">
       <PageHeader />
-      
+
       {error && <PageError error={error} />}
       {isLoading && <PageLoading />}
-      
+
       <section id="list-table" className="mt-6">
-      {!isLoading && !error && (
-        <div className="w-full">
-          
-          <div className="py-4 mb-2"> 
-            <select 
-              value={status} 
-              onChange={(e) => {
-                const val = e.target.value;
-                setStatus(val === "" ? undefined : Number(val));
-                setPage(1);
-              }} 
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-500 w-48 focus:outline-none focus:border-[#DB4444] bg-white"
-            >
-              <option value="">All Status</option>
-              <option value="1">Active</option>
-              <option value="0">Inactive</option>
-            </select>
+        {!isLoading && !error && (
+          <div className="w-full">
+            <TableWrapper>
+              <TableHeader
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={handleToggleSort}
+              />
+              <TableBody>
+                {promotionsData.length > 0 ? (
+                  promotionsData.map((promo) => (
+                    <TableItem
+                      key={promo.id}
+                      promo={promo}
+                      onTogglePublish={handleTogglePublish}
+                      onDelete={() => setIdToDelete(promo.id)}
+                    />
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-10">
+                      <PageEmpty />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </TableWrapper>
+
+            <div className="mt-4">
+              <TablePagination
+                page={page}
+                limit={limit}
+                totalItems={paginationData.total_items}
+                totalPages={paginationData.total_pages}
+                onLimitSet={(l) => {
+                  setLimit(l);
+                  setPage(1);
+                }}
+                onPageChange={(p) => setPage(p)}
+              />
+            </div>
           </div>
+        )}
+      </section>
 
-          <TableWrapper>
-            <TableHeader sortBy={sortBy} sortOrder={sortOrder} onSort={handleToggleSort} />
-            <TableBody>
-              {promotionsData.length > 0 ? (
-                promotionsData.map((promo) => (
-                  <TableItem
-                    key={promo.id}
-                    promo={promo}
-                    onTogglePublish={handleTogglePublish}
-                    onDelete={() => setIdToDelete(promo.id)}
-                  />
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-10">
-                    <PageEmpty />
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </TableWrapper>
-
-          <div className="mt-4">
-            <TablePagination
-              page={page}
-              limit={limit}
-              totalItems={paginationData.total_items}
-              totalPages={paginationData.total_pages}
-              onLimitSet={(l) => { setLimit(l); setPage(1); }}
-              onPageChange={(p) => setPage(p)}
-            />
-          </div>
-        </div>
-      )}
-    </section>
-
-      <DeleteModal idToDelete={idToDelete} onCancel={() => setIdToDelete(null)} onConfirm={handleDeleteConfirm} />
-      <DeleteConfirmModal isVisible={deleteConfirmVisible} onSelfDelete={() => setDeleteConfirmVisible(false)} />
+      <DeleteModal
+        idToDelete={idToDelete}
+        onCancel={() => setIdToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+      />
+      <DeleteConfirmModal
+        isVisible={deleteConfirmVisible}
+        onSelfDelete={() => setDeleteConfirmVisible(false)}
+      />
     </div>
   );
 };
@@ -165,15 +165,15 @@ const PageHeader = () => {
     <section id="header" className="flex justify-between items-center">
       <div>
         <h1 className="text-2xl font-bold">Promotion</h1>
-        <Breadcrumbs items={[{ label: "Home", href: "/admin" }, { label: "Promotion" }]} />
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/admin" }, { label: "Promotion" }]}
+        />
       </div>
-      <Button 
-        size="medium" 
-        onClick={() => navigate("./add")} 
-        className="bg-[#DB4444] text-white flex items-center gap-2 px-4 py-2 rounded-md"
-      >
-        <LucidePlus size={18} />
-        <span className="text-sm font-semibold">Add New Promotion</span>
+      <Button size="medium" onClick={() => navigate("./add")}>
+        <span className="flex gap-2 text-sm font-semibold">
+          <LucidePlus size={18} className="" />
+          Add New Promotion
+        </span>
       </Button>
     </section>
   );
@@ -181,65 +181,94 @@ const PageHeader = () => {
 
 const TableHeader = ({ sortBy, sortOrder, onSort }) => (
   <TableHead>
-    <TableHeadCol title="Promotion Name" sort={sortBy === "name" ? sortOrder : "none"} onSort={() => onSort("name")} />
-    <TableHeadCol title="Start Date" sort={sortBy === "start_date" ? sortOrder : "none"} onSort={() => onSort("start_date")} />
-    <TableHeadCol title="End Date" sort={sortBy === "end_date" ? sortOrder : "none"} onSort={() => onSort("end_date")} />
-    <TableHeadCol title="Type" sort={sortBy === "type" ? sortOrder : "none"} onSort={() => onSort("type")} />
-    <TableHeadCol title="Description" sort={sortBy === "description" ? sortOrder : "none"} onSort={() => onSort("description")} />
-    <TableHeadCol title="Status" sort={sortBy === "is_active" ? sortOrder : "none"} onSort={() => onSort("is_active")} />
-    <TableHeadCol title="Published" sort={sortBy === "is_published" ? sortOrder : "none"} onSort={() => onSort("is_published")} />
+    <TableHeadCol
+      title="Promotion Name"
+      sort={sortBy === "name" ? sortOrder : "none"}
+      onSort={() => onSort("name")}
+    />
+    <TableHeadCol
+      title="Start Date"
+      sort={sortBy === "start_date" ? sortOrder : "none"}
+      onSort={() => onSort("start_date")}
+    />
+    <TableHeadCol
+      title="End Date"
+      sort={sortBy === "end_date" ? sortOrder : "none"}
+      onSort={() => onSort("end_date")}
+    />
+    <TableHeadCol
+      title="Type"
+      sort={sortBy === "type" ? sortOrder : "none"}
+      onSort={() => onSort("discount_type")}
+    />
+    <TableHeadCol
+      title="Description"
+      sort={sortBy === "description" ? sortOrder : "none"}
+      onSort={() => onSort("description")}
+    />
+    <TableHeadCol
+      title="Active"
+      sort={sortBy === "is_active" ? sortOrder : "none"}
+      onSort={() => onSort("is_active")}
+    />
     <TableHeadCol title="Action" />
   </TableHead>
 );
 
 const TableItem = ({ promo, onTogglePublish, onDelete }) => {
   const navigate = useNavigate();
-  const isActive = promo.is_active ?? true; 
-
-  const displayType = (type) => {
-    const types = {
-      'direct_discount': 'Direct Discount',
-      'voucher_code': 'Voucher Code'
-    };
-    return types[type] || type || "-";
-  };
 
   return (
     <TableRow>
       <TableCell>{promo.name || "-"}</TableCell>
       <TableCell className="text-gray-500 text-sm">
-        {promo.start_date ? new Date(promo.start_date).toLocaleDateString("id-ID") : "-"}
+        {promo.start_date
+          ? new Date(promo.start_date).toLocaleDateString("id-ID")
+          : "-"}
       </TableCell>
       <TableCell className="text-gray-500 text-sm">
-        {promo.end_date ? new Date(promo.end_date).toLocaleDateString("id-ID") : "-"}
+        {promo.end_date
+          ? new Date(promo.end_date).toLocaleDateString("id-ID")
+          : "-"}
       </TableCell>
       <TableCell className="text-gray-500 text-sm capitalize">
-        {displayType(promo.type)}
+        {toTitleCase(promo.discount_type)}
       </TableCell>
       <TableCell className="text-gray-500 text-sm">
-        {promo.description || (promo.discount_value ? `Potongan Rp ${promo.discount_value}` : "-")}
+        {promo.description ||
+          (promo.discount_value ? `Potongan Rp ${promo.discount_value}` : "-")}
       </TableCell>
       <TableCell>
-        <span className={`px-3 py-1 rounded-full text-[10px] text-white ${isActive ? 'bg-[#2D9E63]' : 'bg-[#687182]'}`}>
-          {isActive ? "Active" : "Inactive"}
-        </span>
-      </TableCell>
-      <TableCell>
-        <Switch 
-          on={!!promo.is_published} 
+        <Switch
+          on={promo.is_active}
           onChange={() => onTogglePublish(promo.id)}
         />
       </TableCell>
       <TableCell>
         <div className="flex gap-2">
-          <IconButton onClick={() => navigate(`/admin/promotions/${promo.name}`)} title="Detail">
-            <LucideEye size={18} className="text-gray-500 hover:text-blue-500 transition-colors"/>
+          <IconButton
+            onClick={() => navigate(`/admin/promotions/${promo.name}`)}
+            title="Detail"
+          >
+            <LucideEye
+              size={18}
+              className="text-gray-500 hover:text-blue-500 transition-colors"
+            />
           </IconButton>
-          <IconButton onClick={() => navigate(`/admin/promotions/edit/${promo.id}`)} title="Edit">
-            <LucidePencil size={18} className="text-gray-500 hover:text-orange-500 transition-colors"/>
+          <IconButton
+            onClick={() => navigate(`/admin/promotions/edit/${promo.name}`)}
+            title="Edit"
+          >
+            <LucidePencil
+              size={18}
+              className="text-gray-500 hover:text-orange-500 transition-colors"
+            />
           </IconButton>
           <IconButton onClick={onDelete} title="Delete">
-            <LucideTrash size={18} className="text-gray-500 hover:text-red-500 transition-colors"/>
+            <LucideTrash
+              size={18}
+              className="text-gray-500 hover:text-red-500 transition-colors"
+            />
           </IconButton>
         </div>
       </TableCell>
@@ -247,17 +276,28 @@ const TableItem = ({ promo, onTogglePublish, onDelete }) => {
   );
 };
 
-const TablePagination = ({ page, limit, totalItems, totalPages, onLimitSet, onPageChange }) => (
+const TablePagination = ({
+  page,
+  limit,
+  totalItems,
+  totalPages,
+  onLimitSet,
+  onPageChange,
+}) => (
   <div className="flex items-center justify-between p-4 border-t border-gray-100">
     <div className="flex-1 italic text-gray-500 text-sm">
       <PaginationInfo currentPage={page} limit={limit} total={totalItems} />
     </div>
     <div className="flex items-center gap-4">
       <div className="flex items-center gap-2">
-         <span className="text-xs text-gray-400">Rows per page:</span>
-         <PaginationLimiterButton limit={limit} onLimitSet={onLimitSet} />
+        <span className="text-xs text-gray-400">Rows per page:</span>
+        <PaginationLimiterButton limit={limit} onLimitSet={onLimitSet} />
       </div>
-      <PaginationNavigation currentPage={page} totalPages={totalPages} onPageChange={onPageChange} />
+      <PaginationNavigation
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   </div>
 );
@@ -269,10 +309,14 @@ const DeleteModal = ({ idToDelete, onCancel, onConfirm }) => (
         <LucideTrash size={32} className="text-red-500" />
       </div>
       <h2 className="text-xl font-bold text-red-500">Delete Promotion?</h2>
-      <p className="text-gray-600">Are you sure want to delete this promotion?</p>
+      <p className="text-gray-600">
+        Are you sure want to delete this promotion?
+      </p>
       <div className="flex gap-4 mt-4">
-        <Button variant="outlined" onClick={() => onCancel()} className="w-24 border-red-500 text-red-500">No</Button>
-        <Button onClick={() => onConfirm()} className="w-24 bg-red-500 text-white">Yes</Button>
+        <Button variant="outlined" onClick={() => onCancel()}>
+          No
+        </Button>
+        <Button onClick={() => onConfirm()}>Yes</Button>
       </div>
     </div>
   </Modal>
@@ -292,18 +336,24 @@ const DeleteConfirmModal = ({ isVisible, onSelfDelete }) => {
     <Modal isOpen={isVisible} onClose={() => onSelfDelete()}>
       <div className="flex flex-col items-center text-center gap-4 p-4">
         <LucideCheckCircle size={48} className="text-green-500" />
-        <h2 className="text-lg font-bold">This promotion is successfully deleted</h2>
+        <h2 className="text-lg font-bold">
+          This promotion is successfully deleted
+        </h2>
       </div>
     </Modal>
   );
 };
 
 const PageError = ({ error }) => (
-  <div className="p-4 text-red-500">Error: {error?.message || "Something went wrong"}</div>
+  <div className="p-4 text-red-500">
+    Error: {error?.message || "Something went wrong"}
+  </div>
 );
 
 const PageLoading = () => (
-  <div className="p-4 flex justify-center"><LucideTags className="animate-spin" /></div>
+  <div className="p-4 flex justify-center">
+    <LucideTags className="animate-spin" />
+  </div>
 );
 
 const PageEmpty = () => (

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { promotionService } from "@/shared/services/promotionService";
 import { Modal } from "@/admin/components/Modal";
 import { LucideCheckCircle } from "lucide-react";
+import { toBackendDate } from "@/shared/utils/toBackendDate";
 
 export const AdminAddPromotionPage = () => {
   const navigate = useNavigate();
@@ -13,62 +14,55 @@ export const AdminAddPromotionPage = () => {
   const [error, setError] = useState(null);
 
   const onSubmit = async (formData) => {
-  setLoading(true);
-  setError(null);
-  
-  try {
-    // Fungsi pembantu untuk mengubah tanggal ke format RFC3339 (ISOString)
-    const toRFC3339 = (dateStr) => {
-      if (!dateStr) return null;
-      const date = new Date(dateStr);
-      // Memastikan jam diatur ke 00:00:00 atau sesuai kebutuhan agar valid
-      return date.toISOString(); 
-    };
+    setLoading(true);
+    setError(null);
 
-    const payload = {
-      name: formData.name,
-      description: formData.description || null,
-      type: formData.type,
-      discount_type: formData.discount_type,
-      voucher_code: formData.type === "voucher_code" ? formData.voucher_code : null,
-      discount_value: Number(formData.discount_value),
-      usage_limit: formData.usage_limit ? Number(formData.usage_limit) : null,
-      
-      start_date: toRFC3339(formData.start_date),
-      end_date: toRFC3339(formData.end_date),
-      
-      product_id: formData.product_id ? Number(formData.product_id) : null,
-      is_active: true,
-      is_published: true
-    };
+    try {
+      const payload = {
+        name: formData.name,
+        description: formData.description || null,
+        type: "direct_discount", // Keep a default type since backend might expect it, or remove if truly gone. Assuming we only have direct_discount now based on the payload.
+        discount_type: formData.discount_type,
+        discount_value: Number(formData.discount_value),
+        min_purchase: Number(formData.min_purchase),
+        max_discount: Number(formData.max_discount),
 
-    console.log("Payload Final ke API:", payload);
+        start_date: formData.start_date
+          ? toBackendDate(new Date(formData.start_date))
+          : null,
+        end_date: formData.end_date
+          ? toBackendDate(new Date(formData.end_date))
+          : null,
+        is_active: true,
+      };
 
-    await promotionService.admin.create(payload);
-    
-    setShowSuccessModal(true);
-    setTimeout(() => {
-      navigate("/admin/promotions", { replace: true });
-    }, 2000);
-  } catch (err) {
-    const serverMessage = err.response?.data?.message || err.message;
-    const details = err.response?.data?.errors;
-    
-    // Jika ada detail error per field, tampilkan agar kita tahu mana yang kurang
-    const fullError = details 
-      ? `${serverMessage}: ${JSON.stringify(details)}` 
-      : serverMessage;
+      console.log("Payload Final ke API:", payload);
 
-    setError(fullError);
-    console.error("Error dari Server:", err.response?.data);
-  } finally {
-    setLoading(false);
-  }
-};
+      await promotionService.admin.create(payload);
+
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        navigate("/admin/promotions", { replace: true });
+      }, 2000);
+    } catch (err) {
+      const serverMessage = err.response?.data?.message || err.message;
+      const details = err.response?.data?.errors;
+
+      // Jika ada detail error per field, tampilkan agar kita tahu mana yang kurang
+      const fullError = details
+        ? `${serverMessage}: ${JSON.stringify(details)}`
+        : serverMessage;
+
+      setError(fullError);
+      console.error("Error dari Server:", err.response?.data);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="p-6">
       <PageHeader />
-      
+
       {error && (
         <div className="bg-red-50 text-red-500 p-4 rounded-md my-4 text-sm border border-red-100">
           {error}
@@ -88,7 +82,9 @@ export const AdminAddPromotionPage = () => {
             <LucideCheckCircle size={48} className="text-[#2D9E63]" />
           </div>
           <h2 className="text-xl font-bold text-gray-800">Success!</h2>
-          <p className="text-gray-500 mt-2">New promotion has been successfully added to the list.</p>
+          <p className="text-gray-500 mt-2">
+            New promotion has been successfully added to the list.
+          </p>
         </div>
       </Modal>
     </div>

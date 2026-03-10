@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { useNavigate, useParams } from "react-router-dom";
 import { promotionService } from "../../../../shared/services/promotionService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
@@ -7,40 +7,19 @@ export const AdminDetailPromotionPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
+  const {
+    data: res,
+    error,
+    isLoading,
+  } = useSWR(id ? `/api/v1/promotions/code/${id}` : null, () =>
+    promotionService.admin.getByCode(id),
+  );
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const res = await promotionService.admin.getByCode(id);
-        setData(res);
-      } catch (err) {
-        console.error("Failed to fetch promotion detail:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const data = res?.data || res;
 
-    if (id) fetchDetail();
-  }, [id]);
-
-  if (loading) return <div className="p-6 text-gray-500">Loading...</div>;
-  if (!data) return <div className="p-6 text-gray-500">Promotion not found.</div>;
-
-  /* =========================
-     FIX TYPE PROMOTION
-  ========================= */
-
-  const isVoucher = Boolean(data.voucher_code);
-
-  /* =========================
-     PRODUCT DATA
-  ========================= */
-
-  const products =
-    data.products ||
-    (data.product ? [data.product] : []);
+  if (isLoading) return <div className="p-6 text-gray-500">Loading...</div>;
+  if (error || !data)
+    return <div className="p-6 text-gray-500">Promotion not found.</div>;
 
   /* =========================
      DISCOUNT LABEL
@@ -48,94 +27,77 @@ export const AdminDetailPromotionPage = () => {
 
   const discountLabel =
     data.discount_type === "percentage"
-      ? `Percentage : ${data.discount_value}%`
-      : `Amount : ${Number(data.discount_value || 0).toLocaleString("id-ID")}`;
+      ? `${data.discount_value}%`
+      : `Rp ${Number(data.discount_value || 0).toLocaleString("id-ID")}`;
 
   return (
     <div className="p-6">
       <PageHeader />
 
-      <section className="bg-white p-10 rounded-xl shadow-sm border border-gray-100 w-full">
-
+      <section>
         <div className="grid grid-cols-2 gap-x-12 gap-y-6">
-
-          {/* Promotion Type */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-gray-700">
-              Promotion Type
+              Promotion Name
             </label>
             <input
               type="text"
-              value={isVoucher ? "Voucher Code" : "Direct Discount"}
+              value={data.name || "-"}
               readOnly
               className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
             />
           </div>
 
-          {/* Right field row 1 */}
-          {isVoucher ? (
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700">
-                Voucher Code
-              </label>
-              <input
-                type="text"
-                value={data.voucher_code || "-"}
-                readOnly
-                className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700">
-                Promotion Name
-              </label>
-              <input
-                type="text"
-                value={data.name || "-"}
-                readOnly
-                className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
-              />
-            </div>
-          )}
-
-          {/* Voucher Only Row */}
-          {isVoucher && (
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700">
-                Promotion Name
-              </label>
-              <input
-                type="text"
-                value={data.name || "-"}
-                readOnly
-                className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
-              />
-            </div>
-          )}
-
-          {/* Product */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-gray-700">
-              Product
+              Discount Type
             </label>
+            <input
+              type="text"
+              value={
+                data.discount_type === "percentage"
+                  ? "Percentage"
+                  : "Fixed Amount"
+              }
+              readOnly
+              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+            />
+          </div>
 
-            <div className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] flex gap-2 flex-wrap min-h-[46px]">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Discount Value
+            </label>
+            <input
+              type="text"
+              value={discountLabel}
+              readOnly
+              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+            />
+          </div>
 
-              {products.length === 0 && (
-                <span className="text-sm text-gray-400">-</span>
-              )}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Minimum Purchase
+            </label>
+            <input
+              type="text"
+              value={`Rp ${Number(data.min_purchase || 0).toLocaleString("id-ID")}`}
+              readOnly
+              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+            />
+          </div>
 
-              {products.map((p, index) => (
-                <span
-                  key={index}
-                  className="bg-[#D1D5DB] px-3 py-1 rounded text-[10px] text-gray-600"
-                >
-                  {p.name}
-                </span>
-              ))}
-
-            </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Maximum Discount
+            </label>
+            <input
+              type="text"
+              value={`Rp ${Number(data.max_discount || 0).toLocaleString("id-ID")}`}
+              readOnly
+              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+            />
           </div>
 
           {/* Start Date */}
@@ -164,46 +126,28 @@ export const AdminDetailPromotionPage = () => {
             />
           </div>
 
-          {/* Discount */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 col-span-2">
             <label className="text-sm font-semibold text-gray-700">
-              Discount
+              Description
             </label>
-            <input
-              type="text"
-              value={discountLabel}
+            <textarea
+              value={data.description || "-"}
               readOnly
-              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none min-h-[80px]"
             />
           </div>
 
-          {/* Usage Limit */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-gray-700">
-              Promotion Usage Limit
+              Active Status
             </label>
             <input
               type="text"
-              value={data.usage_limit || "0"}
+              value={data.is_active ? "Active" : "Inactive"}
               readOnly
-              className="border border-gray-200 rounded-lg px-4 py-3 bg-[#F3F4F6] text-sm text-gray-500 outline-none"
+              className={`border border-gray-200 rounded-lg px-4 py-3 text-sm font-medium outline-none ${data.is_active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
             />
           </div>
-
-          {/* Voucher Checkbox */}
-          {isVoucher && (
-            <div className="flex items-center gap-3 col-span-2 mt-2">
-              <input
-                type="checkbox"
-                checked
-                readOnly
-                className="w-4 h-4 accent-gray-400"
-              />
-              <label className="text-sm text-gray-400">
-                Show the voucher code on the checkout page
-              </label>
-            </div>
-          )}
         </div>
 
         {/* Close Button */}
@@ -215,7 +159,6 @@ export const AdminDetailPromotionPage = () => {
             Close
           </button>
         </div>
-
       </section>
     </div>
   );
