@@ -1,28 +1,12 @@
 import { request } from "./client";
 
-const promotionService = {
+export const promotionService = {
   public: {
-    get: (
-      page = 1,
-      limit = 10,
-      search,
-      discountType,
-      isActive,
-      sortBy,
-      sortOrder,
-    ) => {
+    get: (params) => {
       return request({
         url: `/promotions`,
         method: "GET",
-        params: {
-          page,
-          limit,
-          search,
-          discount_type: discountType,
-          is_active: isActive,
-          sort_by: sortBy,
-          sort_order: sortOrder,
-        },
+        params,
       });
     },
     getByCode: (code) => {
@@ -32,10 +16,51 @@ const promotionService = {
       });
     },
   },
+  
   admin: {
-    create: () => {},
-    update: () => {},
-    delete: (id) => {},
-    toggleStatus: (id) => {},
+    getAll: (params) => {
+      return request({
+        url: `/promotions`,
+        method: "GET",
+        params,
+      });
+    },
+
+    getByCode: (code) => {
+      return request({
+        url: `/promotions/${code}`,
+        method: "GET",
+      });
+    },
+
+    create: (data) => {
+      return request({
+        url: `/admin/promotions`,
+        method: "POST",
+        data,
+      });
+    },
+
+    update: (id, data) => {
+      return request({
+        url: `/admin/promotions/${id}`,
+        method: "PUT",
+        data,
+      });
+    },
+
+    delete: (id) => {
+      return request({
+        url: `/admin/promotions/${id}`,
+        method: "DELETE",
+      });
+    },
+ 
+    toggleStatus: (id) => {
+      return request({
+        url: `/admin/promotions/${id}/status`,
+        method: "PUT",
+      });
+    },
   },
 };
