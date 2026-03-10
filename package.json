@@ -20,6 +20,7 @@
     "react-hook-form": "^7.71.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
+    "react-select": "^5.10.2",
     "swr": "^2.4.1",
     "tailwindcss": "^4.2.0",
     "tailwindcss-react": "^0.0.0",

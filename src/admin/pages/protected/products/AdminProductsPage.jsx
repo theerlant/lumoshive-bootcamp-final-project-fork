@@ -29,6 +29,11 @@ import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 
 import { Modal } from "@/admin/components/Modal";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
 
 // Tutorial slicing halaman.
 
@@ -121,7 +126,12 @@ export const AdminProductsPage = () => {
     <>
       {" "}
       <PageHeader />
-      {error ? <PageError error={error} /> : null}
+      {error ? (
+        <PageError
+          message="Cannot fetch Products. We will keep trying..."
+          error={error}
+        />
+      ) : null}
       {isLoading ? <PageLoading /> : null}
       <section id="list-table">
         {!isLoading && data ? (
@@ -324,35 +334,4 @@ const DeleteConfirmModal = ({ isVisible, onSelfDelete }) => {
       </div>
     </Modal>
   );
-};
-
-const PageError = ({ error }) => {
-  return (
-    <div className="bg-white w-full rounded-2xl p-4 font-admin">
-      <section
-        id="error"
-        className="flex flex-col justify-between items-center mb-8"
-      >
-        <p>Cannot fetch Products. We will keep trying...</p>
-        <p className="text-sm text-gray-600 italic">
-          {error?.message || String(error)}
-        </p>
-      </section>
-    </div>
-  );
-};
-
-const PageLoading = () => {
-  return (
-    <div className="flex flex-col items-center mb-4">
-      <LucidePackage className="animate-spinalt" />
-      <p>Loading...</p>
-    </div>
-  );
-};
-
-const PageEmpty = () => {
-  <div className="w-full text-center">
-    <p>Sadly there's no data here</p>
-  </div>;
 };

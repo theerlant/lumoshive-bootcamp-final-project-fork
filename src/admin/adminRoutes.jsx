@@ -13,6 +13,16 @@ import { AdminInputOTPPage } from "./pages/auth-misc/AdminInputOtpPage";
 import { AdminEditProductPage } from "./pages/protected/products/AdminEditProductPage";
 import AdminCategoryListPage from "./pages/protected/categories/AdminCategoryListPage";
 import AdminRatingListPage from "./pages/protected/rating/AdminRatingPage";
+import AdminStockListPage from "./pages/protected/stocks/AdminStockListPage";
+import AdminStockDetailPage from "./pages/protected/stocks/AdminStockDetailPage";
+import AdminStockFormPage from "./pages/protected/stocks/AdminStockFormPage";
+import AdminOrderListPage from "./pages/protected/orders/AdminOrderListPage";
+import { AdminPromotionListPage } from "./pages/protected/promotions/AdminPromotionListPage";
+import { AdminAddPromotionPage } from "./pages/protected/promotions/AdminAddPromotionPage";
+import { AdminDetailPromotionPage } from "./pages/protected/promotions/AdminDetailPromotionPage";
+import { AdminEditPromotionPage } from "./pages/protected/promotions/AdminEditPromotionPage";
+
+
 
 export default function AdminRoutes() {
   return (
@@ -39,12 +49,12 @@ export default function AdminRoutes() {
               <Route path=":id/edit" element={<AdminEditProductPage />} />
             </Route>
             <Route path="categories" element={<AdminCategoryListPage />} />
-            <Route path="orders" element={<>TODO ORDERS</>} />
+            <Route path="orders" element={<AdminOrderListPage />} />
             <Route path="promotions">
-              <Route index element={<>TODO PROMOTION LIST PAGE</>} />
-              <Route path=":id" element={<>TODO DETAIL PROMOTION</>} />
-              <Route path="add" element={<>TODO ADD PROMOTION</>} />
-              <Route path="edit/:id" element={<>TODO EDIT PROMOTION</>} />
+              <Route index element={<AdminPromotionListPage />} />
+              <Route path=":id" element={<AdminDetailPromotionPage />} />
+              <Route path="add" element={<AdminAddPromotionPage />} />
+              <Route path="edit/:id" element={<AdminEditPromotionPage />} />
             </Route>
             <Route path="banners">
               <Route index element={<>TODO BANNER LIST PAGE</>} />
@@ -54,10 +64,10 @@ export default function AdminRoutes() {
             </Route>
             <Route path="ratings" element={<AdminRatingListPage />} />
             <Route path="stocks">
-              <Route index element={<>TODO STOCK LIST PAGE</>} />
-              <Route path=":id" element={<>TODO DETAIL STOCK</>} />
-              <Route path="add" element={<>TODO ADD STOCK</>} />
-              <Route path="edit/:id" element={<>TODO EDIT STOCK</>} />
+              <Route index element={<AdminStockListPage />} />
+              <Route path="add" element={<AdminStockFormPage mode="add" />} />
+              <Route path="edit/:id" element={<AdminStockFormPage mode="edit" />} />
+              <Route path="detail/:id" element={<AdminStockDetailPage />} />
             </Route>
           </Route>
         </Route>
