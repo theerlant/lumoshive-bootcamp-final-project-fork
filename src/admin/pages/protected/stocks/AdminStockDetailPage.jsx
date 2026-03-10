@@ -12,9 +12,9 @@ export default function AdminStockDetailPage() {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const res = await stockService.admin.getAllLog(1, 100); 
+        const res = await stockService.admin.getAllLog(1, 100);
         const data = res?.data?.data || res?.data || [];
-        const found = data.find(item => item.id === id);
+        const found = data.find((item) => item.id === id);
         setStockDetail(found);
       } catch (err) {
         console.error(err);
@@ -31,45 +31,65 @@ export default function AdminStockDetailPage() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold flex items-center gap-2">
-           <button onClick={() => navigate(-1)} className="hover:text-gray-600">&lt;</button> 
-           Stock Log Detail
+          <button onClick={() => navigate(-1)} className="hover:text-gray-600">
+            &lt;
+          </button>
+          Stock Log Detail
         </h1>
-        <Breadcrumbs items={[
-          { label: "Home", href: "/admin" }, 
-          { label: "Stock", href: "/admin/stocks" },
-          { label: "Detail", href: "" }
-        ]} />
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/admin" },
+            { label: "Stock", href: "/admin/stocks" },
+            { label: "Detail", href: "" },
+          ]}
+        />
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 grid grid-cols-2 gap-8">
-          <div>
-            <label className="text-xs text-gray-400 uppercase font-bold">Product Name</label>
-            <p className="text-lg font-medium">{stockDetail?.product_name || "-"}</p>
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 uppercase font-bold">SKU</label>
-            <p className="text-lg font-medium">{stockDetail?.product_sku || "-"}</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <label className="text-xs text-gray-400 uppercase font-bold">Old Stock</label>
-            <p className="text-xl font-bold text-gray-600">{stockDetail?.old_stock}</p>
-          </div>
-          <div className="bg-emerald-50 p-4 rounded-lg">
-            <label className="text-xs text-gray-400 uppercase font-bold">New Stock</label>
-            <p className="text-xl font-bold text-emerald-600">{stockDetail?.new_stock}</p>
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-gray-400 uppercase font-bold">Description</label>
-            <p className="text-gray-600 italic">"{stockDetail?.description || "No description"}"</p>
-          </div>
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <label className="text-xs text-gray-400 uppercase font-bold">
+            Product Name
+          </label>
+          <p className="text-lg font-medium">
+            {stockDetail?.product_name || "-"}
+          </p>
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 uppercase font-bold">
+            SKU
+          </label>
+          <p className="text-lg font-medium">
+            {stockDetail?.product_sku || "-"}
+          </p>
+        </div>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <label className="text-xs text-gray-400 uppercase font-bold">
+            Old Stock
+          </label>
+          <p className="text-xl font-bold text-gray-600">
+            {stockDetail?.old_stock}
+          </p>
+        </div>
+        <div className="bg-emerald-50 p-4 rounded-lg">
+          <label className="text-xs text-gray-400 uppercase font-bold">
+            New Stock
+          </label>
+          <p className="text-xl font-bold text-emerald-600">
+            {stockDetail?.new_stock}
+          </p>
+        </div>
+        <div className="col-span-2">
+          <label className="text-xs text-gray-400 uppercase font-bold">
+            Description
+          </label>
+          <p className="text-gray-600 italic">
+            "{stockDetail?.description || "No description"}"
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
-
-
-
 
 // Syntax dibawah ini dihapus juga gapapa
 // export default function AdminStockDetailPage() {
@@ -82,7 +102,7 @@ export default function AdminStockDetailPage() {
 //     const fetchDetail = async () => {
 //       try {
 //         // Asumsi menggunakan ID log atau ID produk untuk ambil detail
-//         const res = await stockService.admin.getAllLog(1, 100); 
+//         const res = await stockService.admin.getAllLog(1, 100);
 //         const found = res.data?.data?.find(item => item.id === parseInt(id));
 //         setStockDetail(found);
 //       } catch (err) {
@@ -100,11 +120,11 @@ export default function AdminStockDetailPage() {
 //     <div className="p-6 space-y-6">
 //       <div className="flex flex-col">
 //         <h1 className="text-2xl font-bold flex items-center gap-2">
-//            <button onClick={() => navigate(-1)} className="hover:text-gray-600">&lt;</button> 
+//            <button onClick={() => navigate(-1)} className="hover:text-gray-600">&lt;</button>
 //            Detail Stock
 //         </h1>
 //         <Breadcrumbs items={[
-//           { label: "Home", path: "/admin" }, 
+//           { label: "Home", path: "/admin" },
 //           { label: "Stock", path: "/admin/stocks" },
 //           { label: "Detail Stock", path: "" }
 //         ]} />
@@ -148,7 +168,7 @@ export default function AdminStockDetailPage() {
 //           <div className="bg-gray-50 p-6 rounded-xl">
 //             <h3 className="font-bold text-gray-700 mb-4">Stock Movement Info</h3>
 //             <p className="text-sm text-gray-500">
-//               This data reflects the latest recorded transaction for this product. 
+//               This data reflects the latest recorded transaction for this product.
 //               To see full history, please check the system logs.
 //             </p>
 //           </div>
