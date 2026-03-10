@@ -1,6 +1,8 @@
 import Navbar from "../../../components/Navbar";
 import { useState } from "react";
 import useSWR from "swr";
+import { usePagination } from "@/shared/hooks/usePagination";
+import { useSort } from "@/shared/hooks/useSort";
 import { categoryService } from "../../../../shared/services/categoryService";
 
 import {
@@ -35,20 +37,27 @@ export default function AdminCategoryListPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  // SWR fetcher
-  const fetcher = async () => {
-    const res = await categoryService.public.getAll();
-    //return res.data.data.data;
-    console.log(res); // data ada lgsg jika dilihat dari output ini
-    return res.data;
-  };
+  const { page, limit, setPage, setLimit } = usePagination(1, 10);
+  const { sortBy, sortOrder, onSort } = useSort();
 
   const {
-    data: categories = [],
+    data: resData,
     error,
     isLoading,
     mutate,
-  } = useSWR("categories", fetcher);
+  } = useSWR(["categories", page, limit, sortBy, sortOrder], async () => {
+    const res = await categoryService.public.getAll({
+      page,
+      limit,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+    });
+    return res.data;
+  });
+
+  const categories = resData?.data || resData || [];
+  const paginationData = resData?.pagination ||
+    resData?.meta || { total_items: categories.length || 0, total_pages: 1 };
 
   const handleCreate = async (data) => {
     try {
@@ -87,120 +96,128 @@ export default function AdminCategoryListPage() {
   // if (error) return <div className="p-8">Failed to load categories</div>;
 
   return (
-    <div className="flex min-h-screen">
-      <Navbar />
-
-      <div className="flex-1 p-8 bg-[#F4F5F9]">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Category</h2>
-            <p className="text-sm text-gray-500">
-              Home &gt; <span className="text-[#DB4444]">Category</span>
-            </p>
-          </div>
-
-          <Button onClick={() => setShowCreate(true)}>
-            <span className="text-xs">Add New Category</span>
-          </Button>
+    <>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Category</h2>
+          <p className="text-sm text-gray-500">
+            Home &gt; <span className="text-[#DB4444]">Category</span>
+          </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <TableWrapper>
-            <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
-
-            <TableHead>
-              <TableHeadCol title="Category Name" />
-              <TableHeadCol title="Category Icon" />
-              <TableHeadCol title="Published" />
-              <TableHeadCol title="Action" />
-            </TableHead>
-
-            <TableBody>
-              {categories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>{category.name}</TableCell>
-
-                  <TableCell>
-                    {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
-                    <img
-                      src={`http://103.150.116.241:8082${category.icon_url}`}
-                      alt={category.name}
-                      className="w-6 h-6"
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <Switch
-                      checked={category.is_published}
-                      onChange={async () => {
-                        try {
-                          await categoryService.admin.togglePublish(
-                            category.id,
-                          );
-                          mutate();
-                        } catch (err) {
-                          console.log(err);
-                        }
-                      }}
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <IconButton
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          setShowEdit(true);
-                        }}
-                      >
-                        <LucidePencil size={16} />
-                      </IconButton>
-
-                      <IconButton
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          setShowDelete(true);
-                        }}
-                      >
-                        <LucideTrash size={16} />
-                      </IconButton>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </TableWrapper>
-
-          <div className="mt-8 flex justify-between items-center border-t pt-4">
-            <PaginationInfo total={27} />
-
-            <div className="flex items-center gap-6">
-              <PaginationLimiterButton />
-              <PaginationNavigation currentPage={1} totalPages={2} />
-            </div>
-          </div>
-        </div>
-
-        <CategoryCreateModal
-          isOpen={showCreate}
-          onClose={() => setShowCreate(false)}
-          onSubmit={handleCreate}
-        />
-
-        <CategoryEditModal
-          isOpen={showEdit}
-          category={selectedCategory}
-          onClose={() => setShowEdit(false)}
-          onSubmit={handleUpdate}
-        />
-
-        <CategoryDeleteModal
-          isOpen={showDelete}
-          category={selectedCategory}
-          onClose={() => setShowDelete(false)}
-          onDelete={handleDelete}
-        />
+        <Button onClick={() => setShowCreate(true)}>
+          <span className="text-xs">Add New Category</span>
+        </Button>
       </div>
-    </div>
+
+      <TableWrapper>
+        <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
+
+        <TableHead>
+          <TableHeadCol
+            title="Category Name"
+            sort={sortBy === "name" ? sortOrder : "none"}
+            onSort={() => onSort("name")}
+          />
+          <TableHeadCol title="Category Icon" />
+          <TableHeadCol
+            title="Published"
+            sort={sortBy === "is_published" ? sortOrder : "none"}
+            onSort={() => onSort("is_published")}
+          />
+          <TableHeadCol title="Action" />
+        </TableHead>
+
+        <TableBody>
+          {categories.map((category) => (
+            <TableRow key={category.id}>
+              <TableCell>{category.name}</TableCell>
+
+              <TableCell>
+                {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
+                <img
+                  src={`http://103.150.116.241:8082${category.icon_url}`}
+                  alt={category.name}
+                  className="w-6 h-6"
+                />
+              </TableCell>
+
+              <TableCell>
+                <Switch
+                  on={category.is_published}
+                  onChange={async () => {
+                    try {
+                      await categoryService.admin.togglePublish(category.id);
+                      mutate();
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }}
+                />
+              </TableCell>
+
+              <TableCell>
+                <div className="flex gap-2">
+                  <IconButton
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowEdit(true);
+                    }}
+                  >
+                    <LucidePencil size={16} />
+                  </IconButton>
+
+                  <IconButton
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowDelete(true);
+                    }}
+                  >
+                    <LucideTrash size={16} />
+                  </IconButton>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </TableWrapper>
+
+      <div className="mt-4 flex justify-between items-center">
+        <PaginationInfo
+          currentPage={page}
+          limit={limit}
+          total={paginationData.total_items}
+        />
+
+        <div className="flex items-center gap-6">
+          <PaginationLimiterButton limit={limit} onLimitSet={setLimit} />
+          <PaginationNavigation
+            currentPage={page}
+            totalPages={paginationData.total_pages}
+            onPageChange={setPage}
+          />
+        </div>
+      </div>
+
+      <CategoryCreateModal
+        isOpen={showCreate}
+        onClose={() => setShowCreate(false)}
+        onSubmit={handleCreate}
+      />
+
+      <CategoryEditModal
+        isOpen={showEdit}
+        category={selectedCategory}
+        onClose={() => setShowEdit(false)}
+        onSubmit={handleUpdate}
+      />
+
+      <CategoryDeleteModal
+        isOpen={showDelete}
+        category={selectedCategory}
+        onClose={() => setShowDelete(false)}
+        onDelete={handleDelete}
+      />
+    </>
   );
 }
