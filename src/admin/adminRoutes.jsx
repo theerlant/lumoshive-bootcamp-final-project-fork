@@ -11,6 +11,8 @@ import { AdminDetailProductPage } from "./pages/protected/products/AdminDetailPr
 import { AdminAddProductPage } from "./pages/protected/products/AdminAddProductPage";
 import { AdminInputOTPPage } from "./pages/auth-misc/AdminInputOtpPage";
 import { AdminEditProductPage } from "./pages/protected/products/AdminEditProductPage";
+import AdminCategoryListPage from "./pages/protected/categories/AdminCategoryListPage";
+import AdminRatingListPage from "./pages/protected/rating/AdminRatingPage";
 import AdminStockListPage from "./pages/protected/stocks/AdminStockListPage";
 import AdminStockDetailPage from "./pages/protected/stocks/AdminStockDetailPage";
 import AdminStockFormPage from "./pages/protected/stocks/AdminStockFormPage";
@@ -46,7 +48,7 @@ export default function AdminRoutes() {
               <Route path="add" element={<AdminAddProductPage />} />
               <Route path=":id/edit" element={<AdminEditProductPage />} />
             </Route>
-            <Route path="categories" element={<>TODO CATEGORIES</>} />
+            <Route path="categories" element={<AdminCategoryListPage />} />
             <Route path="orders" element={<AdminOrderListPage />} />
             <Route path="promotions">
               <Route index element={<AdminPromotionListPage />} />
@@ -60,7 +62,7 @@ export default function AdminRoutes() {
               <Route path="add" element={<>TODO ADD BANNER</>} />
               <Route path="edit/:id" element={<>TODO EDIT BANNER</>} />
             </Route>
-            <Route path="ratings" element={<>TODO USERS PAGE</>} />
+            <Route path="ratings" element={<AdminRatingListPage />} />
             <Route path="stocks">
               <Route index element={<AdminStockListPage />} />
               <Route path="add" element={<AdminStockFormPage mode="add" />} />

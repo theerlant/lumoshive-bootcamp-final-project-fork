@@ -2,10 +2,18 @@ import { request } from "./client";
 
 export const categoryService = {
   public: {
-    getAll: () => {
+    getAll: ({ page, limit, search, published, sort_by, sort_order }) => {
       return request({
         url: "/categories",
         method: "GET",
+        params: {
+          page,
+          limit,
+          search,
+          published,
+          sort_by,
+          sort_order,
+        },
       });
     },
     getForDropdown: () => {
@@ -24,7 +32,7 @@ export const categoryService = {
   admin: {
     create: (name, isPublished, icon) => {
       return request({
-        url: "categories",
+        url: "/categories",
         method: "POST",
         data: {
           name,

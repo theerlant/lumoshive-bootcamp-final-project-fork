@@ -37,6 +37,8 @@ const retryQueue = (error, token = null) => {
       callback.resolve(token);
     }
   });
+
+  queue.length = 0; // penting
 };
 
 /// Response error handling & token refresh
@@ -46,7 +48,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // catch 401 error
-    if (error.response.status === 401 && originalRequest.retry !== true) {
+    if (error.response?.status === 401 && originalRequest.retry !== true) {
       // if already doing refresh token
       // make a promise object and push it to the queue
       if (isRefreshing) {
