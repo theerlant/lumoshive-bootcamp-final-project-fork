@@ -1,16 +1,12 @@
-import { request } from "./client";
+import api, { request } from "./client";
 
 // abstraksi api call untuk otentikasi
 export const AuthService = {
   register: ({ email, password, fullname }) => {
-    return request({
-      url: "/auth/register",
-      method: "POST",
-      data: {
-        email,
-        password,
-        fullname,
-      },
+    return api.post("/auth/register", {
+      email,
+      password,
+      fullname,
     });
   },
   login: ({ email, password }) => {

@@ -6,7 +6,7 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = loginSchema.extend({
-  fullname: z.string().min(3, "Name too short"),
+  fullname: z.string().min(3, "Name too short").max(50, "Name too long"),
 });
 
 export const otpSchema = z.object({

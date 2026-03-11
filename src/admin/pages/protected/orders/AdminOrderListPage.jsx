@@ -285,7 +285,7 @@ export default function AdminOrderListPage() {
                       colSpan={6}
                       className="text-center py-10 text-gray-400 font-medium"
                     >
-                      <PageEmpty />
+                      <PageEmpty message="Belum ada Order" />
                     </TableCell>
                   </TableRow>
                 )}

@@ -9,8 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Ini bingung fungsinya apa, soalnya API nya kan satu login trus cuma admin yang bisa ganti role user?
-// Jadi harusnya register lewat page utama? Tapi ini disimpen aja dulu..
 export default function AdminSignupPage() {
   const [passwordVisible, setPasswordVisibility] = useState(false);
   const [apiError, setApiError] = useState(null);
@@ -29,13 +27,12 @@ export default function AdminSignupPage() {
     setApiError(null);
     AuthService.register(data)
       .then(() => {
-        navigate("/admin/auth/otp", { state: { email: data.email } });
+        sessionStorage.setItem("verifyEmail", data.email);
+        navigate("/admin/auth/otp");
       })
       .catch((error) => {
-        if (error.status === 400) {
-          navigate("/admin/auth/otp", {
-            state: { email: data.email },
-          });
+        if (error.message === "email already registered") {
+          setApiError("This email address is already registered.");
         } else {
           setApiError(error.message || "An error occurred during sign up");
         }

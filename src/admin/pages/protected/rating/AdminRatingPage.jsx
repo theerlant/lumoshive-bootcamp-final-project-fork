@@ -84,24 +84,23 @@ export default function AdminRatingListPage() {
       {!error && !isLoading && (
         <div className="">
           <>
-            <TableWrapper>
-              <TableColGroup
-                colSizes={["18%", "22%", "10%", "30%", "10%", "10%"]}
-              />
+            {/* data?.data karena wrapper request lo biasanya unwrap hasil axios */}
+            {data?.data?.length > 0 ? (
+              <TableWrapper>
+                <TableColGroup
+                  colSizes={["18%", "22%", "10%", "30%", "10%", "10%"]}
+                />
 
-              <TableHead>
-                <TableHeadCol title="User" />
-                <TableHeadCol title="Product" />
-                <TableHeadCol title="Rating" />
-                <TableHeadCol title="Review" />
-                <TableHeadCol title="Date" />
-                <TableHeadCol title="Action" />
-              </TableHead>
-
-              <TableBody>
-                {/* data?.data karena wrapper request lo biasanya unwrap hasil axios */}
-                {data?.data?.length > 0 ? (
-                  data.data.map((rating) => (
+                <TableHead>
+                  <TableHeadCol title="User" />
+                  <TableHeadCol title="Product" />
+                  <TableHeadCol title="Rating" />
+                  <TableHeadCol title="Review" />
+                  <TableHeadCol title="Date" />
+                  <TableHeadCol title="Action" />
+                </TableHead>
+                <TableBody>
+                  {data.data.map((rating) => (
                     <TableRow key={rating.id}>
                       <TableCell>{rating.user?.name || "Unknown"}</TableCell>
                       <TableCell>{rating.product?.name}</TableCell>
@@ -132,19 +131,15 @@ export default function AdminRatingListPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-10">
-                      <PageEmpty />
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </TableWrapper>
+                  ))}
+                </TableBody>
+              </TableWrapper>
+            ) : (
+              <PageEmpty message="Belum ada Review" />
+            )}
 
             {/* PAGINATION LOGIC */}
-            <div className="mt-8 flex justify-between items-center border-t pt-4">
+            <div className="mt-4 flex justify-between items-center">
               <PaginationInfo total={data?.meta?.total ?? 0} />
 
               <div className="flex items-center gap-6">
