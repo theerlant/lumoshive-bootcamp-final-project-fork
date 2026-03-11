@@ -6,6 +6,11 @@ import {
   LucideCheckCircle,
   LucidePlus,
 } from "lucide-react";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
 import Button from "../../../components/Button";
 import Switch from "../../../components/Switch";
 import {
@@ -28,6 +33,7 @@ import { promotionService } from "../../../../shared/services/promotionService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "@/admin/components/Modal";
+import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
 import { toTitleCase } from "../../../../shared/utils/toTitleCase";
 
 export const AdminPromotionListPage = () => {
@@ -97,7 +103,12 @@ export const AdminPromotionListPage = () => {
     <div className="p-6">
       <PageHeader />
 
-      {error && <PageError error={error} />}
+      {error && (
+        <PageError
+          message="Cannot fetch Promotions. We will keep trying..."
+          error={error}
+        />
+      )}
       {isLoading && <PageLoading />}
 
       <section id="list-table" className="mt-6">
@@ -147,13 +158,16 @@ export const AdminPromotionListPage = () => {
       </section>
 
       <DeleteModal
-        idToDelete={idToDelete}
+        isOpen={idToDelete !== null}
+        title="Delete Promotion?"
         onCancel={() => setIdToDelete(null)}
         onConfirm={handleDeleteConfirm}
       />
-      <DeleteConfirmModal
-        isVisible={deleteConfirmVisible}
-        onSelfDelete={() => setDeleteConfirmVisible(false)}
+
+      <SuccessModal
+        visible={deleteConfirmVisible}
+        setVisible={setDeleteConfirmVisible}
+        message="This promotion is successfully deleted"
       />
     </div>
   );
@@ -300,62 +314,4 @@ const TablePagination = ({
       />
     </div>
   </div>
-);
-
-const DeleteModal = ({ idToDelete, onCancel, onConfirm }) => (
-  <Modal isOpen={idToDelete !== null} onClose={() => onCancel()}>
-    <div className="flex flex-col items-center text-center gap-4 p-4">
-      <div className="w-16 h-16 rounded-full border-4 border-red-500 flex items-center justify-center">
-        <LucideTrash size={32} className="text-red-500" />
-      </div>
-      <h2 className="text-xl font-bold text-red-500">Delete Promotion?</h2>
-      <p className="text-gray-600">
-        Are you sure want to delete this promotion?
-      </p>
-      <div className="flex gap-4 mt-4">
-        <Button variant="outlined" onClick={() => onCancel()}>
-          No
-        </Button>
-        <Button onClick={() => onConfirm()}>Yes</Button>
-      </div>
-    </div>
-  </Modal>
-);
-
-const DeleteConfirmModal = ({ isVisible, onSelfDelete }) => {
-  const timerRef = useRef(null);
-  useEffect(() => {
-    if (isVisible) {
-      clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => onSelfDelete(), 3000);
-    }
-    return () => clearTimeout(timerRef.current);
-  }, [isVisible, onSelfDelete]);
-
-  return (
-    <Modal isOpen={isVisible} onClose={() => onSelfDelete()}>
-      <div className="flex flex-col items-center text-center gap-4 p-4">
-        <LucideCheckCircle size={48} className="text-green-500" />
-        <h2 className="text-lg font-bold">
-          This promotion is successfully deleted
-        </h2>
-      </div>
-    </Modal>
-  );
-};
-
-const PageError = ({ error }) => (
-  <div className="p-4 text-red-500">
-    Error: {error?.message || "Something went wrong"}
-  </div>
-);
-
-const PageLoading = () => (
-  <div className="p-4 flex justify-center">
-    <LucideTags className="animate-spin" />
-  </div>
-);
-
-const PageEmpty = () => (
-  <div className="text-gray-500">Sadly there's no data here</div>
 );

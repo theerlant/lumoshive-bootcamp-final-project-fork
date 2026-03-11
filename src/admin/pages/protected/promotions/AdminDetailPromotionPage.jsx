@@ -2,6 +2,7 @@ import useSWR from "swr";
 import { useNavigate, useParams } from "react-router-dom";
 import { promotionService } from "../../../../shared/services/promotionService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
+import { PageLoading, PageError } from "../../../components/SimpleConditional";
 
 export const AdminDetailPromotionPage = () => {
   const { id } = useParams();
@@ -17,9 +18,18 @@ export const AdminDetailPromotionPage = () => {
 
   const data = res?.data || res;
 
-  if (isLoading) return <div className="p-6 text-gray-500">Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="p-6">
+        <PageLoading />
+      </div>
+    );
   if (error || !data)
-    return <div className="p-6 text-gray-500">Promotion not found.</div>;
+    return (
+      <div className="p-6">
+        <PageError error={error} message="Promotion not found." />
+      </div>
+    );
 
   /* =========================
      DISCOUNT LABEL

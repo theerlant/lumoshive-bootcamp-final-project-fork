@@ -29,6 +29,7 @@ import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
 
 import { Modal } from "@/admin/components/Modal";
+import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
 import {
   PageLoading,
   PageEmpty,
@@ -134,48 +135,57 @@ export const AdminProductsPage = () => {
       ) : null}
       {isLoading ? <PageLoading /> : null}
       <section id="list-table">
-        {!isLoading && data ? (
-          <TableWrapper>
-            <TableHeader
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              onSort={handleToggleSort}
-            />
-            <TableBody>
-              {data.data.map((product) => (
-                <TableItem
-                  key={product.id}
-                  product={product}
-                  onTogglePublish={handleTogglePublish}
-                  onDelete={() => setIdToDelete(product.id)}
-                />
-              ))}
-            </TableBody>
-          </TableWrapper>
-        ) : !error ? (
-          <PageEmpty />
-        ) : null}
+        {!isLoading && !error && (
+          <div className="w-full">
+            <TableWrapper>
+              <TableHeader
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSort={handleToggleSort}
+              />
+              <TableBody>
+                {data?.data?.length > 0 ? (
+                  data.data.map((product) => (
+                    <TableItem
+                      key={product.id}
+                      product={product}
+                      onTogglePublish={handleTogglePublish}
+                      onDelete={() => setIdToDelete(product.id)}
+                    />
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-10">
+                      <PageEmpty />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </TableWrapper>
+
+            {data && (
+              <TablePagination
+                page={page}
+                limit={limit}
+                totalItems={data.pagination.total_items}
+                totalPages={data.pagination.total_pages}
+                onLimitSet={(limit) => setLimit(limit)}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            )}
+          </div>
+        )}
       </section>
-      {!isLoading && data ? (
-        <TablePagination
-          page={page}
-          limit={limit}
-          totalItems={data.pagination.total_items}
-          totalPages={data.pagination.total_pages}
-          onLimitSet={(limit) => setLimit(limit)}
-          onPageChange={(newPage) => setPage(newPage)}
-        />
-      ) : (
-        <></>
-      )}
       <DeleteModal
+        isOpen={idToDelete !== null}
         idToDelete={idToDelete}
         onCancel={() => setIdToDelete(null)}
         onConfirm={handleDeleteConfirm}
       />
-      <DeleteConfirmModal
-        isVisible={deleteConfirmVisible}
-        onSelfDelete={() => setDeleteConfirmVisible(false)}
+      <SuccessModal
+        visible={deleteConfirmVisible}
+        setVisible={setDeleteConfirmVisible}
+        message="This product is successfully deleted"
       />
     </>
   );
@@ -278,60 +288,5 @@ const TablePagination = ({
         onPageChange={onPageChange}
       />
     </section>
-  );
-};
-
-const DeleteModal = ({ idToDelete, onCancel, onConfirm }) => {
-  return (
-    <Modal
-      isOpen={idToDelete !== null} // Open if we have an item selected
-      onClose={() => onCancel()}
-    >
-      <div className="flex flex-col items-center text-center gap-6">
-        <LucideTrash size={48} className="text-[#DC3741]" />
-        <div>
-          <h2 className="text-xl font-bold text-[#DC3741] mb-2">
-            Delete Product?
-          </h2>
-          <p className="text-gray-600 text-sm">
-            Are you sure you want to delete this product?
-          </p>
-        </div>
-
-        <div className="flex gap-4 w-full justify-center mt-4">
-          <Button variant="outlined" onClick={() => onCancel()}>
-            No
-          </Button>
-          <Button onClick={() => onConfirm()}>Yes</Button>
-        </div>
-      </div>
-    </Modal>
-  );
-};
-
-const DeleteConfirmModal = ({ isVisible, onSelfDelete }) => {
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    if (isVisible) {
-      clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => onSelfDelete(), 3000);
-    }
-
-    return () => clearTimeout(timerRef.current);
-  }, [isVisible]);
-
-  return (
-    <Modal
-      isOpen={isVisible} // Open if we have an item selected
-      onClose={() => onSelfDelete()}
-    >
-      <div className="flex flex-col items-center text-center gap-6">
-        <LucideCheckCircle size={48} className="text-[#A5DC86]" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">
-          This product is successfully deleted
-        </h2>
-      </div>
-    </Modal>
   );
 };

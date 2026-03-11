@@ -23,6 +23,12 @@ import useSWR from "swr";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { toTitleCase } from "../../../../shared/utils/toTitleCase";
 import { Modal } from "../../../components/Modal";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
+import { SuccessModal } from "@/admin/components/PremadeModal";
 
 // Helper function to map order status to OrderStatusChip status
 const getChipStatusColor = (status) => {
@@ -52,6 +58,8 @@ export default function AdminOrderListPage() {
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
   const [productNames, setProductNames] = useState({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleAcceptClick = (order) => {
     setSelectedOrder(order);
@@ -74,7 +82,9 @@ export default function AdminOrderListPage() {
       // Refresh data setelah update status
       mutate();
       setShowReviewModal(false);
-      alert(`Order status updated to ${newStatus}`);
+      setShowDetailModal(false);
+      setSuccessMessage(`Order status updated to ${newStatus}`);
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Failed to update order status:", error);
       alert("Failed to update order status");
@@ -102,7 +112,10 @@ export default function AdminOrderListPage() {
       mutate();
       setShowTrackingModal(false);
       setShowReviewModal(false);
-      alert(`Order marked as shipped with tracking number: ${trackingNumber}`);
+      setSuccessMessage(
+        `Order marked as shipped with tracking number: ${trackingNumber}`,
+      );
+      setShowSuccessModal(true);
     } catch (error) {
       console.error("Failed to ship order:", error);
       alert("Failed to ship order");
@@ -156,17 +169,6 @@ export default function AdminOrderListPage() {
     fetchProductNames();
   }, [selectedOrder]);
 
-  if (error) {
-    return (
-      <div className="p-8">
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-          <strong>Koneksi Gagal:</strong> Server tidak merespon. Periksa koneksi
-          ke 103.150.116.241:8082.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <section id="header" className="flex justify-between items-center mb-8">
@@ -181,139 +183,145 @@ export default function AdminOrderListPage() {
         </Button>
       </section>
 
-      <section id="list-table">
-        <TableWrapper>
-          <TableColGroup
-            colSizes={["18%", "20%", "20%", "12%", "18%", "12%"]}
-          />
-          <TableHead>
-            <TableHeadCol
-              title="User Name"
-              sort={getSortState("user_name")}
-              onSort={() => handleSort("user_name")}
-            />
-            <TableHeadCol
-              title="Address"
-              sort={getSortState("address")}
-              onSort={() => handleSort("address")}
-            />
-            <TableHeadCol
-              title="Payment Method"
-              sort={getSortState("payment_method")}
-              onSort={() => handleSort("payment_method")}
-            />
-            <TableHeadCol
-              title="Amount"
-              sort={getSortState("total")}
-              onSort={() => handleSort("total")}
-            />
-            <TableHeadCol
-              title="Status Order"
-              sort={getSortState("status")}
-              onSort={() => handleSort("status")}
-            />
-            <TableHeadCol title="Action" />
-          </TableHead>
-
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-10">
-                  <div className="animate-spin inline-block w-6 h-6 border-b-2 border-[#DB4444] rounded-full"></div>
-                </TableCell>
-              </TableRow>
-            ) : orders.length > 0 ? (
-              orders.map((order) => (
-                <TableRow key={order.id}>
-                  {/* Mapping nama dari user atau email jika name kosong */}
-                  <TableCell>
-                    {order.user?.name || order.user?.email || "-"}
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-[#687182] text-xs line-clamp-2">
-                      {order.address?.full_address || "-"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="capitalize">
-                    {order.payment_method?.replace("_", " ")}
-                  </TableCell>
-                  <TableCell className="font-medium text-black">
-                    Rp {order.total?.toLocaleString("id-ID")}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-start">
-                      <OrderStatusChip
-                        color={getChipStatusColor(order.status)}
-                        status={toTitleCase(order.status)}
-                      />
-                    </div>
-                  </TableCell>
-                  <div className="flex gap-2">
-                    {order.status === "pending" ||
-                    order.status === "created" ? (
-                      <>
-                        <button
-                          onClick={() => handleAcceptClick(order)}
-                          className="flex items-center justify-center w-7 h-7 bg-[#00D26A] text-white rounded-full hover:bg-green-600 transition-colors"
-                        >
-                          <LucideCheck size={14} strokeWidth={4} />
-                        </button>
-                        <button
-                          onClick={() => handleDeclineClick(order)}
-                          className="flex items-center justify-center w-7 h-7 bg-[#F8312F] text-white rounded-full hover:bg-red-600 transition-colors"
-                        >
-                          <LucideX size={14} strokeWidth={4} />
-                        </button>
-                      </>
-                    ) : (
-                      <IconButton onClick={() => handleReviewClick(order)}>
-                        <LucideEye size={18} className="text-gray-500" />
-                      </IconButton>
-                    )}
-                  </div>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-10 text-gray-400 font-medium"
-                >
-                  No orders available.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </TableWrapper>
-      </section>
-
-      {/* PAGINATION: Menggunakan data dari 'meta' */}
-      <section
-        id="pagination"
-        className="flex items-center justify-between mt-4 px-2"
-      >
-        <PaginationInfo
-          currentPage={page}
-          limit={limit}
-          total={pagination.total}
+      {error ? (
+        <PageError
+          error={error}
+          message="Koneksi Gagal: Server tidak merespon."
         />
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <PaginationLimiterButton
+      ) : null}
+      {isLoading ? <PageLoading /> : null}
+
+      {!isLoading && !error && (
+        <>
+          <section id="list-table">
+            <TableWrapper>
+              <TableColGroup
+                colSizes={["18%", "20%", "20%", "12%", "18%", "12%"]}
+              />
+              <TableHead>
+                <TableHeadCol
+                  title="User Name"
+                  sort={getSortState("user_name")}
+                  onSort={() => handleSort("user_name")}
+                />
+                <TableHeadCol
+                  title="Address"
+                  sort={getSortState("address")}
+                  onSort={() => handleSort("address")}
+                />
+                <TableHeadCol
+                  title="Payment Method"
+                  sort={getSortState("payment_method")}
+                  onSort={() => handleSort("payment_method")}
+                />
+                <TableHeadCol
+                  title="Amount"
+                  sort={getSortState("total")}
+                  onSort={() => handleSort("total")}
+                />
+                <TableHeadCol
+                  title="Status Order"
+                  sort={getSortState("status")}
+                  onSort={() => handleSort("status")}
+                />
+                <TableHeadCol title="Action" />
+              </TableHead>
+
+              <TableBody>
+                {orders.length > 0 ? (
+                  orders.map((order) => (
+                    <TableRow key={order.id}>
+                      {/* Mapping nama dari user atau email jika name kosong */}
+                      <TableCell>
+                        {order.user?.name || order.user?.email || "-"}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-[#687182] text-xs line-clamp-2">
+                          {order.address?.full_address || "-"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {order.payment_method?.replace("_", " ")}
+                      </TableCell>
+                      <TableCell className="font-medium text-black">
+                        Rp {order.total?.toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-start">
+                          <OrderStatusChip
+                            color={getChipStatusColor(order.status)}
+                            status={toTitleCase(order.status)}
+                          />
+                        </div>
+                      </TableCell>
+                      <div className="flex gap-2">
+                        {order.status === "pending" ||
+                        order.status === "created" ? (
+                          <>
+                            <button
+                              onClick={() => handleAcceptClick(order)}
+                              className="flex items-center justify-center w-7 h-7 bg-[#00D26A] text-white rounded-full hover:bg-green-600 transition-colors"
+                            >
+                              <LucideCheck size={14} strokeWidth={4} />
+                            </button>
+                            <button
+                              onClick={() => handleDeclineClick(order)}
+                              className="flex items-center justify-center w-7 h-7 bg-[#F8312F] text-white rounded-full hover:bg-red-600 transition-colors"
+                            >
+                              <LucideX size={14} strokeWidth={4} />
+                            </button>
+                          </>
+                        ) : (
+                          <IconButton onClick={() => handleReviewClick(order)}>
+                            <LucideEye size={18} className="text-gray-500" />
+                          </IconButton>
+                        )}
+                      </div>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-10 text-gray-400 font-medium"
+                    >
+                      <PageEmpty />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </TableWrapper>
+          </section>
+
+          {/* PAGINATION: Menggunakan data dari 'meta' */}
+          <section
+            id="pagination"
+            className="flex items-center justify-between mt-4 px-2"
+          >
+            <PaginationInfo
+              currentPage={page}
               limit={limit}
-              onLimitSet={(v) => {
-                setLimit(v);
-                setPage(1);
-              }}
+              total={pagination.total}
             />
-          </div>
-          <PaginationNavigation
-            currentPage={page}
-            totalPages={Math.ceil(pagination.total / limit)}
-            onPageChange={(p) => setPage(p)}
-          />
-        </div>
-      </section>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <PaginationLimiterButton
+                  limit={limit}
+                  onLimitSet={(v) => {
+                    setLimit(v);
+                    setPage(1);
+                  }}
+                />
+              </div>
+              <PaginationNavigation
+                currentPage={page}
+                totalPages={Math.ceil(pagination.total / limit)}
+                onPageChange={(p) => setPage(p)}
+              />
+            </div>
+          </section>
+        </>
+      )}
 
       {/* MODAL DETAIL ORDER */}
       {selectedOrder && (
@@ -706,6 +714,12 @@ export default function AdminOrderListPage() {
           </div>
         </Modal>
       )}
+
+      <SuccessModal
+        visible={showSuccessModal}
+        setVisible={setShowSuccessModal}
+        message={successMessage}
+      />
     </>
   );
 }

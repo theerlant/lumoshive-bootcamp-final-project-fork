@@ -4,6 +4,11 @@ import useSWR from "swr";
 import { usePagination } from "@/shared/hooks/usePagination";
 import { useSort } from "@/shared/hooks/useSort";
 import { categoryService } from "../../../../shared/services/categoryService";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
 
 import {
   TableWrapper,
@@ -29,13 +34,17 @@ import { LucidePencil, LucideTrash } from "lucide-react";
 
 import CategoryCreateModal from "./CategoryCreateModal";
 import CategoryEditModal from "./CategoryEditModal";
-import CategoryDeleteModal from "./CategoryDeleteModal";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
+import { Modal } from "@/admin/components/Modal";
+import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
 
 export default function AdminCategoryListPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const { page, limit, setPage, setLimit } = usePagination(1, 10);
   const { sortBy, sortOrder, onSort } = useSort();
@@ -63,6 +72,8 @@ export default function AdminCategoryListPage() {
     try {
       await categoryService.admin.create(data.name, true, data.icon);
       mutate(); // refresh data
+      setSuccessMessage("Category created successfully!");
+      setShowSuccessModal(true);
     } catch (err) {
       console.log(err);
     }
@@ -78,6 +89,8 @@ export default function AdminCategoryListPage() {
       );
 
       mutate();
+      setSuccessMessage("Category updated successfully!");
+      setShowSuccessModal(true);
     } catch (err) {
       console.log(err);
     }
@@ -85,8 +98,12 @@ export default function AdminCategoryListPage() {
 
   const handleDelete = async () => {
     try {
+      console.log(selectedCategory.id);
       await categoryService.admin.delete(selectedCategory.id);
       mutate();
+      setShowDelete(false);
+      setSuccessMessage("Category deleted successfully!");
+      setShowSuccessModal(true);
     } catch (err) {
       console.log(err);
     }
@@ -100,104 +117,126 @@ export default function AdminCategoryListPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Category</h2>
-          <p className="text-sm text-gray-500">
-            Home &gt; <span className="text-[#DB4444]">Category</span>
-          </p>
+          <Breadcrumbs
+            items={[{ label: "Home", href: "/admin" }, { label: "Category" }]}
+          />
         </div>
 
-        <Button onClick={() => setShowCreate(true)}>
+        <Button size="medium" onClick={() => setShowCreate(true)}>
           <span className="text-xs">Add New Category</span>
         </Button>
       </div>
 
-      <TableWrapper>
-        <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
-
-        <TableHead>
-          <TableHeadCol
-            title="Category Name"
-            sort={sortBy === "name" ? sortOrder : "none"}
-            onSort={() => onSort("name")}
-          />
-          <TableHeadCol title="Category Icon" />
-          <TableHeadCol
-            title="Published"
-            sort={sortBy === "is_published" ? sortOrder : "none"}
-            onSort={() => onSort("is_published")}
-          />
-          <TableHeadCol title="Action" />
-        </TableHead>
-
-        <TableBody>
-          {categories.map((category) => (
-            <TableRow key={category.id}>
-              <TableCell>{category.name}</TableCell>
-
-              <TableCell>
-                {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
-                <img
-                  src={`http://103.150.116.241:8082${category.icon_url}`}
-                  alt={category.name}
-                  className="w-6 h-6"
-                />
-              </TableCell>
-
-              <TableCell>
-                <Switch
-                  on={category.is_published}
-                  onChange={async () => {
-                    try {
-                      await categoryService.admin.togglePublish(category.id);
-                      mutate();
-                    } catch (err) {
-                      console.log(err);
-                    }
-                  }}
-                />
-              </TableCell>
-
-              <TableCell>
-                <div className="flex gap-2">
-                  <IconButton
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setShowEdit(true);
-                    }}
-                  >
-                    <LucidePencil size={16} />
-                  </IconButton>
-
-                  <IconButton
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setShowDelete(true);
-                    }}
-                  >
-                    <LucideTrash size={16} />
-                  </IconButton>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </TableWrapper>
-
-      <div className="mt-4 flex justify-between items-center">
-        <PaginationInfo
-          currentPage={page}
-          limit={limit}
-          total={paginationData.total_items}
+      {error ? (
+        <PageError
+          message="Cannot fetch Categories. We will keep trying..."
+          error={error}
         />
+      ) : null}
+      {isLoading ? <PageLoading /> : null}
 
-        <div className="flex items-center gap-6">
-          <PaginationLimiterButton limit={limit} onLimitSet={setLimit} />
-          <PaginationNavigation
-            currentPage={page}
-            totalPages={paginationData.total_pages}
-            onPageChange={setPage}
-          />
-        </div>
-      </div>
+      {!isLoading && !error && (
+        <>
+          <TableWrapper>
+            <TableColGroup colSizes={["40%", "25%", "20%", "15%"]} />
+
+            <TableHead>
+              <TableHeadCol
+                title="Category Name"
+                sort={sortBy === "name" ? sortOrder : "none"}
+                onSort={() => onSort("name")}
+              />
+              <TableHeadCol title="Category Icon" />
+              <TableHeadCol
+                title="Published"
+                sort={sortBy === "is_published" ? sortOrder : "none"}
+                onSort={() => onSort("is_published")}
+              />
+              <TableHeadCol title="Action" />
+            </TableHead>
+
+            <TableBody>
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell>{category.name}</TableCell>
+
+                    <TableCell>
+                      {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
+                      <img
+                        src={`http://103.150.116.241:8082${category.icon_url}`}
+                        alt={category.name}
+                        className="w-6 h-6"
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      <Switch
+                        on={category.is_published}
+                        onChange={async () => {
+                          try {
+                            await categoryService.admin.togglePublish(
+                              category.id,
+                            );
+                            mutate();
+                          } catch (err) {
+                            console.log(err);
+                          }
+                        }}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <IconButton
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            setShowEdit(true);
+                          }}
+                        >
+                          <LucidePencil size={16} />
+                        </IconButton>
+
+                        <IconButton
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            setShowDelete(true);
+                          }}
+                        >
+                          <LucideTrash size={16} />
+                        </IconButton>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-10">
+                    <PageEmpty />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </TableWrapper>
+
+          <div className="mt-4 flex justify-between items-center">
+            <PaginationInfo
+              currentPage={page}
+              limit={limit}
+              total={paginationData.total_items}
+            />
+
+            <div className="flex items-center gap-6">
+              <PaginationLimiterButton limit={limit} onLimitSet={setLimit} />
+              <PaginationNavigation
+                currentPage={page}
+                totalPages={paginationData.total_pages}
+                onPageChange={setPage}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       <CategoryCreateModal
         isOpen={showCreate}
@@ -209,14 +248,20 @@ export default function AdminCategoryListPage() {
         isOpen={showEdit}
         category={selectedCategory}
         onClose={() => setShowEdit(false)}
-        onSubmit={handleUpdate}
+        onConfirm={handleUpdate}
       />
 
-      <CategoryDeleteModal
+      <DeleteModal
         isOpen={showDelete}
-        category={selectedCategory}
-        onClose={() => setShowDelete(false)}
-        onDelete={handleDelete}
+        title="Delete Category?"
+        onCancel={() => setShowDelete(false)}
+        onConfirm={handleDelete}
+      />
+
+      <SuccessModal
+        visible={showSuccessModal}
+        setVisible={setShowSuccessModal}
+        message={successMessage}
       />
     </>
   );

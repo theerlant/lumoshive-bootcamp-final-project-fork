@@ -7,6 +7,7 @@ import { Modal } from "@/admin/components/Modal";
 import { LucideCheckCircle } from "lucide-react";
 import { toBackendDate } from "@/shared/utils/toBackendDate";
 import { PromotionForm } from "./components/PromotionForm";
+import { PageLoading } from "@/admin/components/SimpleConditional";
 
 export const AdminEditPromotionPage = () => {
   const { id } = useParams();
@@ -102,7 +103,12 @@ export const AdminEditPromotionPage = () => {
     }
   };
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading)
+    return (
+      <div className="p-6">
+        <PageLoading />
+      </div>
+    );
 
   return (
     <div className="p-6">

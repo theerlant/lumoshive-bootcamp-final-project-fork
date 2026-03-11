@@ -1,3 +1,5 @@
+import { LucidePackage } from "lucide-react";
+
 export const PageError = ({ message, error }) => {
   return (
     <div className="bg-white w-full rounded-2xl p-4 font-admin">
@@ -24,7 +26,9 @@ export const PageLoading = () => {
 };
 
 export const PageEmpty = () => {
-  <div className="w-full text-center">
-    <p>Sadly there's no data here</p>
-  </div>;
+  return (
+    <div className="w-full text-center">
+      <p>Sadly there's no data here</p>
+    </div>
+  );
 };

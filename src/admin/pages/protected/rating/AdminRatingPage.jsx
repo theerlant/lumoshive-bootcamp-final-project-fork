@@ -24,12 +24,21 @@ import {
 
 import { LucideTrash, LucideEye } from "lucide-react";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
+import { Modal } from "@/admin/components/Modal";
+import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
 
 export default function AdminRatingListPage() {
   // Logic State untuk Pagination & Filter
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // SWR dengan Key Dinamis (otomatis fetch ulang kalau page/limit berubah)
   const { data, error, isLoading, mutate } = useSWR(
@@ -38,26 +47,19 @@ export default function AdminRatingListPage() {
   );
 
   // Logic Hapus Review
-  const handleDelete = async (reviewId) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus rating ini?")) {
-      try {
-        await reviewService.admin.delete(reviewId);
-        mutate(); // Refresh data setelah hapus
-      } catch (err) {
-        console.error("Gagal menghapus:", err.message);
-        alert("Gagal menghapus review: " + err.message);
-      }
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return;
+    try {
+      await reviewService.admin.delete(itemToDelete);
+      mutate(); // Refresh data setelah hapus
+      setItemToDelete(null);
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error("Gagal menghapus:", err.message);
+      alert("Gagal menghapus review: " + err.message);
+      setItemToDelete(null);
     }
   };
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen">
-        <Navbar />
-        <div className="flex-1 p-8 bg-[#F4F5F9]">ERROR {error.message}</div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -75,11 +77,12 @@ export default function AdminRatingListPage() {
         </Button>
       </div>
 
+      {error && <PageError error={error} message="Failed to load ratings." />}
+      {isLoading && <PageLoading />}
+
       {/* TABLE SECTION */}
-      <div className="">
-        {isLoading ? (
-          <div className="flex justify-center p-4">Loading...</div>
-        ) : (
+      {!error && !isLoading && (
+        <div className="">
           <>
             <TableWrapper>
               <TableColGroup
@@ -97,38 +100,46 @@ export default function AdminRatingListPage() {
 
               <TableBody>
                 {/* data?.data karena wrapper request lo biasanya unwrap hasil axios */}
-                {data?.data?.map((rating) => (
-                  <TableRow key={rating.id}>
-                    <TableCell>{rating.user?.name || "Unknown"}</TableCell>
-                    <TableCell>{rating.product?.name}</TableCell>
-                    <TableCell>
-                      <span className="text-yellow-500 font-medium">
-                        ⭐ {rating.rating}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <p className="line-clamp-2 text-sm text-gray-600">
-                        {rating.comment}
-                      </p>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(rating.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <IconButton>
-                          <LucideEye size={16} />
-                        </IconButton>
-                        <IconButton
-                          className="text-red-500 hover:bg-red-50"
-                          onClick={() => handleDelete(rating.id)}
-                        >
-                          <LucideTrash size={16} />
-                        </IconButton>
-                      </div>
+                {data?.data?.length > 0 ? (
+                  data.data.map((rating) => (
+                    <TableRow key={rating.id}>
+                      <TableCell>{rating.user?.name || "Unknown"}</TableCell>
+                      <TableCell>{rating.product?.name}</TableCell>
+                      <TableCell>
+                        <span className="text-yellow-500 font-medium">
+                          ⭐ {rating.rating}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <p className="line-clamp-2 text-sm text-gray-600">
+                          {rating.comment}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(rating.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <IconButton>
+                            <LucideEye size={16} />
+                          </IconButton>
+                          <IconButton
+                            className="text-red-500 hover:bg-red-50"
+                            onClick={() => setItemToDelete(rating.id)}
+                          >
+                            <LucideTrash size={16} />
+                          </IconButton>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-10">
+                      <PageEmpty />
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </TableWrapper>
 
@@ -164,8 +175,21 @@ export default function AdminRatingListPage() {
               </div>
             </div>
           </>
-        )}
-      </div>
+        </div>
+      )}
+
+      <DeleteModal
+        isOpen={itemToDelete !== null}
+        title="Delete Review?"
+        onCancel={() => setItemToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+      />
+
+      <SuccessModal
+        visible={showSuccessModal}
+        setVisible={setShowSuccessModal}
+        message="Review deleted successfully!"
+      />
     </>
   );
 }

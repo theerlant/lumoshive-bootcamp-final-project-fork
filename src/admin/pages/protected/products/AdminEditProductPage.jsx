@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import { productService } from "@/shared/services/productService";
+import { PageLoading } from "@/admin/components/SimpleConditional";
 
 export const AdminEditProductPage = () => {
   const { id } = useParams();
@@ -110,7 +111,7 @@ export const AdminEditProductPage = () => {
         </div>
       )}
 
-      {isLoading && <div className="p-4 text-center">Loading...</div>}
+      {isLoading && <PageLoading />}
 
       {!isLoading && data && (
         <ProductForm

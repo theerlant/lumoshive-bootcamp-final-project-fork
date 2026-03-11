@@ -8,6 +8,7 @@ import { IconButton } from "@/admin/components/IconButton";
 import { LucidePencil } from "lucide-react";
 import { HorizontalDivider } from "@/admin/components/Divider";
 import { ProductForm } from "./components/ProductForm";
+import { PageLoading, PageError } from "@/admin/components/SimpleConditional";
 
 export const AdminDetailProductPage = () => {
   const { id } = useParams();
@@ -32,7 +33,21 @@ export const AdminDetailProductPage = () => {
     <>
       <PageHeader />
       <HorizontalDivider />
-      {!isLoading && data ? <ProductForm initialData={data} readOnly /> : <></>}
+      {isLoading && (
+        <div className="p-6">
+          <PageLoading />
+        </div>
+      )}
+      {error && (
+        <div className="p-6">
+          <PageError error={error} message="Product not found" />
+        </div>
+      )}
+      {!isLoading && !error && data ? (
+        <ProductForm initialData={data} readOnly />
+      ) : (
+        <></>
+      )}
       <div className="w-full flex justify-end gap-2">
         <Button variant="outlined" onClick={() => navigate(`/product/${id}`)}>
           View on Public

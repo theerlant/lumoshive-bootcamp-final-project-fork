@@ -20,6 +20,12 @@ import { IconButton } from "../../../components/IconButton";
 import { stockService } from "../../../../shared/services/stockService";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Modal } from "../../../components/Modal";
+import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
+import {
+  PageLoading,
+  PageEmpty,
+  PageError,
+} from "../../../components/SimpleConditional";
 
 export default function AdminStockListPage() {
   const navigate = useNavigate();
@@ -29,11 +35,13 @@ export default function AdminStockListPage() {
   const [modalType, setModalType] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
   const fetchStocks = async () => {
     setLoading(true);
+    setError(null);
     try {
       const currentSearch = search?.trim() || undefined;
       const res = await stockService.admin.getAllLog(page, 10, currentSearch);
@@ -45,6 +53,7 @@ export default function AdminStockListPage() {
       setTotalItems(pagination.total_items || actualData.length || 0);
     } catch (err) {
       console.error("Gagal mengambil data stock:", err);
+      setError(err);
       setStocks([]);
     } finally {
       setLoading(false);
@@ -105,126 +114,105 @@ export default function AdminStockListPage() {
         </div>
       </div> */}
 
-      <TableWrapper>
-        <TableHead>
-          <TableHeadCol title="Product Name" />
-          <TableHeadCol title="SKU" />
-          <TableHeadCol title="Quantity" />
-          {/* <TableHeadCol title="Type" /> */}
-          <TableHeadCol title="Description" />
-          <TableHeadCol title="Action" />
-        </TableHead>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-10">
-                Loading...
-              </TableCell>
-            </TableRow>
-          ) : stocks.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={6}
-                className="text-center py-10 text-gray-400"
-              >
-                No data available
-              </TableCell>
-            </TableRow>
-          ) : (
-            stocks.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">
-                  {item.product_name}
-                </TableCell>
-                <TableCell>{item.product_sku}</TableCell>
-                <TableCell>
-                  <span className="font-bold text-gray-700">
-                    {item.quantity}
-                  </span>
-                </TableCell>
-                {/* <TableCell>
+      {error && <PageError error={error} message="Failed to load stock list" />}
+      {loading && <PageLoading />}
+
+      {!loading && !error && (
+        <>
+          <TableWrapper>
+            <TableHead>
+              <TableHeadCol title="Product Name" />
+              <TableHeadCol title="SKU" />
+              <TableHeadCol title="Quantity" />
+              {/* <TableHeadCol title="Type" /> */}
+              <TableHeadCol title="Description" />
+              <TableHeadCol title="Action" />
+            </TableHead>
+            <TableBody>
+              {stocks.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-10 text-gray-400"
+                  >
+                    <PageEmpty />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                stocks.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">
+                      {item.product_name}
+                    </TableCell>
+                    <TableCell>{item.product_sku}</TableCell>
+                    <TableCell>
+                      <span className="font-bold text-gray-700">
+                        {item.quantity}
+                      </span>
+                    </TableCell>
+                    {/* <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       item.action_type === 'subtract' ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'
                     }`}>
                       {item.action_type}
                     </span>
                   </TableCell> */}
-                <TableCell className="text-gray-500 text-sm italic">
-                  {item.description || "-"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <IconButton
-                      onClick={() =>
-                        navigate(`/admin/stocks/detail/${item.id}`)
-                      }
-                    >
-                      <Eye size={18} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setSelectedItem(item);
-                        setModalType("delete");
-                      }}
-                    >
-                      <Trash2 size={18} />
-                    </IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </TableWrapper>
+                    <TableCell className="text-gray-500 text-sm italic">
+                      {item.description || "-"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <IconButton
+                          onClick={() =>
+                            navigate(`/admin/stocks/detail/${item.id}`)
+                          }
+                        >
+                          <Eye size={18} />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => {
+                            setSelectedItem(item);
+                            setModalType("delete");
+                          }}
+                        >
+                          <Trash2 size={18} />
+                        </IconButton>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </TableWrapper>
 
-      <div className="mt-4 flex justify-between items-center">
-        <PaginationInfo currentPage={page} limit={10} total={totalItems} />
-        <div className="flex gap-2">
-          <PaginationLimiterButton />
-          <PaginationNavigation
-            totalPages={Math.ceil(totalItems / 10) || 1}
-            currentPage={page}
-            onPageChange={setPage}
-          />
-        </div>
-      </div>
-
-      <Modal isOpen={!!modalType} onClose={() => setModalType(null)}>
-        <div className="w-full text-center">
-          {modalType === "delete" && (
-            <div className="space-y-6">
-              <div className="mx-auto w-16 h-16 border-4 border-red-500 rounded-full flex items-center justify-center animate-pulse">
-                <Trash2 className="text-red-500" size={32} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">Delete Stock Log?</h2>
-                <p className="text-gray-500 mt-2">
-                  This action cannot be undone.
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Button variant="outlined" onClick={() => setModalType(null)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleDelete}>Yes, Delete</Button>
-              </div>
-            </div>
-          )}
-
-          {modalType?.startsWith("success") && (
-            <div className="space-y-6 pb-2">
-              <CheckCircle
-                className="mx-auto text-emerald-400"
-                size={80}
-                strokeWidth={1}
+          <div className="mt-4 flex justify-between items-center">
+            <PaginationInfo currentPage={page} limit={10} total={totalItems} />
+            <div className="flex gap-2">
+              <PaginationLimiterButton />
+              <PaginationNavigation
+                totalPages={Math.ceil(totalItems / 10) || 1}
+                currentPage={page}
+                onPageChange={setPage}
               />
-              <h2 className="text-xl font-medium">
-                Success! Stock was {modalType.split("-")[1]}ed.
-              </h2>
             </div>
-          )}
-        </div>
-      </Modal>
+          </div>
+        </>
+      )}
+
+      <DeleteModal
+        isOpen={modalType === "delete"}
+        title="Delete Stock Log?"
+        onCancel={() => setModalType(null)}
+        onConfirm={handleDelete}
+      />
+
+      <SuccessModal
+        visible={modalType?.startsWith("success")}
+        setVisible={(visible) => !visible && setModalType(null)}
+        message={
+          modalType ? `Success! Stock was ${modalType.split("-")[1]}ed.` : ""
+        }
+      />
     </div>
   );
 }

@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { stockService } from "../../../../shared/services/stockService";
+import { PageLoading, PageError } from "../../../components/SimpleConditional";
 
 export default function AdminStockDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [stockDetail, setStockDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const res = await stockService.admin.getAllLog(1, 100);
+        const res = await stockService.admin.getAllLog(1, 1000);
         const data = res?.data?.data || res?.data || [];
         const found = data.find((item) => item.id === id);
+        if (!found) {
+          throw new Error("Stock log not found");
+        }
         setStockDetail(found);
       } catch (err) {
         console.error(err);
+        setError(err);
       } finally {
         setLoading(false);
       }
@@ -25,7 +30,19 @@ export default function AdminStockDetailPage() {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading)
+    return (
+      <div className="p-6">
+        <PageLoading />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="p-6">
+        <PageError error={error} message="Failed to load stock detail." />
+      </div>
+    );
 
   return (
     <div className="p-6 space-y-6">
