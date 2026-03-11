@@ -4,7 +4,8 @@ import AdminRatingListPage from "./admin/pages/protected/rating/AdminRatingPage"
 import AdminRoutes from "./admin/adminRoutes";
 import { Provider } from "react-redux";
 import store from "./shared/features/store";
-import AdminCategoryListPage from "./admin/pages/protected/categories/AdminCategoryListPage";
+import ContactUs from "./public/pages/unprotected/misc/ContactUsPage";
+import AboutPage from "./public/pages/unprotected/misc/AboutPage";
 
 function App() {
   return (
@@ -12,9 +13,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           {process.env.NODE_ENV === "development" && (
-            <Route path="/sandbox" element={<AdminCategoryListPage />} />
+            <Route path="/sandbox" element={<ComponentSandbox />} />
           )}
           <Route path="/admin/*" element={<AdminRoutes />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/aboutpage" element={<AboutPage />} />
         </Routes>
       </BrowserRouter>
     </Provider>
