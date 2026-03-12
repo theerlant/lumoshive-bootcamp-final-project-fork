@@ -6,6 +6,7 @@ const variantClasses = {
     "bg-transparent outline -outline-offset-2 hover:outline-black/50 hover:text-[#7D8184]",
   outlinedAlt:
     "bg-transparent outline -outline-offset-2 outline-[#DB4444] text-[#DB4444]",
+  transparent: "hover:bg-gray-50 transition-colors",
 };
 
 export const Button = ({

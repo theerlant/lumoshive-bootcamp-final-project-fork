@@ -11,6 +11,12 @@ import { PublicProtectedRoutes } from "./publicProtectedRoutes";
 import UnauthorizedPage from "./pages/errors/401";
 import ServerErrorPage from "./pages/errors/500";
 import NotFoundPage from "./pages/errors/404";
+import { MyProfilePage } from "./pages/protected/account/MyProfilePage";
+import { AddressBookPage } from "./pages/protected/account/AddressBookPage";
+import { CreateAddressBookPage } from "./pages/protected/account/CreateAddressBookPage";
+import { UpdateAddressBookPage } from "./pages/protected/account/UpdateAddressBookPage";
+import { MyOrdersPage } from "./pages/protected/account/MyOrdersPage";
+import { AccountLayout } from "./pages/protected/account/components/AccountLayout";
 
 export const PublicRoutes = () => {
   return (
@@ -28,13 +34,13 @@ export const PublicRoutes = () => {
           <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
           <Route element={<PublicProtectedRoutes />}>
-            <Route path="me">
-              <Route index element={<>ACCOUNT SETTING</>} />
-              <Route path="orders" element={<>MY ORDERS</>} />
+            <Route path="me" element={<AccountLayout />}>
+              <Route index element={<MyProfilePage />} />
+              <Route path="orders" element={<MyOrdersPage />} />
               <Route path="address">
-                <Route index element={<>ADDRESS LIST</>} />
-                <Route path="new" element={<>NEW ADDRESS</>} />
-                <Route path=":id/edit" element={<>EDIT ADDRESS </>} />
+                <Route index element={<AddressBookPage />} />
+                <Route path="new" element={<CreateAddressBookPage />} />
+                <Route path=":id" element={<UpdateAddressBookPage />} />
               </Route>
             </Route>
             <Route path="wishlist" element={<>MY WISHLIST</>} />
