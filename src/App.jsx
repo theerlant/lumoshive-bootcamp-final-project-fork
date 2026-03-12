@@ -3,6 +3,7 @@ import ComponentSandbox from "./sandbox/Sandbox";
 import AdminRoutes from "./admin/adminRoutes";
 import { Provider } from "react-redux";
 import store from "./shared/features/store";
+import { PublicRoutes } from "./public/publicRoutes";
 
 function App() {
   return (

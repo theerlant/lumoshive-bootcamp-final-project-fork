@@ -21,7 +21,7 @@ export const Header = () => {
     <>
       {/* Desktop Layout */}
       <header
-        className={`hidden sticky top-0 bg-white px-24 py-4 pt-8 border-b border-b-black/30 ${user && isAuthenticated ? "lg:flex items-center justify-between" : "lg:grid grid-cols-3 align-middle"}`}
+        className={`hidden sticky top-0 bg-white px-24 py-4 pt-8 border-b border-b-black/30 ${user && isAuthenticated ? "xl:flex items-center justify-between" : "xl:grid grid-cols-[1fr_1.5fr_1fr] align-middle"}`}
       >
         <Logo />
         <nav className="flex gap-12 justify-between items-center *:hover:underline">
@@ -52,7 +52,7 @@ export const Header = () => {
         </div>
       </header>
       {/* Mobile Layout */}
-      <header className="sticky lg:hidden top-0 z-10 bg-white">
+      <header className="sticky xl:hidden top-0 z-10 bg-white">
         <div className="flex justify-between px-8 py-8">
           <Logo />
           <button

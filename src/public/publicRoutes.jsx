@@ -8,6 +8,9 @@ import { PublicRegisterPage } from "./pages/auth/PublicRegisterPage";
 import { PublicForgotPasswordPage } from "./pages/auth/PublicForgotPasswordPage";
 import { PublicOTPPage } from "./pages/auth/PublicOtpPage";
 import { PublicProtectedRoutes } from "./publicProtectedRoutes";
+import UnauthorizedPage from "./pages/errors/401";
+import ServerErrorPage from "./pages/errors/500";
+import NotFoundPage from "./pages/errors/404";
 
 export const PublicRoutes = () => {
   return (
@@ -39,9 +42,10 @@ export const PublicRoutes = () => {
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactUs />} />
 
-          <Route path="401" element={<>401</>} />
-          <Route path="500" element={<>500</>} />
-          <Route path="*" element={<>404</>} />
+          <Route path="401" element={<UnauthorizedPage />} />
+          <Route path="500" element={<ServerErrorPage />} />
+          {/* Wildcard route direct to 404 Not found */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </div>
