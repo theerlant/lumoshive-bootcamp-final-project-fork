@@ -104,9 +104,9 @@ export const MyProfilePage = () => {
           <div className="col-span-full flex flex-col items-center gap-2">
             <img
               src={
-                avatarPreview ||
-                data?.data?.data?.profile?.avatar_url ||
-                "/avatar_placeholder.png"
+                avatarPreview || data?.profile?.avatar_url
+                  ? `http://103.150.116.241:8082${data.profile.avatar_url}`
+                  : "/avatar_placeholder.png"
               }
               className="w-28 aspect-square rounded-full object-cover border-2 border-[#DB4444]/20"
               alt="Profile avatar"

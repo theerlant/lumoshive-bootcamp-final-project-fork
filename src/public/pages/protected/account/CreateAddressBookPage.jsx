@@ -1,38 +1,41 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { addressService } from "../../../../shared/services/addressService";
+import { addressSchema } from "../../../../shared/schema/addressSchema";
+import { Button } from "../../../components/Button";
+import { toast } from "react-toastify";
 
 export const CreateAddressBookPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    label: "",
-    recipientName: "",
-    phone: "",
-    addressLine: "",
-    city: "",
-    province: "",
-    postalCode: "",
-    isDefault: false,
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      label: "",
+      recipient_name: "",
+      phone: "",
+      address_line: "",
+      city: "",
+      province: "",
+      postal_code: "",
+      is_default: false,
+    },
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await addressService.addAddress(
-        formData.label,
-        formData.recipientName,
-        formData.phone,
-        formData.addressLine,
-        formData.city,
-        formData.province,
-        formData.postalCode,
-        formData.isDefault,
-      );
-      navigate("/account/address");
-    } catch (err) {
-      alert("Failed to add address. Please check all fields.");
+      await addressService.addAddress(data);
+      navigate("/me/address");
+    } catch (error) {
+      toast.error(`Failed to add address: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -43,93 +46,128 @@ export const CreateAddressBookPage = () => {
       <h2 className="text-[#DB4444] text-lg font-medium mb-6">
         Create Your Address
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <input
-            placeholder="Label (Home/Office)"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, label: e.target.value })
-            }
-            required
-          />
-          <input
-            placeholder="Recipient Name"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, recipientName: e.target.value })
-            }
-            required
-          />
-          <input
-            placeholder="Phone Number"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, phone: e.target.value })
-            }
-            required
-          />
-          <input
-            placeholder="City"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            required
-          />
-          <input
-            placeholder="Province"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, province: e.target.value })
-            }
-            required
-          />
-          <input
-            placeholder="Postal Code"
-            className="bg-[#F5F5F5] p-3 rounded-md text-sm outline-none"
-            onChange={(e) =>
-              setFormData({ ...formData, postalCode: e.target.value })
-            }
-            required
-          />
+          <div>
+            <input
+              placeholder="Label (Home/Office)"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.label ? "border border-red-500" : ""
+              }`}
+              {...register("label")}
+            />
+            {errors.label && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.label.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              placeholder="Recipient Name"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.recipient_name ? "border border-red-500" : ""
+              }`}
+              {...register("recipient_name")}
+            />
+            {errors.recipient_name && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.recipient_name.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              placeholder="Phone Number"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.phone ? "border border-red-500" : ""
+              }`}
+              {...register("phone")}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.phone.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              placeholder="City"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.city ? "border border-red-500" : ""
+              }`}
+              {...register("city")}
+            />
+            {errors.city && (
+              <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>
+            )}
+          </div>
+          <div>
+            <input
+              placeholder="Province"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.province ? "border border-red-500" : ""
+              }`}
+              {...register("province")}
+            />
+            {errors.province && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.province.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <input
+              placeholder="Postal Code"
+              className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none ${
+                errors.postal_code ? "border border-red-500" : ""
+              }`}
+              {...register("postal_code")}
+            />
+            {errors.postal_code && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.postal_code.message}
+              </p>
+            )}
+          </div>
         </div>
-        <textarea
-          placeholder="Full Address"
-          rows="3"
-          className="w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none resize-none"
-          onChange={(e) =>
-            setFormData({ ...formData, addressLine: e.target.value })
-          }
-          required
-        />
+        <div>
+          <textarea
+            placeholder="Full Address"
+            rows="3"
+            className={`w-full bg-[#F5F5F5] p-3 rounded-md text-sm outline-none resize-none ${
+              errors.address_line ? "border border-red-500" : ""
+            }`}
+            {...register("address_line")}
+          />
+          {errors.address_line && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.address_line.message}
+            </p>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isDefault"
-            onChange={(e) =>
-              setFormData({ ...formData, isDefault: e.target.checked })
-            }
-          />
+          <input type="checkbox" id="isDefault" {...register("is_default")} />
           <label htmlFor="isDefault" className="text-sm">
             Set as default address
           </label>
         </div>
 
         <div className="flex justify-end gap-4 mt-6">
-          <button
+          <Button
             type="button"
-            onClick={() => navigate(-1)}
-            className="text-gray-500 text-sm"
+            variant="transparent"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(-1);
+            }}
           >
             Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-[#DB4444] text-white px-8 py-2 rounded-md text-sm font-medium"
-          >
+          </Button>
+          <Button type="submit" disabled={loading}>
             {loading ? "Saving..." : "Add Address"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

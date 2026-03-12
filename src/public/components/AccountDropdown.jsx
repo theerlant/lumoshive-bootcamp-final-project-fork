@@ -57,7 +57,7 @@ export const AccountDropdown = () => {
               <span>Manage My Account</span>
             </Link>
             <Link
-              to="/orders"
+              to="/me/orders"
               className="flex items-center gap-3 px-5 py-2.5 hover:bg-white/10 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -65,7 +65,7 @@ export const AccountDropdown = () => {
               <span>My Order</span>
             </Link>
             <Link
-              to="/reviews"
+              to="/me/reviews"
               className="flex items-center gap-3 px-5 py-2.5 hover:bg-white/10 transition-colors"
               onClick={() => setIsOpen(false)}
             >

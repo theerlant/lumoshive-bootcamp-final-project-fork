@@ -4,7 +4,7 @@ import { Button } from "../../components/Button";
 export default function NotFoundPage() {
   const navigate = useNavigate();
   return (
-    <div className="container mx-auto px-4 py-20">
+    <>
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-500 mb-20">
         <Link to="/" className="hover:underline">
@@ -25,6 +25,6 @@ export default function NotFoundPage() {
 
         <Button onClick={() => navigate("/")}>Back to home page</Button>
       </div>
-    </div>
+    </>
   );
 }

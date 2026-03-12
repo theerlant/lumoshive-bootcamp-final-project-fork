@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { addressService } from "../../../../shared/services/addressService"; // Pastikan path benar
+import { addressSchema } from "../../../../shared/schema/addressSchema";
+import { Button } from "../../../components/Button";
+import { toast } from "react-toastify";
 
 export const UpdateAddressBookPage = () => {
   const { id } = useParams();
@@ -9,68 +14,67 @@ export const UpdateAddressBookPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // State disesuaikan dengan kebutuhan API addressService.updateAddress
-  const [formData, setFormData] = useState({
-    label: "",
-    recipientName: "",
-    phone: "",
-    addressLine: "",
-    city: "",
-    province: "",
-    postalCode: "",
-    isDefault: false,
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      label: "",
+      recipient_name: "",
+      phone: "",
+      address_line: "",
+      city: "",
+      province: "",
+      postal_code: "",
+      is_default: false,
+    },
   });
 
   useEffect(() => {
+    if (id) console.log(id);
+
     const fetchAddressDetail = async () => {
       try {
         setLoading(true);
-        const res = await addressService.getById(id);
-        const data = res.data.data;
+        const data = await addressService.getById(id);
 
-        // Map data dari API (snake_case) ke state (camelCase)
-        setFormData({
+        const parts = data.full_address.split(",").map((part) => part.trim());
+        const [city, province, postal_code] = parts.slice(-3);
+        const address_line = parts.slice(0, -3).join(", ");
+
+        reset({
           label: data.label || "",
-          recipientName: data.recipient_name || "",
+          recipient_name: data.recipient_name || "",
           phone: data.phone || "",
-          addressLine: data.address_line || "",
-          city: data.city || "",
-          province: data.province || "",
-          postalCode: data.postal_code || "",
-          isDefault: data.is_default || false,
+          address_line: address_line || "",
+          city: city || "",
+          province: province || "",
+          postal_code: postal_code || "",
+          is_default: data.is_default || false,
         });
       } catch (err) {
-        console.error("Failed to fetch address:", err);
-        alert("Address not found");
-        navigate("/account/address");
+        toast.error(`Failed to fetch address: ${err}`);
+        navigate(-1);
       } finally {
         setLoading(false);
       }
     };
 
     if (id) fetchAddressDetail();
-  }, [id, navigate]);
+  }, [id, navigate, reset]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setSubmitting(true);
     try {
-      await addressService.updateAddress(
-        id,
-        formData.label,
-        formData.recipientName,
-        formData.phone,
-        formData.addressLine,
-        formData.city,
-        formData.province,
-        formData.postalCode,
-        formData.isDefault,
-      );
-      alert("Address updated successfully!");
-      navigate("/account/address");
+      await addressService.updateAddress(id, data); // Pass id and the validated data object
+      toast.success("Address updated successfully!");
+      navigate(-1);
     } catch (err) {
       console.error("Update failed:", err);
-      alert("Failed to update address. Please check your connection.");
+      toast.error(`Failed to update address: ${err}`);
     } finally {
       setSubmitting(false);
     }
@@ -86,7 +90,7 @@ export const UpdateAddressBookPage = () => {
       <h2 className="text-[#DB4444] text-lg font-medium mb-6">
         Update Your Address
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Responsive Grid: 1 kolom di mobile, 2 kolom di desktop */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           <div className="flex flex-col gap-2">
@@ -95,49 +99,89 @@ export const UpdateAddressBookPage = () => {
             </label>
             <input
               type="text"
-              required
-              value={formData.label}
-              onChange={(e) =>
-                setFormData({ ...formData, label: e.target.value })
-              }
-              className="bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444]"
+              {...register("label")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.label ? "border border-red-500" : ""
+              }`}
             />
+            {errors.label && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.label.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Recipient Name</label>
             <input
               type="text"
-              required
-              value={formData.recipientName}
-              onChange={(e) =>
-                setFormData({ ...formData, recipientName: e.target.value })
-              }
-              className="bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444]"
+              {...register("recipient_name")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.recipient_name ? "border border-red-500" : ""
+              }`}
             />
+            {errors.recipient_name && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.recipient_name.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Phone Number</label>
             <input
               type="text"
-              required
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-              className="bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444]"
+              {...register("phone")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.phone ? "border border-red-500" : ""
+              }`}
             />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.phone.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">City</label>
             <input
               type="text"
-              required
-              value={formData.city}
-              onChange={(e) =>
-                setFormData({ ...formData, city: e.target.value })
-              }
-              className="bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444]"
+              {...register("city")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.city ? "border border-red-500" : ""
+              }`}
             />
+            {errors.city && (
+              <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Province</label>
+            <input
+              type="text"
+              {...register("province")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.province ? "border border-red-500" : ""
+              }`}
+            />
+            {errors.province && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.province.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Postal Code</label>
+            <input
+              type="text"
+              {...register("postal_code")}
+              className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none focus:ring-1 focus:ring-[#DB4444] ${
+                errors.postal_code ? "border border-red-500" : ""
+              }`}
+            />
+            {errors.postal_code && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.postal_code.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -145,23 +189,23 @@ export const UpdateAddressBookPage = () => {
           <label className="text-sm font-medium">Full Address</label>
           <textarea
             rows="4"
-            required
-            value={formData.addressLine}
-            onChange={(e) =>
-              setFormData({ ...formData, addressLine: e.target.value })
-            }
-            className="bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none resize-none focus:ring-1 focus:ring-[#DB4444]"
+            {...register("address_line")}
+            className={`bg-[#F5F5F5] rounded-md px-4 py-3 text-sm outline-none resize-none focus:ring-1 focus:ring-[#DB4444] ${
+              errors.address_line ? "border border-red-500" : ""
+            }`}
           ></textarea>
+          {errors.address_line && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.address_line.message}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
             id="isDefault"
-            checked={formData.isDefault}
-            onChange={(e) =>
-              setFormData({ ...formData, isDefault: e.target.checked })
-            }
+            {...register("is_default")}
             className="accent-[#DB4444]"
           />
           <label htmlFor="isDefault" className="text-sm cursor-pointer">
@@ -171,20 +215,16 @@ export const UpdateAddressBookPage = () => {
 
         {/* Responsive Buttons: Stacked on mobile, row on desktop */}
         <div className="flex flex-col lg:flex-row justify-end items-center gap-4 lg:gap-6 mt-8">
-          <button
+          <Button
             type="button"
+            variant="transparent"
             onClick={() => navigate(-1)}
-            className="order-2 lg:order-1 text-gray-500 text-sm hover:text-black font-medium"
           >
             Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="order-1 lg:order-2 w-full lg:w-auto bg-[#DB4444] text-white px-10 py-3 rounded-md text-sm font-medium hover:bg-red-600 transition shadow-sm disabled:opacity-50"
-          >
+          </Button>
+          <Button type="submit" disabled={submitting}>
             {submitting ? "Saving..." : "Save Changes"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

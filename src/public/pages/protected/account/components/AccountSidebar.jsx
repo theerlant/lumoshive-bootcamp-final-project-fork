@@ -10,7 +10,7 @@ export const AccountSidebar = () => {
 
   return (
     // Mobile: Horizontal Scroll/Flex Row | Desktop: Vertical Column
-    <div className="w-full lg:w-64 flex-shrink-0 mb-8 lg:mb-0">
+    <div className="w-full lg:w-64 shrink-0 mb-8 mt-2 lg:mb-0">
       <div className="flex lg:flex-col flex-row gap-4 lg:gap-0 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
         {/* Section Manage Account */}
         <div className="flex lg:flex-col flex-row gap-2 lg:gap-0 items-center lg:items-start lg:mb-6">

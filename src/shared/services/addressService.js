@@ -12,29 +12,11 @@ export const addressService = {
    * @param {string} postalCode postal code
    * @param {boolean} isDefault is default (default is false)
    */
-  addAddress: (
-    label,
-    recipientName,
-    phone,
-    addressLine,
-    city,
-    province,
-    postalCode,
-    isDefault = false,
-  ) => {
+  addAddress: (data) => {
     return request({
       url: "/address",
       method: "POST",
-      data: {
-        label,
-        recipient_name: recipientName,
-        phone,
-        address_line: addressLine,
-        city,
-        province,
-        postal_code: postalCode,
-        is_default: isDefault,
-      },
+      data: data,
     });
   },
 
@@ -52,30 +34,11 @@ export const addressService = {
     });
   },
 
-  updateAddress: (
-    id,
-    label,
-    recipientName,
-    phone,
-    addressLine,
-    city,
-    province,
-    postalCode,
-    isDefault = false,
-  ) => {
+  updateAddress: (id, data) => {
     return request({
       url: `/address/${id}`,
       method: "PUT",
-      data: {
-        label,
-        recipient_name: recipientName,
-        phone,
-        address_line: addressLine,
-        city,
-        province,
-        postal_code: postalCode,
-        is_default: isDefault,
-      },
+      data: data,
     });
   },
 
