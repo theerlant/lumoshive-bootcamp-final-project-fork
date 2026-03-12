@@ -17,13 +17,15 @@ import { CreateAddressBookPage } from "./pages/protected/account/CreateAddressBo
 import { UpdateAddressBookPage } from "./pages/protected/account/UpdateAddressBookPage";
 import { MyOrdersPage } from "./pages/protected/account/MyOrdersPage";
 import { AccountLayout } from "./pages/protected/account/components/AccountLayout";
+import { HomePage } from "./pages/unprotected/HomePage";
+import { ProductDetailPage } from "./pages/unprotected/products/ProductDetailPage";
 
 export const PublicRoutes = () => {
   return (
     <div className="font-public">
       <Routes>
         <Route element={<PublicLayout />}>
-          <Route index element={<>HOME PAGE</>} />
+          <Route index element={<HomePage />} />
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />
             <Route path="login" element={<PublicLoginPage />} />
@@ -33,6 +35,7 @@ export const PublicRoutes = () => {
           </Route>
           <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
+          <Route path="product/:id" element={<ProductDetailPage />} />
           <Route element={<PublicProtectedRoutes />}>
             <Route path="me" element={<AccountLayout />}>
               <Route index element={<MyProfilePage />} />
@@ -44,6 +47,10 @@ export const PublicRoutes = () => {
               </Route>
             </Route>
             <Route path="wishlist" element={<>MY WISHLIST</>} />
+            <Route path="cart">
+              <Route index element={<>CART PAGE</>} />
+              <Route path="checkout" element={<>CHECKOUT PAGE</>} />
+            </Route>
           </Route>
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactUs />} />
