@@ -1,10 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserIcon, ShoppingBagIcon, StarIcon, LogOutIcon } from "lucide-react";
+import { AuthService } from "../../shared/services/authService";
+import { useDispatch } from "react-redux";
+import { logout } from "../../shared/features/authSlice";
 
 export const AccountDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -15,6 +21,17 @@ export const AccountDropdown = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleLogout = () => {
+    AuthService.logout()
+      .then(() => {
+        dispatch(logout());
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.log(error.code);
+      });
+  };
 
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
@@ -60,7 +77,7 @@ export const AccountDropdown = () => {
               className="flex items-center gap-3 px-5 py-2.5 hover:bg-white/10 transition-colors w-full text-left"
               onClick={() => {
                 setIsOpen(false);
-                // Handle logout logic here
+                handleLogout();
               }}
             >
               <LogOutIcon size={20} strokeWidth={1.5} />
