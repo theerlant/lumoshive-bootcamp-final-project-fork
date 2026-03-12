@@ -80,7 +80,7 @@ export const ProductForm = ({
   };
 
   const { data, error } = useSWR("/categories", () =>
-    categoryService.public.getAll(),
+    categoryService.public.getAll({ limit: 100 }),
   );
 
   const {

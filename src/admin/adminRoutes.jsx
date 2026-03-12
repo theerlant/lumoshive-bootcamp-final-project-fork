@@ -5,7 +5,7 @@ import AdminProtectedRoutes from "./adminProtectedRoutes";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import AdminLoginPage from "./pages/auth/AdminLoginPage";
 import AdminSignupPage from "./pages/auth/AdminSignupPage";
-import AdminDashboardPage from "./pages/protected/AdminDashboardPage";
+import AdminDashboardPage from "./pages/protected/home/AdminDashboardPage";
 import { AdminProductsPage } from "./pages/protected/products/AdminProductsPage";
 import { AdminDetailProductPage } from "./pages/protected/products/AdminDetailProductPage";
 import { AdminAddProductPage } from "./pages/protected/products/AdminAddProductPage";
@@ -21,8 +21,7 @@ import { AdminPromotionListPage } from "./pages/protected/promotions/AdminPromot
 import { AdminAddPromotionPage } from "./pages/protected/promotions/AdminAddPromotionPage";
 import { AdminDetailPromotionPage } from "./pages/protected/promotions/AdminDetailPromotionPage";
 import { AdminEditPromotionPage } from "./pages/protected/promotions/AdminEditPromotionPage";
-
-
+import { AdminForgotPasswordPage } from "./pages/auth-misc/AdminForgotPasswordPage";
 
 export default function AdminRoutes() {
   return (
@@ -35,7 +34,7 @@ export default function AdminRoutes() {
             <Route path="register" element={<AdminSignupPage />} />
           </Route>
           <Route element={<AdminAuthMiscLayout />}>
-            <Route path="forgot" element={<>TODO</>} />
+            <Route path="forgot" element={<AdminForgotPasswordPage />} />
             <Route path="otp" element={<AdminInputOTPPage />} />
           </Route>
         </Route>
@@ -66,7 +65,10 @@ export default function AdminRoutes() {
             <Route path="stocks">
               <Route index element={<AdminStockListPage />} />
               <Route path="add" element={<AdminStockFormPage mode="add" />} />
-              <Route path="edit/:id" element={<AdminStockFormPage mode="edit" />} />
+              <Route
+                path="edit/:id"
+                element={<AdminStockFormPage mode="edit" />}
+              />
               <Route path="detail/:id" element={<AdminStockDetailPage />} />
             </Route>
           </Route>

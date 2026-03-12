@@ -114,18 +114,17 @@ export default function AdminCategoryListPage() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6">
+      <section id="header" className="flex justify-between items-start mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Category</h2>
+          <h1 className="text-2xl font-bold">Category</h1>
           <Breadcrumbs
             items={[{ label: "Home", href: "/admin" }, { label: "Category" }]}
           />
         </div>
-
         <Button size="medium" onClick={() => setShowCreate(true)}>
-          <span className="text-xs">Add New Category</span>
+          <p className="text-xs">Add New Category</p>
         </Button>
-      </div>
+      </section>
 
       {error ? (
         <PageError

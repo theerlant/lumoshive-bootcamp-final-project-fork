@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { stockService } from "../../../../shared/services/stockService";
 import { PageLoading, PageError } from "../../../components/SimpleConditional";
+import { useState, useEffect } from "react";
 
 export default function AdminStockDetailPage() {
   const { id } = useParams();
@@ -39,20 +40,15 @@ export default function AdminStockDetailPage() {
 
   if (error)
     return (
-      <div className="p-6">
+      <>
         <PageError error={error} message="Failed to load stock detail." />
-      </div>
+      </>
     );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="hover:text-gray-600">
-            &lt;
-          </button>
-          Stock Log Detail
-        </h1>
+        <h1 className="text-2xl font-bold">Stock Log Detail</h1>
         <Breadcrumbs
           items={[
             { label: "Home", href: "/admin" },

@@ -36,14 +36,9 @@ export default function AdminStockFormPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <button onClick={() => navigate(-1)} className="hover:text-gray-500">
-            &lt;
-          </button>
-          Add Stock
-        </h1>
+        <h1 className="text-2xl font-bold">Add Stock</h1>
         <Breadcrumbs
           items={[
             { label: "Home", href: "/admin" },

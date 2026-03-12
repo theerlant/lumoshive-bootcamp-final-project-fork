@@ -88,7 +88,7 @@ export default function AdminStockListPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Stock</h1>
@@ -99,11 +99,8 @@ export default function AdminStockListPage() {
             ]}
           />
         </div>
-        <Button
-          onClick={() => navigate("/admin/stocks/add")}
-          className="bg-[#DB4444] rounded-lg px-3 py-2 text-white"
-        >
-          Add New Stock
+        <Button onClick={() => navigate("/admin/stocks/add")}>
+          <p className="text-xs">Add New Stock</p>
         </Button>
       </div>
 

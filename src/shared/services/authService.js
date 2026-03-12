@@ -1,76 +1,61 @@
-import { request } from "./client";
+import axios from "axios";
+import api, { request } from "./client";
+
+const BASE_URL = "/api";
+
+// Axios instance
+const authApi = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  headers: {
+    Accept: "application/json",
+  },
+});
 
 // abstraksi api call untuk otentikasi
 export const AuthService = {
   register: ({ email, password, fullname }) => {
-    return request({
-      url: "/auth/register",
-      method: "POST",
-      data: {
-        email,
-        password,
-        fullname,
-      },
+    return authApi.post("/auth/register", {
+      email,
+      password,
+      fullname,
     });
   },
   login: ({ email, password }) => {
-    return request({
-      url: "/auth/login",
-      method: "POST",
-      data: {
-        email,
-        password,
-      },
+    return authApi.post("/auth/login", {
+      email,
+      password,
     });
   },
   verifyOtp: ({ email, otp }) => {
-    return request({
-      url: "/auth/verify-otp",
-      method: "POST",
-      data: {
-        email,
-        otp,
-      },
+    return authApi.post("/auth/verify-otp", {
+      email,
+      otp,
     });
   },
   resendOtp: (email) => {
-    return request({
-      url: "/auth/resend-otp",
-      method: "POST",
-      data: {
-        email,
-      },
+    return authApi.post("/auth/resend-otp", {
+      email,
     });
   },
   forgotPassword: (email) => {
-    return request({
-      url: "/auth/forgot-password",
-      method: "POST",
-      data: {
-        email,
-      },
+    return authApi.post("/auth/forgot-password", {
+      email,
     });
   },
   resetPassword: (email, otp, password) => {
-    return request({
-      url: "/auth/reset-password",
-      method: "POST",
-      data: {
-        email,
-        otp,
-        password,
-      },
+    return authApi.post("/auth/reset-password", {
+      email,
+      otp,
+      password,
     });
   },
   refresh: (refreshToken) => {
-    return request({
-      url: "/auth/refresh-token",
-      method: "POST",
-      data: {
-        refreshToken,
-      },
+    return authApi.post("/auth/refresh-token", {
+      refreshToken,
     });
   },
+
   logout: () => {
     return request({
       url: "/auth/logout",

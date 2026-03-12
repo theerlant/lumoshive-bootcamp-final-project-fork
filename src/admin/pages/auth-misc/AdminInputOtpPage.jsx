@@ -5,29 +5,36 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { otpSchema } from "../../../shared/schema/authSchema";
 import z from "zod";
 import { AuthService } from "../../../shared/services/authService";
+import { useDispatch } from "react-redux";
 
 export const AdminInputOTPPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const email = location.state?.email;
-  console.log("email:", email);
+  const [loaded, setLoaded] = useState(false);
+  const [email, setEmail] = useState(null);
+
   // kembali ke login jika OTP diakses tanpa email
   useEffect(() => {
-    if (!email) {
-      console.warn("No email found in state, redirecting to login...");
+    const verifyEmail = sessionStorage.getItem("verifyEmail");
+
+    if (!verifyEmail) {
+      console.warn(
+        "No verify email found in session storage, redirecting to login...",
+      );
       // Use an absolute path to be safe
       navigate("/admin/auth/login", { replace: true });
+    } else {
+      setEmail(verifyEmail);
+      setLoaded(true);
     }
-  }, [email, navigate]);
-
-  if (!email) return null;
+  }, [navigate]);
 
   const [otp, setOTP] = useState(Array.from({ length: 6 }).fill(""));
   const inputRefs = useRef([]);
 
   const [errors, setErrors] = useState([]);
-  const [apiError, setApiError] = useState([]);
+  const [message, setMessage] = useState(null);
 
   // perubahan per otp input
   const handleChange = (field, index) => {
@@ -56,14 +63,25 @@ export const AdminInputOTPPage = () => {
     const result = otpSchema.safeParse({ email, otp: otp.join("") });
     if (result.success) {
       AuthService.verifyOtp(result.data)
-        .then(() => navigate("/admin", { replace: true }))
-        .catch((error) => setApiError(error));
+        .then((data) => {
+          // auto login dengan data otentikasi
+          dispatch(
+            setCredentials({
+              user: data.user,
+              accessToken: data.access_token,
+              refreshToken: data.refresh_token,
+            }),
+          );
+        })
+        .catch((error) => setErrors([error]));
     } else {
       setErrors(result.error.issues);
     }
   };
 
   const otpError = errors.find((err) => err.path.includes("otp"))?.message;
+
+  if (!loaded) return null;
 
   return (
     <div className="w-full text-center">

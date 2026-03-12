@@ -1,4 +1,4 @@
-import { LucidePackage } from "lucide-react";
+import { CircleDashed, LucidePackage } from "lucide-react";
 
 export const PageError = ({ message, error }) => {
   return (
@@ -25,10 +25,11 @@ export const PageLoading = () => {
   );
 };
 
-export const PageEmpty = () => {
+export const PageEmpty = ({ message = "" }) => {
   return (
-    <div className="w-full text-center">
-      <p>Sadly there's no data here</p>
+    <div className="w-full flex flex-col gap-2 items-center text-center">
+      <CircleDashed />
+      <p>{message || "Sadly there's no data here"}</p>
     </div>
   );
 };

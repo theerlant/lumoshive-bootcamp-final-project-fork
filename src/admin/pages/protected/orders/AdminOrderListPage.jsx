@@ -171,7 +171,7 @@ export default function AdminOrderListPage() {
 
   return (
     <>
-      <section id="header" className="flex justify-between items-center mb-8">
+      <section id="header" className="flex justify-between items-start mb-8">
         <div>
           <h1 className="text-2xl font-bold">Orders</h1>
           <Breadcrumbs
@@ -285,7 +285,7 @@ export default function AdminOrderListPage() {
                       colSpan={6}
                       className="text-center py-10 text-gray-400 font-medium"
                     >
-                      <PageEmpty />
+                      <PageEmpty message="Belum ada Order" />
                     </TableCell>
                   </TableRow>
                 )}
