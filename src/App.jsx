@@ -16,8 +16,6 @@ function App() {
             <Route path="/sandbox" element={<ComponentSandbox />} />
           )}
           <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/contactus" element={<ContactUs />} />
-          <Route path="/aboutpage" element={<AboutPage />} />
         </Routes>
       </BrowserRouter>
     </Provider>
