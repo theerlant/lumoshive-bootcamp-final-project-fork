@@ -1,11 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ComponentSandbox from "./sandbox/Sandbox";
-import AdminRatingListPage from "./admin/pages/protected/rating/AdminRatingPage";
 import AdminRoutes from "./admin/adminRoutes";
 import { Provider } from "react-redux";
 import store from "./shared/features/store";
-import ContactUs from "./public/pages/unprotected/misc/ContactUsPage";
-import AboutPage from "./public/pages/unprotected/misc/AboutPage";
+import { PublicRoutes } from "./public/publicRoutes";
 
 function App() {
   return (
@@ -16,6 +14,7 @@ function App() {
             <Route path="/sandbox" element={<ComponentSandbox />} />
           )}
           <Route path="/admin/*" element={<AdminRoutes />} />
+          <Route path="*" element={<PublicRoutes />} />
         </Routes>
       </BrowserRouter>
     </Provider>
