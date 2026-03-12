@@ -64,9 +64,9 @@ export default function AdminRatingListPage() {
   return (
     <>
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Rating</h2>
+          <h2 className="text-2xl font-bold">Rating</h2>
           <Breadcrumbs
             items={[{ label: "Home", href: "/admin" }, { label: "Rating" }]}
           />

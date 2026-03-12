@@ -5,9 +5,11 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { otpSchema } from "../../../shared/schema/authSchema";
 import z from "zod";
 import { AuthService } from "../../../shared/services/authService";
+import { useDispatch } from "react-redux";
 
 export const AdminInputOTPPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [loaded, setLoaded] = useState(false);
   const [email, setEmail] = useState(null);
@@ -61,8 +63,17 @@ export const AdminInputOTPPage = () => {
     const result = otpSchema.safeParse({ email, otp: otp.join("") });
     if (result.success) {
       AuthService.verifyOtp(result.data)
-        .then(() => navigate("/admin", { replace: true }))
-        .catch((error) => setApiError(error));
+        .then((data) => {
+          // auto login dengan data otentikasi
+          dispatch(
+            setCredentials({
+              user: data.user,
+              accessToken: data.access_token,
+              refreshToken: data.refresh_token,
+            }),
+          );
+        })
+        .catch((error) => setErrors([error]));
     } else {
       setErrors(result.error.issues);
     }

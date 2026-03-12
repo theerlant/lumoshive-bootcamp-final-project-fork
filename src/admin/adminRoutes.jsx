@@ -21,6 +21,7 @@ import { AdminPromotionListPage } from "./pages/protected/promotions/AdminPromot
 import { AdminAddPromotionPage } from "./pages/protected/promotions/AdminAddPromotionPage";
 import { AdminDetailPromotionPage } from "./pages/protected/promotions/AdminDetailPromotionPage";
 import { AdminEditPromotionPage } from "./pages/protected/promotions/AdminEditPromotionPage";
+import { AdminForgotPasswordPage } from "./pages/auth-misc/AdminForgotPasswordPage";
 
 export default function AdminRoutes() {
   return (
@@ -33,7 +34,7 @@ export default function AdminRoutes() {
             <Route path="register" element={<AdminSignupPage />} />
           </Route>
           <Route element={<AdminAuthMiscLayout />}>
-            <Route path="forgot" element={<>TODO</>} />
+            <Route path="forgot" element={<AdminForgotPasswordPage />} />
             <Route path="otp" element={<AdminInputOTPPage />} />
           </Route>
         </Route>

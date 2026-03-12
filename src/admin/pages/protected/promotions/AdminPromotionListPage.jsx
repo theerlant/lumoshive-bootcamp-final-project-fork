@@ -28,11 +28,10 @@ import {
   PaginationNavigation,
 } from "../../../components/Pagination";
 import useSWR from "swr";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { promotionService } from "../../../../shared/services/promotionService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "@/admin/components/Modal";
 import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
 import { toTitleCase } from "../../../../shared/utils/toTitleCase";
 
@@ -100,7 +99,7 @@ export const AdminPromotionListPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <>
       <PageHeader />
 
       {error && (
@@ -169,14 +168,14 @@ export const AdminPromotionListPage = () => {
         setVisible={setDeleteConfirmVisible}
         message="This promotion is successfully deleted"
       />
-    </div>
+    </>
   );
 };
 
 const PageHeader = () => {
   const navigate = useNavigate();
   return (
-    <section id="header" className="flex justify-between items-center">
+    <section id="header" className="flex justify-between items-start mb-8">
       <div>
         <h1 className="text-2xl font-bold">Promotion</h1>
         <Breadcrumbs
@@ -184,10 +183,7 @@ const PageHeader = () => {
         />
       </div>
       <Button size="medium" onClick={() => navigate("./add")}>
-        <span className="flex gap-2 text-sm font-semibold">
-          <LucidePlus size={18} className="" />
-          Add New Promotion
-        </span>
+        <p className="text-xs">Add New Promotion</p>
       </Button>
     </section>
   );

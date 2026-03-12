@@ -195,7 +195,7 @@ const PageHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <section id="header" className="flex justify-between items-center mb-8">
+    <section id="header" className="flex justify-between items-start mb-8">
       <div>
         <h1 className="text-2xl font-bold">Product</h1>
         <Breadcrumbs

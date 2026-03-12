@@ -1,16 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UserService } from "@/shared/services/userService";
 import { SummaryCardItem } from "./SummaryCardItem";
 import {
   BadgeDollarSignIcon,
+  ChevronLeftIcon,
   ChevronRight,
+  ChevronRightIcon,
   MousePointerClickIcon,
   PackageIcon,
   UsersRoundIcon,
 } from "lucide-react";
 import useSWR from "swr";
 import { dashboardService } from "../../../../shared/services/dashboardService";
-import { PageLoading } from "../../../components/SimpleConditional";
+import { PageError, PageLoading } from "../../../components/SimpleConditional";
 import {
   LineChart,
   Line,
@@ -22,6 +24,7 @@ import {
 } from "recharts";
 import { productService } from "../../../../shared/services/productService";
 import { Link } from "react-router-dom";
+import { IconButton } from "../../../components/IconButton";
 
 export default function AdminDashboardPage() {
   useEffect(() => {
@@ -78,7 +81,13 @@ const SummaryCard = () => {
           </div>
         </>
       ) : (
-        <PageLoading />
+        <div className="flex w-full h-full items-center justify-center">
+          {error ? (
+            <PageError message="Failed to get Summary" error={error} />
+          ) : (
+            <PageLoading />
+          )}
+        </div>
       )}
     </section>
   );
@@ -97,20 +106,33 @@ const MonthlyProfitCard = () => {
       <h1 className="font-medium text-lg text-center">
         Total earning this month
       </h1>
-      <h2 className="text-[#DB4444] text-5xl font-bold">
-        {data && !isLoading ? `Rp${data.total_earning}` : `Loading`}
-      </h2>
-      <p className="text-[#89868D] text-center font-medium mb-2">
-        total income profit this month
-      </p>
+      {data && !isLoading ? (
+        <>
+          <h2 className="text-[#DB4444] text-5xl font-bold">
+            Rp{data.total_earning}
+          </h2>
+          <p className="text-[#89868D] text-center font-medium mb-2">
+            total income profit this month
+          </p>
+        </>
+      ) : (
+        <div className="flex w-full h-full items-center justify-center text-center">
+          {error ? (
+            <PageError message="Failed to get Monthly earning" error={error} />
+          ) : (
+            <PageLoading />
+          )}
+        </div>
+      )}
     </section>
   );
 };
 
 const AnnualProfitChart = () => {
-  const year = new Date().getFullYear();
+  const yearConstraint = new Date().getFullYear();
+  const [year, setYear] = useState(yearConstraint);
 
-  const { data, isLoading, error } = useSWR("/revenue-chart", () =>
+  const { data, isLoading, error } = useSWR(`/revenue-chart?year=${year}`, () =>
     dashboardService.getRevenueChart(year),
   );
 
@@ -121,14 +143,25 @@ const AnnualProfitChart = () => {
   return (
     <section id="annual_profit">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-medium text-xl">Revenue {year}</h1>
+        <div className="flex gap-2 items-center">
+          <IconButton onClick={() => setYear(year - 1)}>
+            <ChevronLeftIcon />
+          </IconButton>
+          <h1 className="font-medium text-xl">Revenue {year}</h1>
+          <IconButton
+            onClick={() => setYear(year + 1)}
+            disabled={year >= yearConstraint}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+        </div>
         <div className="flex gap-2 items-center">
           <div className="w-2 h-2 rounded-full bg-[#DB4444]" />
           <p className="text-[#DB4444] text-sm">Sales</p>
         </div>
       </div>
       <div className="h-[300px] w-full mt-4">
-        {data ? (
+        {data && !isLoading ? (
           <ResponsiveContainer
             minWidth={100}
             minHeight={50}
@@ -181,7 +214,15 @@ const AnnualProfitChart = () => {
               />
             </LineChart>
           </ResponsiveContainer>
-        ) : null}
+        ) : error ? (
+          <div className="flex w-full h-full items-center justify-center">
+            <PageError message="Failed to get Revenue chart" error={error} />
+          </div>
+        ) : (
+          <div className="flex w-full h-full items-center justify-center">
+            <PageLoading />
+          </div>
+        )}
       </div>
     </section>
   );
@@ -194,13 +235,13 @@ const BestSellerCard = () => {
   // );
 
   const { data, isLoading, error } = useSWR("/products", () =>
-    productService.public.getAll({ limit: 5 }),
+    dashboardService.getTopSelling(5),
   );
 
   return (
     <section id="best-seller">
       <h1 className="font-medium text-xl mb-6">Best Item Sales</h1>
-      {data?.data ? (
+      {data?.data && !isLoading ? (
         data.data.map((product) => (
           <Link to={`./products/${product.id}`}>
             <div className="flex items-center gap-2 mb-4">
@@ -220,7 +261,13 @@ const BestSellerCard = () => {
           </Link>
         ))
       ) : (
-        <PageLoading />
+        <div className="flex w-full h-full items-center justify-center text-center">
+          {error ? (
+            <PageError message="Failed to get Best selling" error={error} />
+          ) : (
+            <PageLoading />
+          )}
+        </div>
       )}
     </section>
   );

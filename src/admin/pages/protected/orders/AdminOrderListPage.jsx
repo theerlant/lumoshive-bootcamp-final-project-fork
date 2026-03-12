@@ -171,7 +171,7 @@ export default function AdminOrderListPage() {
 
   return (
     <>
-      <section id="header" className="flex justify-between items-center mb-8">
+      <section id="header" className="flex justify-between items-start mb-8">
         <div>
           <h1 className="text-2xl font-bold">Orders</h1>
           <Breadcrumbs

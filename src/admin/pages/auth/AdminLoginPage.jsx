@@ -5,7 +5,7 @@ import { InputLabel, InputField } from "../../components/InputField";
 import { LucideEye, LucideEyeOff } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../../shared/features/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IconButton } from "../../components/IconButton";
 import { loginSchema } from "../../../shared/schema/authSchema";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,9 @@ export default function AdminLoginPage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { message } = location.state || {};
 
   const {
     register,
@@ -29,21 +32,39 @@ export default function AdminLoginPage() {
   const onSubmit = (data) => {
     setApiError(null);
     AuthService.login(data)
-      .then((data) => {
-        if (data) {
+      .then((response) => {
+        console.log(response);
+        if (response.data) {
           dispatch(
             setCredentials({
-              user: data.user,
-              accessToken: data.access_token,
-              refreshToken: data.refresh_token,
+              user: response.data.data.user,
+              accessToken: response.data.data.access_token,
+              refreshToken: response.data.data.refresh_token,
             }),
           );
           navigate("/admin");
         }
       })
       .catch((error) => {
-        console.error(error);
-        setApiError(error.message || "An error occurred during login");
+        if (
+          error.response.data.message ===
+          "account is not active. Please verify your email first"
+        ) {
+          onUnverifiedEmail(data.email);
+        } else {
+          setApiError(error.message || "An error occurred during login");
+        }
+      });
+  };
+
+  const onUnverifiedEmail = (email) => {
+    AuthService.resendOtp(email)
+      .then(() => {
+        sessionStorage.setItem("verifyEmail", email);
+        navigate("/admin/auth/otp");
+      })
+      .catch((error) => {
+        setApiError(error.message || "An error occured during login");
       });
   };
 
@@ -89,6 +110,10 @@ export default function AdminLoginPage() {
             </p>
           )}
         </div>
+
+        {message && (
+          <p className="text-green-600 text-sm text-center">{message}</p>
+        )}
 
         {apiError && (
           <p className="text-red-500 text-sm text-center">{apiError}</p>
