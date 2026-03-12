@@ -1,32 +1,44 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, CheckCircle } from "lucide-react";
-import { Modal } from "../../../../admin/components/Modal"
+import { Modal } from "../../../../admin/components/Modal";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { contactSchema } from "../../../../shared/schema/contactSchema";
+import { Breadcrumbs } from "../../../components/BreadCrumbs";
 
 export default function ContactUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    },
   });
 
-  const handleSubmit = (event) => {
-    event.preventDefault(); 
-    //alert("Success! Your message has been sent.");
+  const onSubmit = (data) => {
+    console.log(data); // Can remove this, just for simulating send
+    toast.success("Success! Your message has been sent.");
     setIsModalOpen(true);
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    reset();
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 md:py-20">
+    <div>
       {/* {Home/Contact} */}
-      <nav className="flex mb-10 text-sm">
-        <Link to="/" className="text-gray-400 hover:text-black">Home</Link>
-        <span className="mx-2 text-gray-400">/</span>
-        <span className="font-semibold text-black">Contact</span>
-      </nav>
+      <Breadcrumbs
+        items={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+      />
 
       <div className="flex flex-col lg:flex-row gap-10">
         {/* Sisi Kiri */}
@@ -63,47 +75,70 @@ export default function ContactUs() {
 
         {/* Sisi Kanan */}
         <div className="w-full lg:w-2/3 shadow-lg rounded-md p-8 border border-gray-50">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                required
-                type="text"
-                placeholder="Your Name *"
-                className="w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444]"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <input
-                required
-                type="email"
-                placeholder="Your Email *"
-                className="w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444]"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-              <input
-                required
-                type="tel"
-                placeholder="Your Phone *"
-                className="w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444]"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Your Name *"
+                  className={`w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444] ${errors.name ? "border-red-500 border" : ""}`}
+                  {...register("name")}
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="email"
+                  placeholder="Your Email *"
+                  className={`w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444] ${errors.email ? "border-red-500 border" : ""}`}
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="tel"
+                  placeholder="Your Phone *"
+                  className={`w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444] ${errors.phone ? "border-red-500 border" : ""}`}
+                  {...register("phone")}
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.phone.message}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <textarea
-              required
-              rows="8"
-              placeholder="Your Message"
-              className="w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444] resize-none"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}>
-              </textarea>
+            <div>
+              <textarea
+                rows="8"
+                placeholder="Your Message"
+                className={`w-full bg-gray-100 p-3 rounded-md focus:outline-[#DB4444] resize-none ${errors.message ? "border-red-500 border" : ""}`}
+                {...register("message")}
+              ></textarea>
+              {errors.message && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.message.message}
+                </p>
+              )}
+            </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="bg-[#DB4444] text-white px-10 py-4 rounded-md hover:bg-[#c13e3e] transition-colors">
+                className="bg-[#DB4444] text-white px-10 py-4 rounded-md hover:bg-[#c13e3e] transition-colors"
+              >
                 Send Message
               </button>
             </div>
@@ -111,17 +146,24 @@ export default function ContactUs() {
         </div>
       </div>
 
-        {/* Modal */}
+      {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className="flex flex-col items-center text-center space-y-4">
-          <CheckCircle size={80} className="text-emerald-500" strokeWidth={1.5} />
+          <CheckCircle
+            size={80}
+            className="text-emerald-500"
+            strokeWidth={1.5}
+          />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-gray-800">Success!</h2>
-            <p className="text-gray-500">Your message has been sent successfully</p>
+            <p className="text-gray-500">
+              Your message has been sent successfully
+            </p>
           </div>
-          <button 
+          <button
             onClick={() => setIsModalOpen(false)}
-            className="mt-4 bg-[#DB4444] text-white px-8 py-2 rounded-lg font-medium hover:bg-[#c13e3e] transition-all">
+            className="mt-4 bg-[#DB4444] text-white px-8 py-2 rounded-lg font-medium hover:bg-[#c13e3e] transition-all"
+          >
             Close
           </button>
         </div>

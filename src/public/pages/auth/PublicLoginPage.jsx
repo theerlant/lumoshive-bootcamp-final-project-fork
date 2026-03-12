@@ -25,31 +25,31 @@ export const PublicLoginPage = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setApiError(null);
-    AuthService.login(data)
-      .then((response) => {
-        if (response.data) {
-          dispatch(
-            setCredentials({
-              user: response.data.data.user,
-              accessToken: response.data.data.access_token,
-              refreshToken: response.data.data.refresh_token,
-            }),
-          );
-          navigate("/");
-        }
-      })
-      .catch((error) => {
-        if (
-          error.response?.data?.message ===
-          "account is not active. Please verify your email first"
-        ) {
-          onUnverifiedEmail(data.email);
-        } else {
-          setApiError(error.message || "An error occurred during login");
-        }
-      });
+
+    try {
+      const response = await AuthService.login(data);
+      if (response.data) {
+        dispatch(
+          setCredentials({
+            user: response.data.data.user,
+            accessToken: response.data.data.access_token,
+            refreshToken: response.data.data.refresh_token,
+          }),
+        );
+        navigate("/");
+      }
+    } catch (error) {
+      if (
+        error.response?.data?.message ===
+        "account is not active. Please verify your email first"
+      ) {
+        onUnverifiedEmail(data.email);
+      } else {
+        setApiError(error.message || "An error occurred during login");
+      }
+    }
   };
 
   const onUnverifiedEmail = (email) => {

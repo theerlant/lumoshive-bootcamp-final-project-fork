@@ -3,7 +3,7 @@ import sideImage from "@/assets/auth_sider_transparent.png";
 
 export const PublicAuthLayout = () => {
   return (
-    <div className="grid lg:grid-cols-2 min-h-[800px]">
+    <div className="grid lg:grid-cols-2">
       <aside className="hidden lg:flex bg-linear-to-b from-[#cde5e9] to-[#d1e6eb] h-full items-center justify-center">
         <img src={sideImage} className="object-cover aspect-square w-full" />
       </aside>

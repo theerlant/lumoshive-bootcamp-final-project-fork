@@ -16,15 +16,11 @@ export const UserService = {
    * @param {string} [phone] phone to change
    * @param {*} [avatar] avatar file to change
    */
-  update: (fullName, phone, avatar) => {
+  update: (data) => {
     return request({
       url: "/users/profile",
       method: "PUT",
-      data: {
-        full_name: fullName,
-        phone,
-        avatar,
-      },
+      data: data,
     });
   },
   /**
