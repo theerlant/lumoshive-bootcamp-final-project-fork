@@ -17,6 +17,7 @@ export const PublicRoutes = () => {
           <Route index element={<>HOME PAGE</>} />
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />
+            <Route path="login" element={<PublicLoginPage />} />
             <Route path="register" element={<PublicRegisterPage />} />
             <Route path="forgot" element={<PublicForgotPasswordPage />} />
             <Route path="otp" element={<PublicOTPPage />} />
