@@ -30,10 +30,12 @@ export const PublicRegisterPage = () => {
         navigate("/auth/otp");
       })
       .catch((error) => {
-        if (error.message === "email already registered") {
+        if (error.response.data.message === "email already registered") {
           setApiError("This email address is already registered.");
         } else {
-          setApiError(error.message || "An error occurred during sign up");
+          setApiError(
+            error.response.data.message || "An error occurred during sign up",
+          );
         }
       });
   };
