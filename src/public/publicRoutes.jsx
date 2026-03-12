@@ -3,6 +3,11 @@ import ContactUs from "./pages/unprotected/misc/ContactUsPage";
 import AboutPage from "./pages/unprotected/misc/AboutPage";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { PublicAuthLayout } from "./layouts/PublicAuthLayout";
+import { PublicLoginPage } from "./pages/auth/PublicLoginPage";
+import { PublicRegisterPage } from "./pages/auth/PublicRegisterPage";
+import { PublicForgotPasswordPage } from "./pages/auth/PublicForgotPasswordPage";
+import { PublicOTPPage } from "./pages/auth/PublicOtpPage";
+import { PublicProtectedRoutes } from "./publicProtectedRoutes";
 
 export const PublicRoutes = () => {
   return (
@@ -11,23 +16,25 @@ export const PublicRoutes = () => {
         <Route element={<PublicLayout />}>
           <Route index element={<>HOME PAGE</>} />
           <Route path="auth" element={<PublicAuthLayout />}>
-            <Route index element={<>LOGIN</>} />
-            <Route path="register" element={<>REGISTER</>} />
-            <Route path="forgot" element={<>FORGOT PASSWORD</>} />
-            <Route path="otp" element={<>OTP</>} />
+            <Route index element={<PublicLoginPage />} />
+            <Route path="register" element={<PublicRegisterPage />} />
+            <Route path="forgot" element={<PublicForgotPasswordPage />} />
+            <Route path="otp" element={<PublicOTPPage />} />
           </Route>
           <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
-          <Route path="me">
-            <Route index element={<>ACCOUNT SETTING</>} />
-            <Route path="orders" element={<>MY ORDERS</>} />
-            <Route path="address">
-              <Route index element={<>ADDRESS LIST</>} />
-              <Route path="new" element={<>NEW ADDRESS</>} />
-              <Route path=":id/edit" element={<>EDIT ADDRESS </>} />
+          <Route element={<PublicProtectedRoutes />}>
+            <Route path="me">
+              <Route index element={<>ACCOUNT SETTING</>} />
+              <Route path="orders" element={<>MY ORDERS</>} />
+              <Route path="address">
+                <Route index element={<>ADDRESS LIST</>} />
+                <Route path="new" element={<>NEW ADDRESS</>} />
+                <Route path=":id/edit" element={<>EDIT ADDRESS </>} />
+              </Route>
             </Route>
+            <Route path="wishlist" element={<>MY WISHLIST</>} />
           </Route>
-          <Route path="wishlist" element={<>MY WISHLIST</>} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactUs />} />
 
