@@ -13,7 +13,11 @@ export default function UserCard() {
   return (
     <div className="grid grid-cols-[auto_1fr] items-center gap-2.5">
       <img
-        src={user?.profile?.avatar_url ?? "/avatar_placeholder.png"}
+        src={
+          user?.profile?.avatar_url
+            ? `http://103.150.116.241:8082${user.profile.avatar_url}`
+            : "/avatar_placeholder.png"
+        }
         alt="User avatar"
         className="w-[32px] h-[32px] rounded-full object-cover"
       />

@@ -6,7 +6,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Logo } from "../components/Logo";
 import { AccountDropdown } from "./AccountDropdown";
 import { useState } from "react";
@@ -15,6 +15,9 @@ import useSWR from "swr";
 import { UserService } from "../../shared/services/userService";
 
 export const Header = () => {
+  const location = useLocation();
+  const active = (path) => path === location.pathname;
+
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const [smDropdownVisible, setSmDropdownvisible] = useState(false);
@@ -30,10 +33,26 @@ export const Header = () => {
         >
           <Logo />
           <nav className="flex gap-4 justify-between items-center *:hover:underline">
-            <Link to="/">Home</Link>
-            <Link to="/contact">Contact</Link>
-            <Link to="/about">About</Link>
-            <Link to="/auth/register">Sign Up</Link>
+            <Link to="/" className={active("/") ? "underline" : ""}>
+              Home
+            </Link>
+            <Link
+              to="/contact"
+              className={active("/contact") ? "underline" : ""}
+            >
+              Contact
+            </Link>
+            <Link to="/about" className={active("/about") ? "underline" : ""}>
+              About
+            </Link>
+            {!isAuthenticated ?? (
+              <Link
+                to="/auth/register"
+                className={active("/auth/register") ? "underline" : ""}
+              >
+                Sign Up
+              </Link>
+            )}
           </nav>
           <div className="flex items-center justify-end gap-4">
             <div className="flex items-center justify-self-end bg-[#F5F5F5] py-2 pl-5 pr-3 text-xs">
@@ -84,10 +103,22 @@ export const Header = () => {
               />
               <SearchIcon />
             </div>
-            <MobileNavItem to="/" active label="Home" />
-            <MobileNavItem label="Contact" to="/contact" />
-            <MobileNavItem label="About" to="/about" />
-            <MobileNavItem label="Wishlist" to="/wishlist" />
+            <MobileNavItem to="/" active={active("/")} label="Home" />
+            <MobileNavItem
+              label="Contact"
+              to="/contact"
+              active={active("/contact")}
+            />
+            <MobileNavItem
+              label="About"
+              to="/about"
+              active={active("/about")}
+            />
+            <MobileNavItem
+              label="Wishlist"
+              to="/wishlist"
+              active={active("/wishlist")}
+            />
             {user && isAuthenticated ? <MobileUserInfo user={user} /> : null}
             <div className="mx-8 w-auto bg-[#15294E]/20 h-0.5" />
             {!user && !isAuthenticated ? (

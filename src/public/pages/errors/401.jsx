@@ -4,7 +4,7 @@ import { Button } from "../../components/Button";
 export default function UnauthorizedPage() {
   const navigate = useNavigate();
   return (
-    <>
+    <div className="w-full">
       <nav className="text-sm text-gray-500 mb-20">
         <Link to="/" className="hover:underline">
           Home
@@ -23,6 +23,6 @@ export default function UnauthorizedPage() {
 
         <Button onClick={() => navigate("/")}>Back to home page</Button>
       </div>
-    </>
+    </div>
   );
 }
