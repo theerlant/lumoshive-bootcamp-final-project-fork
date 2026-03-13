@@ -51,7 +51,7 @@ export const ProductCard = ({
           className="block w-full h-full text-black"
         >
           <img
-            src={`http://103.150.116.241:8082${product.images?.[0]?.image_url}`}
+            src={`${product.images?.[0]?.image_url}`}
             className="w-full h-full rounded-sm object-contain px-12 bg-[#F5F5F5] transition-opacity"
             alt={product.name}
           />

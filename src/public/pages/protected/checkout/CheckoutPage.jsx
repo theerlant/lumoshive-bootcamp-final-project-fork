@@ -25,7 +25,7 @@ const CheckoutProductImage = ({ productId, alt }) => {
     <div className="w-14 h-14 shrink-0 bg-[#f5f5f5] flex items-center justify-center rounded-sm overflow-hidden">
       {data?.images?.[0] ? (
         <img
-          src={`http://103.150.116.241:8082${data.images[0].image_url}`}
+          src={`${data.images[0].image_url}`}
           alt={alt}
           className="w-full h-full object-contain p-2"
         />

@@ -19,7 +19,7 @@ const OrderItem = ({ item }) => {
         <div className="w-14 h-14 shrink-0 bg-[#f5f5f5] flex items-center justify-center rounded-sm overflow-hidden">
           {imgUrl ? (
             <img
-              src={`http://103.150.116.241:8082${imgUrl}`}
+              src={`${imgUrl}`}
               alt={productName}
               className="w-full h-full object-contain p-1"
             />

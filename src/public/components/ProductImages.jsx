@@ -46,7 +46,7 @@ export const ProductImages = ({ images = [] }) => {
     <section id="images" className="flex flex-col gap-4 min-w-0">
       <div className="relative group">
         <img
-          src={`http://103.150.116.241:8082${mainImage.image_url}`}
+          src={`${mainImage.image_url}`}
           className="w-full aspect-[1.5] object-contain p-16 bg-[#F5F5F5] rounded-sm transition-opacity duration-300"
           alt="Product Main Image"
         />
@@ -80,6 +80,7 @@ export const ProductImages = ({ images = [] }) => {
           const isSelected = i === mainImageIndex;
           return (
             <button
+              type="button"
               key={`${image.id}-${i}`}
               ref={(el) => (thumbRefs.current[i] = el)}
               onClick={() => setMainImageIndex(i)}
@@ -90,7 +91,7 @@ export const ProductImages = ({ images = [] }) => {
               }`}
             >
               <img
-                src={`http://103.150.116.241:8082${image.image_url}`}
+                src={`${image.image_url}`}
                 className="w-full h-full object-contain bg-[#F5F5F5]"
                 alt={`Product Thumbnail ${i + 1}`}
               />

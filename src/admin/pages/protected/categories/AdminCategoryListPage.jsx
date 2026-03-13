@@ -163,7 +163,7 @@ export default function AdminCategoryListPage() {
                     <TableCell>
                       {/* Bug dari backend return url tidak sama hostname (ip address) nya */}
                       <img
-                        src={`http://103.150.116.241:8082${category.icon_url}`}
+                        src={`${category.icon_url}`}
                         alt={category.name}
                         className="w-6 h-6"
                       />

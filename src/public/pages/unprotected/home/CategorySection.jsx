@@ -14,7 +14,7 @@ const CategoryCard = ({ category }) => (
   >
     {category.icon ? (
       <img
-        src={`http://103.150.116.241:8082${category.icon}`}
+        src={`${category.icon}`}
         alt={category.label}
         className="w-10 h-10 object-contain group-hover:invert"
       />
