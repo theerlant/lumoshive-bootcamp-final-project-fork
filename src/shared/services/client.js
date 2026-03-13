@@ -1,7 +1,7 @@
 import axios from "axios";
-import store from "../features/store";
+import store from "@/shared/features/store";
 
-import { logout, setTokens } from "../features/authSlice";
+import { logout, setTokens } from "@/shared/features/authSlice";
 
 const BASE_URL = "/api";
 

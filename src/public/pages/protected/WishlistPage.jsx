@@ -1,14 +1,14 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <It is what it is> */
 import { useState } from "react";
 import useSWR from "swr";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { wishListService } from "../../../shared/services/wishListService";
-import { productService } from "../../../shared/services/productService";
-import shoppingCartService from "../../../shared/services/shoppingCartService";
-import { ProductCard } from "../../components/ProductCard";
-import { Breadcrumbs } from "../../components/BreadCrumbs";
-import { Button } from "../../components/Button";
-import { priceFormatter } from "../../../shared/utils/priceFormatter";
+import { wishListService } from "@/shared/services/wishListService";
+import { productService } from "@/shared/services/productService";
+import shoppingCartService from "@/shared/services/shoppingCartService";
+import { ProductCard } from "@/public/components/ProductCard";
+import { Breadcrumbs } from "@/public/components/Breadcrumbs";
+import { Button } from "@/public/components/Button";
 
 const LIMIT = 12;
 
@@ -105,7 +105,7 @@ export default function WishlistPage() {
         <div className="grid grid-cols-4 gap-6 gap-y-10">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
-              key={i}
+              key={`skeleton ${i}`}
               className="h-[300px] rounded-sm bg-gray-100 animate-pulse"
             />
           ))}

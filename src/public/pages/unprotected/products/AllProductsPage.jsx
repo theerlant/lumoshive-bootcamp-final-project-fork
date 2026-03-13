@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { toast } from "react-toastify";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { productService } from "../../../../shared/services/productService";
-import { categoryService } from "../../../../shared/services/categoryService";
-import shoppingCartService from "../../../../shared/services/shoppingCartService";
-import { wishListService } from "../../../../shared/services/wishListService";
-import { ProductCard } from "../../../components/ProductCard";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
-import { Button } from "../../../components/Button";
+import { useNavigate, useParams } from "react-router-dom";
+import { productService } from "@/shared/services/productService";
+import { categoryService } from "@/shared/services/categoryService";
+import shoppingCartService from "@/shared/services/shoppingCartService";
+import { wishListService } from "@/shared/services/wishListService";
+import { ProductCard } from "@/public/components/ProductCard";
+import { Breadcrumbs } from "@/public/components/Breadcrumbs";
+import { Button } from "@/public/components/Button";
 
 const PAGE_LIMIT = 8;
 
@@ -93,6 +93,7 @@ export default function AllProductsPage() {
           <ul className="flex flex-col gap-3">
             <li>
               <button
+                type="button"
                 onClick={() => handleCategorySelect(null)}
                 className={`text-sm text-left transition-colors ${
                   selectedCategory === null
@@ -106,6 +107,7 @@ export default function AllProductsPage() {
             {categories.map((cat) => (
               <li key={cat.value}>
                 <button
+                  type="button"
                   onClick={() => handleCategorySelect(cat.value)}
                   className={`text-sm text-left transition-colors ${
                     selectedCategory === cat.value

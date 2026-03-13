@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   TableWrapper,
   TableColGroup,
@@ -148,7 +148,7 @@ export default function AdminOrderListPage() {
   // Fetch product names when order is selected
   useEffect(() => {
     const fetchProductNames = async () => {
-      if (selectedOrder && selectedOrder.items) {
+      if (selectedOrder?.items) {
         const names = {};
         for (const item of selectedOrder.items) {
           try {
@@ -372,21 +372,20 @@ export default function AdminOrderListPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-700 font-medium">
-                  {selectedOrder.items &&
-                    selectedOrder.items.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="py-2 text-gray-500">
-                          {productNames[item.product_id] || `Loading...`}
-                        </td>
-                        <td className="text-center py-2">{item.quantity}</td>
-                        <td className="text-center py-2">
-                          Rp {item.unit_price?.toLocaleString("id-ID")}
-                        </td>
-                        <td className="text-right py-2">
-                          Rp {item.subtotal?.toLocaleString("id-ID")}
-                        </td>
-                      </tr>
-                    ))}
+                  {selectedOrder.items?.map((item, idx) => (
+                    <tr key={idx}>
+                      <td className="py-2 text-gray-500">
+                        {productNames[item.product_id] || `Loading...`}
+                      </td>
+                      <td className="text-center py-2">{item.quantity}</td>
+                      <td className="text-center py-2">
+                        Rp {item.unit_price?.toLocaleString("id-ID")}
+                      </td>
+                      <td className="text-right py-2">
+                        Rp {item.subtotal?.toLocaleString("id-ID")}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -401,20 +400,19 @@ export default function AdminOrderListPage() {
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="outlined"
                 onClick={() => setShowDetailModal(false)}
-                className="px-8 py-2 border border-[#DB4444] text-[#DB4444] rounded-md text-sm font-bold hover:bg-red-50 transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() =>
                   handleUpdateStatus(selectedOrder.id, "processing")
                 }
-                className="px-8 py-2 bg-[#DB4444] text-white rounded-md text-sm font-bold hover:bg-[#c13a3a] transition-shadow shadow-md"
               >
                 Accept
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>
@@ -441,15 +439,13 @@ export default function AdminOrderListPage() {
             </p>
 
             <div className="flex justify-center gap-4">
-              <button
+              <Button
                 onClick={() => setShowConfirmModal(false)}
-                className="w-28 py-2.5 border border-[#DB4444] text-[#DB4444] rounded-lg text-sm font-bold hover:bg-red-50 transition-colors"
+                variant="outlined"
               >
                 No
-              </button>
-              <button className="w-28 py-2.5 bg-[#DB4444] text-white rounded-lg text-sm font-bold shadow-lg shadow-red-200 hover:bg-[#c13a3a] transition-all">
-                Yes
-              </button>
+              </Button>
+              <Button>Yes</Button>
             </div>
           </div>
         </Modal>
@@ -499,7 +495,7 @@ export default function AdminOrderListPage() {
               {selectedOrder.tracking_number && (
                 <div className="flex justify-between items-start text-sm">
                   <span className="text-gray-500">Tracking Number</span>
-                  <span className="font-bold text-gray-800 text-right bg-blue-50 px-2 py-1 rounded text-blue-800">
+                  <span className="font-bold text-gray-800 text-right bg-blue-50 px-2 py-1 rounded">
                     {selectedOrder.tracking_number}
                   </span>
                 </div>
@@ -536,21 +532,20 @@ export default function AdminOrderListPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-700 font-medium">
-                  {selectedOrder.items &&
-                    selectedOrder.items.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="py-2 text-gray-500">
-                          {productNames[item.product_id] || `Loading...`}
-                        </td>
-                        <td className="text-center py-2">{item.quantity}</td>
-                        <td className="text-center py-2">
-                          Rp {item.unit_price?.toLocaleString("id-ID")}
-                        </td>
-                        <td className="text-right py-2">
-                          Rp {item.subtotal?.toLocaleString("id-ID")}
-                        </td>
-                      </tr>
-                    ))}
+                  {selectedOrder.items?.map((item, idx) => (
+                    <tr key={idx}>
+                      <td className="py-2 text-gray-500">
+                        {productNames[item.product_id] || `Loading...`}
+                      </td>
+                      <td className="text-center py-2">{item.quantity}</td>
+                      <td className="text-center py-2">
+                        Rp {item.unit_price?.toLocaleString("id-ID")}
+                      </td>
+                      <td className="text-right py-2">
+                        Rp {item.subtotal?.toLocaleString("id-ID")}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -602,6 +597,7 @@ export default function AdminOrderListPage() {
                 {(selectedOrder.status === "delivered" ||
                   selectedOrder.status === "completed") && (
                   <button
+                    type="button"
                     onClick={() =>
                       handleUpdateStatus(selectedOrder.id, "refunded")
                     }
@@ -616,6 +612,7 @@ export default function AdminOrderListPage() {
             {/* Close Button */}
             <div className="flex justify-end mt-6">
               <button
+                type="button"
                 onClick={() => setShowReviewModal(false)}
                 className="px-6 py-2 border border-gray-300 text-gray-600 rounded-md text-sm font-bold hover:bg-gray-50 transition-colors"
               >
@@ -659,16 +656,20 @@ export default function AdminOrderListPage() {
 
             <div className="space-y-4 mb-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="tracking_number"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Tracking Number *
                 </label>
                 <input
                   type="text"
+                  id="tracking_number"
+                  name="tracking_number"
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="Enter tracking number..."
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2794EB] focus:border-transparent outline-none transition-colors"
-                  autoFocus
                 />
               </div>
 
@@ -697,19 +698,18 @@ export default function AdminOrderListPage() {
             </div>
 
             <div className="flex justify-end gap-3">
-              <button
+              <Button
                 onClick={() => setShowTrackingModal(false)}
-                className="px-6 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors"
+                variant="outlined"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleConfirmShip}
                 disabled={!trackingNumber.trim()}
-                className="px-6 py-2 bg-[#2794EB] text-white rounded-lg text-sm font-bold hover:bg-[#1e7ac7] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 Confirm Shipping
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>

@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR, { useSWRConfig } from "swr";
-import { productService } from "../../../../shared/services/productService";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
-import { StarRating } from "../../../components/StarRating";
-import { ProductImages } from "../../../components/ProductImages";
-import { ProductCard } from "../../../components/ProductCard";
-import { priceFormatter } from "../../../../shared/utils/priceFormatter";
-import { toTitleCase } from "../../../../shared/utils/toTitleCase";
+import { productService } from "@/shared/services/productService";
+import { Breadcrumbs } from "@/public/components/Breadcrumbs";
+import { StarRating } from "@/public/components/StarRating";
+import { ProductImages } from "@/public/components/ProductImages";
+import { ProductCard } from "@/public/components/ProductCard";
+import { priceFormatter } from "@/shared/utils/priceFormatter";
+import { toTitleCase } from "@/shared/utils/toTitleCase";
 import {
   HeartIcon,
   HeartOffIcon,
@@ -16,9 +16,9 @@ import {
   RotateCcwIcon,
   TruckElectricIcon,
 } from "lucide-react";
-import { Button } from "../../../components/Button";
-import shoppingCartService from "../../../../shared/services/shoppingCartService";
-import { wishListService } from "../../../../shared/services/wishListService";
+import { Button } from "@/public/components/Button";
+import shoppingCartService from "@/shared/services/shoppingCartService";
+import { wishListService } from "@/shared/services/wishListService";
 import { toast } from "react-toastify";
 
 export const ProductDetailPage = () => {

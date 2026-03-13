@@ -12,8 +12,6 @@ export const ProductCard = ({
   onRemoveFromWishlist,
   onAddToCart,
 }) => {
-  if (!product) return null;
-
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
@@ -43,6 +41,8 @@ export const ProductCard = ({
     }
   };
 
+  if (!product) return null;
+
   return (
     <div className="flex flex-col min-w-[200px] max-w-[250px]">
       <div className="relative h-[250px] group/image overflow-hidden">
@@ -58,6 +58,7 @@ export const ProductCard = ({
         </Link>
         {data && isAuthenticated ? (
           <button
+            type="button"
             onClick={(e) => handleWishlistClick(e, data.in_wishlist)}
             className="absolute top-3 right-3 p-2 bg-white hover:bg-gray-100 active:bg-gray-300 rounded-full shadow-sm z-10"
             aria-label="Add to Wishlist"
@@ -68,6 +69,7 @@ export const ProductCard = ({
 
         {product.stock ? (
           <button
+            type="button"
             onClick={handleAddToCart}
             className="absolute bottom-0 left-0 right-0 bg-black text-white py-3 text-center font-medium translate-y-full group-hover/image:translate-y-0 transition-transform duration-300 ease-in-out z-10 hover:cursor-pointer"
           >

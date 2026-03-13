@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   Store,
   DollarSign,
@@ -16,7 +15,7 @@ import SideImage from "../../../../assets/Side_Image.jpg";
 import image_founder from "../../../../assets/image_founder.png";
 import image_managing_director from "../../../../assets/image_managing_director.png";
 import image_managing_designer from "../../../../assets/image_product_designer.png";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
+import { Breadcrumbs } from "@/public/components/BreadCrumbs";
 
 export default function AboutPage() {
   const [activeEllipse, setActiveEllipse] = useState(2);
@@ -117,7 +116,7 @@ export default function AboutPage() {
             key={stat.id}
             className="group border border-gray-300 rounded-md p-8 flex flex-col items-center justify-center transition-all duration-300 hover:bg-[#DB4444] hover:border-[#DB4444] cursor-pointer"
           >
-            <div className="bg-black text-white p-2 rounded-full border-[8px] border-gray-300 group-hover:bg-white group-hover:text-black group-hover:border-red-300 transition-all">
+            <div className="bg-black text-white p-2 rounded-full border-8 border-gray-300 group-hover:bg-white group-hover:text-black group-hover:border-red-300 transition-all">
               {stat.icon}
             </div>
             <h2 className="text-3xl font-bold mt-4 group-hover:text-white">
@@ -166,7 +165,8 @@ export default function AboutPage() {
 
       <div className="flex justify-center items-center gap-3 mb-24">
         {[0, 1, 2, 3, 4].map((i) => (
-          <div
+          <button
+            type="button"
             key={i}
             onClick={() => setActiveEllipse(i)}
             className={`w-[12px] h-[12px] rounded-full cursor-pointer border-2 ${
@@ -184,7 +184,7 @@ export default function AboutPage() {
             key={index}
             className="flex flex-col items-center text-center space-y-4"
           >
-            <div className="bg-black text-white p-3 rounded-full border-[10px] border-gray-300">
+            <div className="bg-black text-white p-3 rounded-full border-10 border-gray-300">
               {service.icon}
             </div>
             <div className="space-y-2">

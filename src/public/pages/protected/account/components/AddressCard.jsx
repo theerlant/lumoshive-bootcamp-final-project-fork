@@ -1,6 +1,5 @@
 import { SquarePenIcon, Trash2Icon } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../../../../components/Button";
+import { useNavigate } from "react-router-dom";
 
 export const AddressCard = ({ addr, handleDelete }) => {
   const navigate = useNavigate();
@@ -20,14 +19,16 @@ export const AddressCard = ({ addr, handleDelete }) => {
         </p>
         <p className="lg:text-sm">{addr.full_address}</p>
       </div>
-      <div className="flex gap-2 lg:gap-3 flex-shrink-0">
+      <div className="flex gap-2 lg:gap-3 shrink-0">
         <button
+          type="button"
           onClick={() => navigate(`/me/address/${addr.id}`)}
           className="text-gray-600 hover:text-black"
         >
           <SquarePenIcon />
         </button>
         <button
+          type="button"
           onClick={() => handleDelete(addr.id)}
           className="text-gray-600 hover:text-red-500"
         >
