@@ -22,6 +22,10 @@ import { AdminAddPromotionPage } from "./pages/protected/promotions/AdminAddProm
 import { AdminDetailPromotionPage } from "./pages/protected/promotions/AdminDetailPromotionPage";
 import { AdminEditPromotionPage } from "./pages/protected/promotions/AdminEditPromotionPage";
 import { AdminForgotPasswordPage } from "./pages/auth-misc/AdminForgotPasswordPage";
+import AdminBannerListPage from "./pages/protected/banners/AdminBannerListPage";
+import AdminAddBannerPage from "./pages/protected/banners/AdminAddBannerPage";
+import AdminDetailBannerPage from "./pages/protected/banners/AdminDetailBannerPage";
+import AdminEditBannerPage from "./pages/protected/banners/AdminEditBannerPage";
 
 export default function AdminRoutes() {
   return (
@@ -56,10 +60,10 @@ export default function AdminRoutes() {
               <Route path="edit/:id" element={<AdminEditPromotionPage />} />
             </Route>
             <Route path="banners">
-              <Route index element={<>TODO BANNER LIST PAGE</>} />
-              <Route path=":id" element={<>TODO DETAIL BANNER</>} />
-              <Route path="add" element={<>TODO ADD BANNER</>} />
-              <Route path="edit/:id" element={<>TODO EDIT BANNER</>} />
+              <Route index element={<AdminBannerListPage />} />
+              <Route path=":id" element={<AdminDetailBannerPage />} />
+              <Route path="add" element={<AdminAddBannerPage />} />
+              <Route path="edit/:id" element={<AdminEditBannerPage />} />
             </Route>
             <Route path="ratings" element={<AdminRatingListPage />} />
             <Route path="stocks">
