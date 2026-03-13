@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema } from "../../../../shared/schema/contactSchema";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 export default function ContactUs() {
   const [isModalOpen, setIsModalOpen] = useState(false);

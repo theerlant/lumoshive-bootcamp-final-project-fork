@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { AccountSidebar } from "./AccountSidebar";
 import { Outlet } from "react-router-dom";
-import { Breadcrumbs } from "../../../../components/BreadCrumbs";
+import { Breadcrumbs } from "../../../../components/Breadcrumbs";
 
 export const AccountLayout = () => {
   const { user } = useSelector((state) => state.auth);

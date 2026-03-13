@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { Button } from "../../../components/Button";
 import { priceFormatter } from "../../../../shared/utils/priceFormatter";
 import useSWR from "swr";

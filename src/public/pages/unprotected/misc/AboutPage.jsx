@@ -15,7 +15,7 @@ import SideImage from "../../../../assets/Side_Image.jpg";
 import image_founder from "../../../../assets/image_founder.png";
 import image_managing_director from "../../../../assets/image_managing_director.png";
 import image_managing_designer from "../../../../assets/image_product_designer.png";
-import { Breadcrumbs } from "@/public/components/BreadCrumbs";
+import { Breadcrumbs } from "@/public/components/Breadcrumbs";
 
 export default function AboutPage() {
   const [activeEllipse, setActiveEllipse] = useState(2);

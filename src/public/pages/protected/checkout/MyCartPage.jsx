@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
-import { Breadcrumbs } from "../../../components/BreadCrumbs";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { Button } from "../../../components/Button";
 import { priceFormatter } from "../../../../shared/utils/priceFormatter";
 import useSWR from "swr";
