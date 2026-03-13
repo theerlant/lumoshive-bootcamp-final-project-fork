@@ -10,36 +10,41 @@ import { SectionHeader } from "./SectionHeader";
 import { Button } from "../../../components/Button";
 import { Link } from "react-router-dom";
 
-const ProductRow = ({ title, tag, products = [], isLoading, scrollRef, onScroll }) => (
+const ProductRow = ({ products = [], isLoading, scrollRef, onScroll }) => (
   <div className="flex flex-col gap-6 mt-14">
-    <div className="flex justify-between items-center">
-      <SectionHeader tag={tag} title={title} />
-      <div className="flex gap-2">
-        <button onClick={() => onScroll(-1)} className="p-2 border border-black/20 rounded-full hover:bg-black hover:text-white transition-colors">
-          <ChevronLeftIcon size={18} />
-        </button>
-        <button onClick={() => onScroll(1)} className="p-2 border border-black/20 rounded-full hover:bg-black hover:text-white transition-colors">
-          <ChevronRightIcon size={18} />
-        </button>
-      </div>
-    </div>
-    <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+    <div
+      ref={scrollRef}
+      className="flex justify-between pb-2"
+      style={{ scrollbarWidth: "none" }}
+    >
       {isLoading
         ? Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="w-[270px] h-[320px] rounded-sm bg-gray-100 shrink-0 animate-pulse" />
+            <div
+              key={i}
+              className="w-[270px] h-[320px] rounded-sm bg-gray-100 shrink-0 animate-pulse"
+            />
           ))
         : products.map((product) => (
             <div key={product.id} className="shrink-0">
               <ProductCard
                 product={product}
                 onAddToCart={() => {
-                  shoppingCartService.addItem(product.id, 1).then(() => toast.success("Added to cart!")).catch(() => toast.error("Failed to add to cart"));
+                  shoppingCartService
+                    .addItem(product.id, 1)
+                    .then(() => toast.success("Added to cart!"))
+                    .catch(() => toast.error("Failed to add to cart"));
                 }}
                 onAddToWishlist={() => {
-                  wishListService.public.add(product.id).then(() => toast.success("Added to wishlist!")).catch(() => toast.error("Failed to update wishlist"));
+                  wishListService.public
+                    .add(product.id)
+                    .then(() => toast.success("Added to wishlist!"))
+                    .catch(() => toast.error("Failed to update wishlist"));
                 }}
                 onRemoveFromWishlist={() => {
-                  wishListService.public.remove(product.id).then(() => toast.success("Removed from wishlist")).catch(() => toast.error("Failed to update wishlist"));
+                  wishListService.public
+                    .remove(product.id)
+                    .then(() => toast.success("Removed from wishlist"))
+                    .catch(() => toast.error("Failed to update wishlist"));
                 }}
               />
             </div>
@@ -55,10 +60,27 @@ export const BestSellerSection = () => {
   );
   const products = Array.isArray(data) ? data : data?.data || [];
 
-  const scroll = (dir) => scrollRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
+  const scroll = (dir) =>
+    scrollRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
 
   return (
     <div className="flex flex-col gap-0">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-4 h-8 bg-[#DB4444] rounded-sm" />
+          <span className="text-[#DB4444] font-semibold text-sm">
+            This Month
+          </span>
+        </div>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Best Selling Products
+          </h2>
+          <Link to="/shop">
+            <Button small>View All</Button>
+          </Link>
+        </div>
+      </div>
       <ProductRow
         title="Best Selling Products"
         tag="This Month"
@@ -67,11 +89,6 @@ export const BestSellerSection = () => {
         scrollRef={scrollRef}
         onScroll={scroll}
       />
-      <div className="flex justify-center mt-10">
-        <Link to="/shop">
-          <Button className="px-14">View All</Button>
-        </Link>
-      </div>
     </div>
   );
 };

@@ -1,35 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-const SLIDES = [
-  {
-    id: 1,
-    label: "iPhone 14 Series",
-    title: "Up to 10% off Voucher",
-    cta: "Shop Now",
-    bg: "bg-black",
-    textColor: "text-white",
-    image: "https://placehold.co/420x300/111827/ffffff?text=iPhone+14",
-  },
-  {
-    id: 2,
-    label: "Summer Collection",
-    title: "Exclusive Deals on Fashion",
-    cta: "Shop Now",
-    bg: "bg-[#0D0D0D]",
-    textColor: "text-white",
-    image: "https://placehold.co/420x300/1e293b/ffffff?text=Fashion",
-  },
-  {
-    id: 3,
-    label: "Tech Essentials",
-    title: "Best Laptops & Gadgets",
-    cta: "Explore",
-    bg: "bg-[#1A1A2E]",
-    textColor: "text-white",
-    image: "https://placehold.co/420x300/1a1a2e/ffffff?text=Laptops",
-  },
-];
+const SLIDES = Array.from({ length: 5 }).fill({
+  logo: "/apple.png",
+  label: "iPhone 14 Series",
+  title: "Up to 10% off Voucher",
+  cta: "Shop Now",
+  targetUrl: "/",
+  image: "/hero_banner.png",
+});
 
 export const BannerCarousel = () => {
   const [current, setCurrent] = useState(0);
@@ -48,21 +32,31 @@ export const BannerCarousel = () => {
   const slide = SLIDES[current];
 
   return (
-    <div className={`relative w-full rounded-sm overflow-hidden ${slide.bg} flex items-center justify-between px-12 py-10 min-h-[340px] transition-colors duration-700`}>
+    <div
+      className={`relative w-full rounded-sm overflow-hidden bg-black flex items-center px-12 py-10 min-h-[340px] transition-colors duration-700`}
+    >
       {/* Left content */}
-      <div className={`flex flex-col gap-5 max-w-sm z-10 ${slide.textColor}`}>
-        <p className="text-sm opacity-70 tracking-widest uppercase">{slide.label}</p>
-        <h2 className="text-4xl font-bold leading-tight">{slide.title}</h2>
-        <button className="flex items-center gap-2 font-semibold border-b border-white w-max pb-0.5 hover:opacity-70 transition-opacity">
-          {slide.cta} →
-        </button>
+      <div className={`flex flex-col gap-5 max-w-sm z-10 text-white`}>
+        <div className="flex items-center gap-8">
+          <img src={slide.logo} />
+          <p className="text-sm">{slide.label}</p>
+        </div>
+        <h2 className="text-5xl font-semibold font-title tracking-wide">
+          {slide.title}
+        </h2>
+        <Link
+          to={slide.targetUrl}
+          className="flex items-center gap-2 font-semibold w-max pb-0.5 hover:opacity-70 transition-opacity"
+        >
+          <span className="underline">{slide.cta}</span> <ArrowRightIcon />
+        </Link>
       </div>
 
-      {/* Right image */}
+      {/* Bg image */}
       <img
         src={slide.image}
         alt={slide.title}
-        className="w-[420px] h-[280px] object-contain z-10"
+        className="absolute h-full left-[50%] -translate-x-[50%] p-4 object-contain"
       />
 
       {/* Prev / Next */}
@@ -85,7 +79,7 @@ export const BannerCarousel = () => {
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`rounded-full transition-all ${i === current ? "w-6 h-2.5 bg-white" : "w-2.5 h-2.5 bg-white/40"}`}
+            className={`rounded-full transition-all ${i === current ? "w-2.5 h-2.5 bg-[#DB4444] outline-2 outline-white -outline-offset-2" : "w-2.5 h-2.5 bg-white/50"}`}
           />
         ))}
       </div>
