@@ -1,10 +1,38 @@
+import { BannerCarousel } from "./home/BannerCarousel";
+import { CategorySection } from "./home/CategorySection";
+import { BestSellerSection } from "./home/BestSellerSection";
+import { PromoBanner } from "./home/PromoBanner";
+import { ExploreSection } from "./home/ExploreSection";
+import { RecommendSection } from "./home/RecommendSection";
+import { FeaturesBar } from "./home/FeaturesBar";
+
 export const HomePage = () => {
   return (
-    <div className="w-full min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Welcome to Our Store</h1>
-        <p className="text-lg text-gray-600">This is your home page</p>
-      </div>
+    <div className="w-full flex flex-col mt-10 pb-20">
+      {/* Hero Banner Carousel */}
+      <BannerCarousel />
+
+      {/* Browse By Category */}
+      <CategorySection />
+
+      <hr className="my-14 border-black/10" />
+
+      {/* Best Selling Products */}
+      <BestSellerSection />
+
+      {/* Promo / Music Banner */}
+      <PromoBanner />
+
+      {/* Explore Our Products */}
+      <ExploreSection />
+
+      <hr className="my-14 border-black/10" />
+
+      {/* Recommend Section */}
+      <RecommendSection />
+
+      {/* Features Bar */}
+      <FeaturesBar />
     </div>
   );
 };
