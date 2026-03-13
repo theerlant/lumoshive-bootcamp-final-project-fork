@@ -23,10 +23,44 @@ import { useState, useEffect } from "react";
 import { bannerService } from "@/shared/services/bannerService";
 import { Modal } from "@/admin/components/Modal";
 
+// DATA DUMMY UNTUK REPORT
+export const DUMMY_BANNERS = [
+  {
+    id: "1",
+    name: "Promo Akhir Tahun",
+    target_url: "www.e-commerce.com",
+    start_date: "2024-11-09T00:00:00Z",
+    end_date: "2024-12-12T00:00:00Z",
+    is_published: false,
+    image: "https://ik.imagekit.io/ferdyawans/PROMO.png",
+    position: "home"
+  },
+  {
+    id: "2",
+    name: "Produk Baru",
+    target_url: "www.e-commerce.com",
+    start_date: "2024-11-08T00:00:00Z",
+    end_date: "2024-11-11T00:00:00Z",
+    is_published: true,
+    image: "https://ik.imagekit.io/ferdyawans/PROMO.png",
+    position: "home"
+  },
+  {
+    id: "3",
+    name: "Diskon 30%",
+    target_url: "www.e-commerce.com",
+    start_date: "2024-11-07T00:00:00Z",
+    end_date: "2024-11-10T00:00:00Z",
+    is_published: false,
+    image: "https://ik.imagekit.io/ferdyawans/PROMO.png",
+    position: "home"
+  }
+];
+
 const AdminBannerListPage = () => {
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set false karena pakai dummy
   const [error, setError] = useState(null);
 
   const [idToDelete, setIdToDelete] = useState(null);
@@ -34,55 +68,23 @@ const AdminBannerListPage = () => {
   const [publishModal, setPublishModal] = useState({ isOpen: false, id: null, currentStatus: false });
 
   useEffect(() => {
-    fetchBanners();
+    // Menggunakan data dummy agar list langsung tampil
+    setBanners(DUMMY_BANNERS);
   }, []);
 
-  const fetchBanners = async () => {
-  try {
-    setLoading(true);
-    const res = await bannerService.admin.getAll(1, 10);
-    
-    // Debugging: Lihat isi response di Console Browser (F12)
-    console.log("Response dari Backend:", res);
-
-    // Cek apakah data ada di res.data (array) atau res.data.data (paginated)
-    const dataBanner = res.data?.data || res.data || [];
-    
-    if (Array.isArray(dataBanner)) {
-      setBanners(dataBanner);
-    } else {
-      console.error("Format data bukan array:", dataBanner);
-      setBanners([]);
-    }
-  } catch (err) {
-    console.error("Gagal ambil list banner:", err);
-    setError(err);
-  } finally {
-    setLoading(false);
-  }
-};
-
   const handleDeleteConfirm = async () => {
-    if (!idToDelete) return;
-    try {
-      await bannerService.admin.delete(idToDelete);
-      setIdToDelete(null);
-      setDeleteConfirmVisible(true);
-      fetchBanners();
-    } catch (err) {
-      alert("Failed to delete banner");
-      setIdToDelete(null);
-    }
+    // Simulasi hapus di dummy
+    setBanners(banners.filter(b => b.id !== idToDelete));
+    setIdToDelete(null);
+    setDeleteConfirmVisible(true);
   };
 
-  const handleTogglePublish = async () => {
-    try {
-      await bannerService.togglePublish(publishModal.id);
-      setPublishModal({ isOpen: false, id: null, currentStatus: false });
-      fetchBanners();
-    } catch (err) {
-      alert("Failed to toggle publish status");
-    }
+  const handleTogglePublish = () => {
+    // Simulasi toggle di dummy
+    setBanners(banners.map(b => 
+      b.id === publishModal.id ? { ...b, is_published: !b.is_published } : b
+    ));
+    setPublishModal({ isOpen: false, id: null, currentStatus: false });
   };
 
   return (
@@ -151,7 +153,6 @@ const AdminBannerListPage = () => {
         )}
       </section>
 
-      {/* Modals tetap sama */}
       <DeleteModal 
         isOpen={idToDelete !== null} 
         onCancel={() => setIdToDelete(null)} 
@@ -201,8 +202,10 @@ const DeleteModal = ({ isOpen, onCancel, onConfirm }) => (
       <h2 className="text-xl font-bold text-red-500">Delete Banner?</h2>
       <p className="text-gray-600">Are you sure want to delete this banner?</p>
       <div className="flex gap-4 mt-4">
-        <Button variant="outlined" onClick={onCancel} className="w-24 border-red-500 text-red-500">No</Button>
-        <Button onClick={onConfirm} className="w-24 bg-red-500 text-white">Yes</Button>
+        <Button variant="outlined" onClick={() => onCancel()}>
+        No
+        </Button>
+        <Button onClick={() => onConfirm()}>Yes</Button>
       </div>
     </div>
   </Modal>
