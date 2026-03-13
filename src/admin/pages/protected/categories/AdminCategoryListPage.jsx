@@ -1,4 +1,3 @@
-import Navbar from "../../../components/Navbar";
 import { useState } from "react";
 import useSWR from "swr";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -35,7 +34,6 @@ import { LucidePencil, LucideTrash } from "lucide-react";
 import CategoryCreateModal from "./CategoryCreateModal";
 import CategoryEditModal from "./CategoryEditModal";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
-import { Modal } from "@/admin/components/Modal";
 import { DeleteModal, SuccessModal } from "@/admin/components/PremadeModal";
 
 export default function AdminCategoryListPage() {
@@ -98,7 +96,6 @@ export default function AdminCategoryListPage() {
 
   const handleDelete = async () => {
     try {
-      console.log(selectedCategory.id);
       await categoryService.admin.delete(selectedCategory.id);
       mutate();
       setShowDelete(false);

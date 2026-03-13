@@ -99,7 +99,7 @@ export const MyCartPage = () => {
       setAppliedPromo(promoData);
       sessionStorage.setItem("appliedPromoCode", promoData.name);
       toast.success("Promo code applied!");
-    } catch (err) {
+    } catch (_) {
       toast.error("Invalid or expired promo code");
       setAppliedPromo(null);
       sessionStorage.removeItem("appliedPromoCode");
@@ -214,7 +214,7 @@ export const MyCartPage = () => {
                       value={item.quantity}
                       onChange={(e) => {
                         const val = parseInt(e.target.value, 10);
-                        if (!isNaN(val))
+                        if (!Number.isNaN(val))
                           handleUpdateQuantity(item.cart_item_id, val);
                       }}
                       className="w-12 text-center text-base font-medium outline-none remove-arrow bg-transparent"

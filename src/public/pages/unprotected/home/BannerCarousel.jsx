@@ -33,12 +33,16 @@ export const BannerCarousel = () => {
 
   return (
     <div
-      className={`relative w-full rounded-sm overflow-hidden bg-black flex items-center px-12 py-10 min-h-[340px] transition-colors duration-700`}
+      className={`relative w-full lg:rounded-sm overflow-hidden bg-black flex items-center px-12 py-10 min-h-[340px] transition-colors duration-700`}
     >
       {/* Left content */}
       <div className={`flex flex-col gap-5 max-w-sm z-10 text-white`}>
         <div className="flex items-center gap-8">
-          <img src={slide.logo} />
+          <img
+            src={slide.logo}
+            alt="Banner logo"
+            className="w-8 lg:w-10 aspect-square object-contain"
+          />
           <p className="text-sm">{slide.label}</p>
         </div>
         <h2 className="text-5xl font-semibold font-title tracking-wide">

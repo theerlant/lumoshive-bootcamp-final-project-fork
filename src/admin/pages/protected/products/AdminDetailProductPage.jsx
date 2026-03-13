@@ -15,19 +15,9 @@ export const AdminDetailProductPage = () => {
 
   const navigate = useNavigate();
 
-  console.log(id);
-
   const { data, error, isLoading } = useSWR(id ? ["/products", id] : null, () =>
     productService.public.getById(id),
   );
-
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-
-      console.log(data.variants);
-    }
-  }, [data]);
 
   return (
     <>

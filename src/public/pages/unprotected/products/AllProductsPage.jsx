@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { productService } from "@/shared/services/productService";
 import { categoryService } from "@/shared/services/categoryService";
 import shoppingCartService from "@/shared/services/shoppingCartService";
@@ -16,6 +16,9 @@ export default function AllProductsPage() {
   // categoryId comes from URL when used as /category/:categoryId, otherwise undefined
   const { categoryId: paramCategoryId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const searchTerm = searchParams.get("search") || "";
+
   const [page, setPage] = useState(1);
   const [allItems, setAllItems] = useState([]);
 
@@ -36,14 +39,19 @@ export default function AllProductsPage() {
   const categories = Array.isArray(catData) ? catData : catData?.data || [];
 
   // Products
-  const swrKey = `/products?category=${selectedCategory ?? "all"}&page=${page}`;
+  const swrKey = `/products?category=${selectedCategory ?? "all"}&page=${page}&search=${searchTerm}`;
   const { data: productData, isLoading } = useSWR(swrKey, () =>
     productService.public.getAll({
       page,
       limit: PAGE_LIMIT,
       categoryId: selectedCategory ?? undefined,
+      search: searchTerm || undefined,
     }),
   );
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm]);
 
   useEffect(() => {
     if (productData) {
@@ -54,7 +62,7 @@ export default function AllProductsPage() {
         setAllItems((prev) => [...prev, ...newProducts]);
       }
     }
-  }, [productData, page]);
+  }, [productData, page]); // Removed searchTerm dependency
 
   const totalPages = productData?.pagination?.total_pages ?? 1;
   const hasMore = page < totalPages;
@@ -77,9 +85,10 @@ export default function AllProductsPage() {
         .catch(() => toast.error("Failed to update wishlist")),
   });
 
-  const activeLabel =
-    categories.find((c) => c.value === selectedCategory)?.label ??
-    "All Products";
+  const activeLabel = searchTerm
+    ? `Search Results for "${searchTerm}"`
+    : (categories.find((c) => c.value === selectedCategory)?.label ??
+      "All Products");
 
   return (
     <div className="w-full pb-20">

@@ -121,7 +121,6 @@ export default api;
  * @returns data if success, throw error if failed
  */
 export const request = async (options) => {
-  console.log("running api call: ", options);
   try {
     const response = await api(options);
     return response.data.data; // immediately unwrap data

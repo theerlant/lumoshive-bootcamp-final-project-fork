@@ -45,7 +45,6 @@ export default function AdminStockListPage() {
     try {
       const currentSearch = search?.trim() || undefined;
       const res = await stockService.admin.getAllLog(page, 10, currentSearch);
-      console.log("Struktur asli dari client.js:", res);
       const actualData = res?.data || res?.data?.data || [];
       const pagination = res?.pagination || {};
 

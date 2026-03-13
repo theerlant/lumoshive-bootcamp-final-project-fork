@@ -34,8 +34,6 @@ export const UpdateAddressBookPage = () => {
   });
 
   useEffect(() => {
-    if (id) console.log(id);
-
     const fetchAddressDetail = async () => {
       try {
         setLoading(true);

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { SectionHeader } from "./SectionHeader";
+import { useMediaQuery } from "../../../../shared/hooks/useMediaQuery";
 
 const RECOMMEND_ITEMS = [
   {
@@ -59,25 +60,35 @@ const RecommendCard = ({ item }) => (
 );
 
 export const RecommendSection = () => {
+  const isMobile = useMediaQuery();
+
   const [main, ...rest] = RECOMMEND_ITEMS;
   const [topRight, ...smallItems] = rest;
 
   return (
     <div className="flex flex-col gap-6 mt-14">
       <SectionHeader tag="Featured" title="Recommend" />
-      <div className="grid grid-cols-[1fr_1fr] gap-6">
-        {/* Large left card */}
-        <RecommendCard item={main} />
+      <div className="grid grid-cols-[1fr_1fr] gap-6 px-4 lg:px-0">
+        {isMobile ? (
+          RECOMMEND_ITEMS.map((item) => {
+            return <RecommendCard item={item} key={item.id} />;
+          })
+        ) : (
+          <>
+            {/* Large left card */}
+            <RecommendCard item={main} />
 
-        {/* Right column */}
-        <div className="flex flex-col gap-6">
-          <RecommendCard item={topRight} />
-          <div className="grid grid-cols-2 gap-6">
-            {smallItems.map((item) => (
-              <RecommendCard key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
+            {/* Right column */}
+            <div className="flex flex-col gap-6">
+              <RecommendCard item={topRight} />
+              <div className="grid grid-cols-2 gap-6">
+                {smallItems.map((item) => (
+                  <RecommendCard key={item.id} item={item} />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

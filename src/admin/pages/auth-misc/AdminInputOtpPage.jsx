@@ -40,8 +40,6 @@ export const AdminInputOTPPage = () => {
   const handleChange = (field, index) => {
     if (isNaN(field.value)) return;
 
-    console.log("is change called");
-
     setOTP(otp.with(Number(field.name), field.value));
 
     if (field.value && index < otp.length - 1) {

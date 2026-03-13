@@ -346,7 +346,7 @@ export const ProductForm = ({
                 className="relative group"
               >
                 <img
-                  src={"http://103.150.116.241:8082" + image.image_url}
+                  src={image.image_url}
                   className="bg-[#F5F5F5] p-12 h-50 aspect-square rounded-sm object-cover border-2 border-gray-100"
                   aria-hidden
                 />

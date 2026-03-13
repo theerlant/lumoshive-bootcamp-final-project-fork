@@ -1,7 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { Phone, Mail, CheckCircle } from "lucide-react";
-import { Modal } from "../../../../admin/components/Modal";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,8 +6,6 @@ import { contactSchema } from "../../../../shared/schema/contactSchema";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 export default function ContactUs() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -27,9 +22,8 @@ export default function ContactUs() {
   });
 
   const onSubmit = (data) => {
-    console.log(data); // Can remove this, just for simulating send
+    console.log(data);
     toast.success("Success! Your message has been sent.");
-    setIsModalOpen(true);
     reset();
   };
 
@@ -145,29 +139,6 @@ export default function ContactUs() {
           </form>
         </div>
       </div>
-
-      {/* Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="flex flex-col items-center text-center space-y-4">
-          <CheckCircle
-            size={80}
-            className="text-emerald-500"
-            strokeWidth={1.5}
-          />
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-gray-800">Success!</h2>
-            <p className="text-gray-500">
-              Your message has been sent successfully
-            </p>
-          </div>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="mt-4 bg-[#DB4444] text-white px-8 py-2 rounded-lg font-medium hover:bg-[#c13e3e] transition-all"
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
     </div>
   );
 }

@@ -105,7 +105,7 @@ export const MyProfilePage = () => {
             <img
               src={
                 avatarPreview || data?.profile?.avatar_url
-                  ? `http://103.150.116.241:8082${data.profile.avatar_url}`
+                  ? `${data.profile.avatar_url}`
                   : "/avatar_placeholder.png"
               }
               className="w-28 aspect-square rounded-full object-cover border-2 border-[#DB4444]/20"

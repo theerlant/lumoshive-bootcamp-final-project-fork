@@ -9,6 +9,7 @@ import { ProductCard } from "../../../components/ProductCard";
 import { SectionHeader } from "./SectionHeader";
 import { Button } from "../../../components/Button";
 import { Link } from "react-router-dom";
+import { useMediaQuery } from "../../../../shared/hooks/useMediaQuery";
 
 const ProductRow = ({ products = [], isLoading, scrollRef, onScroll }) => (
   <div className="flex flex-col gap-6 mt-14">
@@ -55,6 +56,8 @@ const ProductRow = ({ products = [], isLoading, scrollRef, onScroll }) => (
 
 export const BestSellerSection = () => {
   const scrollRef = useRef(null);
+  const isMobile = useMediaQuery();
+
   const { data, isLoading } = useSWR("/products?limit=4", () =>
     productService.public.getAll({ limit: 4 }),
   );
@@ -64,16 +67,18 @@ export const BestSellerSection = () => {
     scrollRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0 px-8 lg:px-0">
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-4 h-8 bg-[#DB4444] rounded-sm" />
-          <span className="text-[#DB4444] font-semibold text-sm">
-            This Month
-          </span>
-        </div>
+        {!isMobile ?? (
+          <div className="flex items-center gap-3">
+            <div className="w-4 h-8 bg-[#DB4444] rounded-sm" />
+            <span className="text-[#DB4444] font-semibold text-sm">
+              This Month
+            </span>
+          </div>
+        )}
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="text-sm lg:text-2xl font-semibold tracking-tight">
             Best Selling Products
           </h2>
           <Link to="/shop">

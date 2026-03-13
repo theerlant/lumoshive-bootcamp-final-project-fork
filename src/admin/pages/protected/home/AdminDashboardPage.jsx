@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { UserService } from "@/shared/services/userService";
 import { SummaryCardItem } from "./SummaryCardItem";
 import {
   BadgeDollarSignIcon,
@@ -22,21 +21,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { productService } from "../../../../shared/services/productService";
 import { Link } from "react-router-dom";
 import { IconButton } from "../../../components/IconButton";
 
 export default function AdminDashboardPage() {
-  useEffect(() => {
-    UserService.get()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-8 *:p-5 *:bg-white *:rounded-lg *:overflow-hidden *:shadow-sm">
       <SummaryCard />
@@ -135,10 +123,6 @@ const AnnualProfitChart = () => {
   const { data, isLoading, error } = useSWR(`/revenue-chart?year=${year}`, () =>
     dashboardService.getRevenueChart(year),
   );
-
-  useEffect(() => {
-    if (data) console.log(data);
-  }, [data]);
 
   return (
     <section id="annual_profit">

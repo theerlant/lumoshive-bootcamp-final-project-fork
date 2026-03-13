@@ -36,8 +36,6 @@ export const AdminAddPromotionPage = () => {
         is_active: true,
       };
 
-      console.log("Payload Final ke API:", payload);
-
       await promotionService.admin.create(payload);
 
       setShowSuccessModal(true);

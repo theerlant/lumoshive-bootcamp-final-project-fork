@@ -5,8 +5,6 @@ import useSWR from "swr";
 import { categoryService } from "../../../../shared/services/categoryService";
 import { productService } from "../../../../shared/services/productService";
 
-const BASE_URL = "http://103.150.116.241:8082";
-
 // Fetches first product image for a given categoryId
 const useCategoryProductImage = (categoryId) => {
   const { data } = useSWR(
@@ -15,40 +13,28 @@ const useCategoryProductImage = (categoryId) => {
   );
   const products = Array.isArray(data) ? data : data?.data || [];
   const img = products[0]?.images?.[0]?.image_url;
-  return img ? `${BASE_URL}${img}` : null;
+  return img ? `${img}` : null;
 };
 
 // Per-category metadata: jargon headline + placeholder product image
 const CATEGORY_META = {
   wearables: {
     title: "Wear the Future\nToday",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Wearables",
-    accentColor: "#00ff88",
   },
   audio: {
     title: "Enhance Your\nMusic Experience",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Audio",
-    accentColor: "#00ff88",
   },
   gaming: {
     title: "Play Beyond\nAll Limits",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Gaming",
-    accentColor: "#00ff88",
   },
   cameras: {
     title: "Capture Every\nPerfect Moment",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Cameras",
-    accentColor: "#00ff88",
   },
   electronics: {
     title: "Power Your\nWorld Forward",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Electronics",
-    accentColor: "#00ff88",
   },
   smartphones: {
     title: "Stay Connected\nAnywhere",
-    image: "https://placehold.co/600x380/111827/ffffff?text=Smartphones",
-    accentColor: "#00ff88",
   },
 };
 
@@ -116,16 +102,21 @@ export const CategoryCarousel = () => {
       </div>
 
       {/* Product Image — fetched from first product in this category */}
-      <CategorySlideImage categoryId={category?.value} categoryLabel={category?.label} />
+      <CategorySlideImage
+        categoryId={category?.value}
+        categoryLabel={category?.label}
+      />
 
       {/* Prev / Next */}
       <button
+        type="button"
         onClick={prev}
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white rounded-full p-2 transition-colors z-20"
       >
         <ChevronLeftIcon size={20} />
       </button>
       <button
+        type="button"
         onClick={next}
         className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 text-white rounded-full p-2 transition-colors z-20"
       >
@@ -136,6 +127,7 @@ export const CategoryCarousel = () => {
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {categories.map((_, i) => (
           <button
+            type="button"
             key={i}
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all ${

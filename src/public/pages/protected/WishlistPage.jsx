@@ -9,6 +9,7 @@ import shoppingCartService from "@/shared/services/shoppingCartService";
 import { ProductCard } from "@/public/components/ProductCard";
 import { Breadcrumbs } from "@/public/components/Breadcrumbs";
 import { Button } from "@/public/components/Button";
+import { useMediaQuery } from "../../../shared/hooks/useMediaQuery";
 
 const LIMIT = 12;
 
@@ -34,6 +35,8 @@ const WishlistItem = ({ item, onAddToCart, onRemoveFromWishlist }) => {
 
 export default function WishlistPage() {
   const [page, setPage] = useState(1);
+
+  const isMobile = useMediaQuery();
 
   const { data, isLoading, mutate } = useSWR(`/wishlist?page=${page}`, () =>
     wishListService.public.get(page, LIMIT),
@@ -83,21 +86,38 @@ export default function WishlistPage() {
       {/* Header */}
       <div className="flex justify-between items-center mt-10 mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-4 h-10 bg-[#DB4444] rounded-sm" />
-          <h2 className="text-2xl font-semibold">
-            Wishlist{" "}
-            <span className="text-black/40 font-normal text-lg">
-              ({totalItems})
-            </span>
-          </h2>
+          <div className="hidden lg:block w-4 h-10 bg-[#DB4444] rounded-sm" />
+          {/* Desktop */}
+          {isMobile ? (
+            <h2 className="block lg:hidden text-sm font-semibold">
+              Wishlist {totalItems}
+            </h2>
+          ) : (
+            <h2 className="text-2xl font-semibold">
+              Wishlist{" "}
+              <span className="text-black/40 font-normal text-lg">
+                ({totalItems})
+              </span>
+            </h2>
+          )}
         </div>
-        <Button
-          variant="outlined"
-          onClick={handleMoveAllToCart}
-          disabled={wishlistItems.length === 0}
-        >
-          Move All To Bag
-        </Button>
+        {isMobile ? (
+          <button
+            type="button"
+            onClick={handleMoveAllToCart}
+            className="text-[#DB4444] text-xs"
+          >
+            Move All to Bag
+          </button>
+        ) : (
+          <Button
+            variant="outlined"
+            onClick={handleMoveAllToCart}
+            disabled={wishlistItems.length === 0}
+          >
+            Move All To Bag
+          </Button>
+        )}
       </div>
 
       {/* Grid */}

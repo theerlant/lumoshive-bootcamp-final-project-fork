@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LucideCheckCircle, LucidePlus, LucideUpload } from "lucide-react";
+import { LucideCheckCircle, LucideUpload } from "lucide-react";
 import { bannerService } from "@/shared/services/bannerService";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import Button from "../../../components/Button";
@@ -19,7 +19,6 @@ const AdminAddBannerPage = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(bannerSchema),
@@ -27,8 +26,6 @@ const AdminAddBannerPage = () => {
       position: "home",
     },
   });
-
-  const imageFile = watch("image");
 
   const onSubmit = async (values) => {
     setLoading(true);

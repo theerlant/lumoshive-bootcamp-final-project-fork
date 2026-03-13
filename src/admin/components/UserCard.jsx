@@ -15,7 +15,7 @@ export default function UserCard() {
       <img
         src={
           user?.profile?.avatar_url
-            ? `http://103.150.116.241:8082${user.profile.avatar_url}`
+            ? `${user.profile.avatar_url}`
             : "/avatar_placeholder.png"
         }
         alt="User avatar"

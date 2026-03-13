@@ -1,4 +1,4 @@
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { Button } from "../../../components/Button";
 import { priceFormatter } from "../../../../shared/utils/priceFormatter";
@@ -37,7 +37,6 @@ const OrderItem = ({ item }) => {
 };
 
 export const CheckoutSuccessPage = () => {
-  const { id } = useParams();
   const location = useLocation();
   const orderData = location.state?.orderData;
 

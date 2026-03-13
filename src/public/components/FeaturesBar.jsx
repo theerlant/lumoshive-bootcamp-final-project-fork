@@ -19,11 +19,11 @@ const FEATURES = [
 ];
 
 export const FeaturesBar = () => (
-  <div className="flex justify-center gap-20 mt-20">
-    {FEATURES.map((f) => (
+  <div className="grid grid-cols-2 lg:flex justify-center gap-8 px-4 lg:px-0 lg:gap-20 mt-20">
+    {FEATURES.map((f, i) => (
       <div
         key={f.title}
-        className="flex-1 flex flex-col items-center gap-3 text-center"
+        className={`flex-1 flex flex-col items-center gap-3 text-center ${i === 2 ? "col-span-full lg:col-auto" : ""}`}
       >
         <div className="flex items-center justify-center text-white rounded-full w-20 h-20 bg-[#2F2E30]/30">
           <div className="flex items-center justify-center bg-black rounded-full w-15 h-15">

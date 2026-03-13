@@ -77,11 +77,6 @@ export const AdminProductsPage = () => {
       }),
   );
 
-  useEffect(() => {
-    if (data) console.log(data);
-    if (error) console.error(error);
-  }, [data, error]);
-
   const handleTogglePublish = (productId, newStatus) => {
     productService.admin
       .togglePublish(productId, newStatus)

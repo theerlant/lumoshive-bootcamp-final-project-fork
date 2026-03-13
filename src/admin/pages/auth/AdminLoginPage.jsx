@@ -33,7 +33,6 @@ export default function AdminLoginPage() {
     setApiError(null);
     AuthService.login(data)
       .then((response) => {
-        console.log(response);
         if (response.data) {
           dispatch(
             setCredentials({

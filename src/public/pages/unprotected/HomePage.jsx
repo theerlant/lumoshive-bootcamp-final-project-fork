@@ -4,7 +4,7 @@ import { CategorySection } from "./home/CategorySection";
 import { BestSellerSection } from "./home/BestSellerSection";
 import { ExploreSection } from "./home/ExploreSection";
 import { RecommendSection } from "./home/RecommendSection";
-import { FeaturesBar } from "./home/FeaturesBar";
+import { FeaturesBar } from "../../components/FeaturesBar";
 
 export const HomePage = () => {
   return (
@@ -15,7 +15,7 @@ export const HomePage = () => {
       {/* Browse By Category */}
       <CategorySection />
 
-      <div className="my-14" />
+      <div className="lg:my-14" />
 
       {/* Best Selling Products */}
       <BestSellerSection />

@@ -12,7 +12,7 @@ export const PublicLayout = () => {
         className={
           location.pathname.includes("auth")
             ? "grow flex"
-            : "grow flex px-8 md:px-12 lg:px-16 xl:px-24 2xl:px-48 py-20"
+            : "grow flex lg:px-16 xl:px-24 2xl:px-48 py-20"
         }
       >
         <Outlet />

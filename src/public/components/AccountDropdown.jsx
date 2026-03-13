@@ -29,7 +29,8 @@ export const AccountDropdown = () => {
         window.location.reload();
       })
       .catch((error) => {
-        console.log(error.code);
+        dispatch(logout());
+        navigate("/auth");
       });
   };
 

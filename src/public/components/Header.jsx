@@ -11,8 +11,8 @@ import { Logo } from "../components/Logo";
 import { AccountDropdown } from "./AccountDropdown";
 import { useState } from "react";
 import { Button } from "./Button";
-import useSWR from "swr";
-import { UserService } from "../../shared/services/userService";
+import { useEffect, useRef, useCallback } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const Header = () => {
   const location = useLocation();
@@ -21,6 +21,33 @@ export const Header = () => {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const [smDropdownVisible, setSmDropdownvisible] = useState(false);
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || "",
+  );
+  const initialized = useRef(false);
+
+  // Immediate search function
+  const triggerSearch = useCallback(
+    (query) => {
+      const trimmed = query.trim();
+      if (trimmed) {
+        navigate(`/all?search=${encodeURIComponent(trimmed)}`);
+      } else if (searchParams.has("search")) {
+        navigate("/all");
+      }
+    },
+    [navigate, searchParams],
+  );
+
+  // Handle Enter key
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      triggerSearch(searchQuery);
+    }
+  };
 
   return (
     <>
@@ -59,8 +86,17 @@ export const Header = () => {
               <input
                 className="outline-0 w-50"
                 placeholder="What are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
-              <SearchIcon />
+              <button
+                type="button"
+                onClick={() => triggerSearch(searchQuery)}
+                className="hover:cursor-pointer"
+              >
+                <SearchIcon size={20} />
+              </button>
             </div>
             {user && isAuthenticated ? (
               <>
@@ -100,8 +136,20 @@ export const Header = () => {
               <input
                 className="outline-0 w-50 flex-1"
                 placeholder="What are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
-              <SearchIcon />
+              <button
+                type="button"
+                onClick={() => {
+                  triggerSearch(searchQuery);
+                  setSmDropdownvisible(false);
+                }}
+                className="hover:cursor-pointer"
+              >
+                <SearchIcon size={20} />
+              </button>
             </div>
             <MobileNavItem to="/" active={active("/")} label="Home" />
             <MobileNavItem
@@ -153,10 +201,11 @@ const MobileUserInfo = ({ user }) => {
       <img
         src={
           user?.profile?.avatar_url
-            ? `http://103.150.116.241:8082${user.profile.avatar_url}`
+            ? `${user.profile.avatar_url}`
             : "/avatar_placeholder.png"
         }
-        className="w-8 aspect-square rounded-full border-[1.5px] border-[#CED4DA]"
+        alt="user avatar"
+        className="h-12 w-12 aspect-square rounded-full border-[1.5px] shrink-0 border-[#CED4DA]"
       />
       <span className="text-black/50">{user?.profile?.full_name}</span>
     </Link>

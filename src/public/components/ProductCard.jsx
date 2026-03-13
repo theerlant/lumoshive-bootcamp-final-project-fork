@@ -44,8 +44,8 @@ export const ProductCard = ({
   if (!product) return null;
 
   return (
-    <div className="flex flex-col min-w-[200px] max-w-[250px]">
-      <div className="relative h-[250px] group/image overflow-hidden">
+    <div className="flex flex-col w-[150px] lg:w-[250px]">
+      <div className="relative h-[150px] lg:h-[250px] group/image overflow-hidden">
         <Link
           to={`/product/${product.id}`}
           className="block w-full h-full text-black"
