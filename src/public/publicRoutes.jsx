@@ -32,6 +32,8 @@ export const PublicRoutes = () => {
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route index element={<>HOME PAGE</>} />
+          <Route path="products" element={<AllProductsPage />} />
+          <Route path="category/:categoryId" element={<ByCategoryPage />} />
 
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />
@@ -40,9 +42,6 @@ export const PublicRoutes = () => {
             <Route path="forgot" element={<PublicForgotPasswordPage />} />
             <Route path="otp" element={<PublicOTPPage />} />
           </Route>
-          <Route path="all" element={<AllProductsPage />} />
-          <Route path="category/:categoryId" element={<ByCategoryPage />} />
-          <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route element={<PublicProtectedRoutes />}>
             <Route path="me" element={<AccountLayout />}>
