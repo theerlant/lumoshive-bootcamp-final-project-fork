@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HeartIcon, HeartOffIcon } from "lucide-react";
 import { StarRating } from "./StarRating";
 import { priceFormatter } from "@/shared/utils/priceFormatter";
 import useSWR from "swr";
 import { wishListService } from "../../shared/services/wishListService";
+import { useSelector } from "react-redux";
 
 export const ProductCard = ({
   product,
@@ -12,6 +13,10 @@ export const ProductCard = ({
   onAddToCart,
 }) => {
   if (!product) return null;
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const navigate = useNavigate();
 
   const { data } = useSWR(["/wishlist", product.id], () =>
     wishListService.public.check(product.id),
@@ -31,7 +36,11 @@ export const ProductCard = ({
     e.preventDefault();
     e.stopPropagation();
 
-    onAddToCart();
+    if (isAuthenticated) {
+      onAddToCart();
+    } else {
+      navigate("/auth");
+    }
   };
 
   return (
@@ -47,7 +56,7 @@ export const ProductCard = ({
             alt={product.name}
           />
         </Link>
-        {data ? (
+        {data && isAuthenticated ? (
           <button
             onClick={(e) => handleWishlistClick(e, data.in_wishlist)}
             className="absolute top-3 right-3 p-2 bg-white hover:bg-gray-100 active:bg-gray-300 rounded-full shadow-sm z-10"

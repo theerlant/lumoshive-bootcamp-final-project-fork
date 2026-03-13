@@ -1,129 +1,161 @@
-import PublicLayout from "../../layouts/PublicLayout";
+import { useState } from "react";
 import useSWR from "swr";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { wishListService } from "../../../shared/services/wishListService";
-import { LucideTrash, LucideShoppingCart, LucideEye } from "lucide-react";
-export default function WishlistPage() {
-  // 1. Fetch Data Wishlist
-  const { data, isLoading, mutate } = useSWR("wishlist", () => 
-    wishListService.public.get()
+import { productService } from "../../../shared/services/productService";
+import shoppingCartService from "../../../shared/services/shoppingCartService";
+import { ProductCard } from "../../components/ProductCard";
+import { Breadcrumbs } from "../../components/BreadCrumbs";
+import { Button } from "../../components/Button";
+import { priceFormatter } from "../../../shared/utils/priceFormatter";
+
+const LIMIT = 12;
+
+const WishlistItem = ({ item, onAddToCart, onRemoveFromWishlist }) => {
+  const { data: product, isLoading } = useSWR(
+    `/products/${item.product_id}`,
+    () => productService.public.getById(item.product_id),
   );
 
-  const wishlistItems = data?.data || [];
+  if (isLoading) {
+    return <div className="h-[300px] rounded-sm bg-gray-100 animate-pulse" />;
+  }
 
-  // 2. Handler Hapus dari Wishlist
-  const handleRemove = async (productId) => {
-    try {
-      await wishListService.public.remove(productId);
-      mutate(); // Refresh data tanpa reload
-    } catch (err) {
-      console.error("Gagal hapus wishlist", err);
-    }
+  return (
+    <ProductCard
+      product={product}
+      onAddToCart={onAddToCart}
+      onRemoveFromWishlist={onRemoveFromWishlist}
+      isWishlisted
+    />
+  );
+};
+
+export default function WishlistPage() {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, mutate } = useSWR(`/wishlist?page=${page}`, () =>
+    wishListService.public.get(page, LIMIT),
+  );
+
+  const wishlistItems = data?.items || [];
+  const totalItems = data?.total_items ?? 0;
+  const totalPages = data?.total_pages ?? 1;
+  const hasMore = page < totalPages;
+
+  const handleRemove = (productId) => {
+    wishListService.public
+      .remove(productId)
+      .then(() => {
+        toast.success("Removed from wishlist");
+        mutate();
+      })
+      .catch(() => toast.error("Failed to remove item"));
+  };
+
+  const handleAddToCart = (productId) => {
+    shoppingCartService
+      .addItem(productId, 1)
+      .then(() => toast.success("Added to cart!"))
+      .catch(() => toast.error("Failed to add to cart"));
+  };
+
+  const handleMoveAllToCart = () => {
+    Promise.all(
+      wishlistItems.map((item) =>
+        shoppingCartService.addItem(item.product_id, 1),
+      ),
+    )
+      .then(() => toast.success("All items added to cart!"))
+      .catch(() => toast.error("Some items failed to add"));
   };
 
   return (
-    <PublicLayout>
-      <div className="container mx-auto px-4 py-12">
-        
-        {/* HEADER WISHLIST */}
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-xl font-normal text-black">
-            Wishlist ({wishlistItems.length})
+    <div className="w-full pb-20">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: `Wishlist (${totalItems})` },
+        ]}
+      />
+
+      {/* Header */}
+      <div className="flex justify-between items-center mt-10 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-4 h-10 bg-[#DB4444] rounded-sm" />
+          <h2 className="text-2xl font-semibold">
+            Wishlist{" "}
+            <span className="text-black/40 font-normal text-lg">
+              ({totalItems})
+            </span>
           </h2>
-          <button className="border border-gray-300 px-10 py-4 rounded font-medium hover:bg-gray-50 transition-all">
-            Move All To Bag
-          </button>
         </div>
-
-        {/* WISHLIST GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-          {isLoading ? (
-            <div className="col-span-full text-center py-10">Loading wishlist...</div>
-          ) : (
-            wishlistItems.map((item) => (
-              <div key={item.id} className="group">
-                {/* Image Container */}
-                <div className="relative bg-[#F5F5F5] rounded flex items-center justify-center h-[250px] overflow-hidden">
-                  {/* Badge Discount (Kalo ada) */}
-                  {item.discount > 0 && (
-                    <span className="absolute top-3 left-3 bg-[#DB4444] text-white text-xs px-3 py-1 rounded">
-                      -{item.discount}%
-                    </span>
-                  )}
-                  
-                  {/* Delete Action */}
-                  <button 
-                    onClick={() => handleRemove(item.product_id)}
-                    className="absolute top-3 right-3 bg-white p-2 rounded-full hover:bg-[#DB4444] hover:text-white transition-colors"
-                  >
-                    <LucideTrash size={18} />
-                  </button>
-
-                  <img 
-                    src={item.product?.image_url} 
-                    alt={item.product?.name} 
-                    className="w-40 h-40 object-contain"
-                  />
-
-                  {/* Add To Cart Overlay */}
-                  <button className="absolute bottom-0 w-full bg-black text-white py-2 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <LucideShoppingCart size={18} />
-                    <span className="text-xs">Add To Cart</span>
-                  </button>
-                </div>
-
-                {/* Info Produk */}
-                <div className="mt-4 space-y-2">
-                  <h3 className="font-medium text-black truncate">{item.product?.name}</h3>
-                  <div className="flex gap-3 items-center">
-                    <span className="text-[#DB4444] font-medium">${item.product?.price}</span>
-                    {item.product?.old_price && (
-                      <span className="text-gray-400 line-through text-sm">${item.product?.old_price}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* SECTION: JUST FOR YOU */}
-        <div className="flex justify-between items-center mb-10">
-          <div className="flex items-center gap-4">
-            <div className="w-5 h-10 bg-[#DB4444] rounded"></div>
-            <h2 className="text-xl font-normal text-black tracking-wide">Just For You</h2>
-          </div>
-          <button className="border border-gray-300 px-10 py-4 rounded font-medium hover:bg-gray-50 transition-all">
-            See All
-          </button>
-        </div>
-
-        {/* JUST FOR YOU GRID (Dummy atau Fetch Rekomendasi) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-           {/* Contoh Card Rekomendasi */}
-           <div className="group">
-              <div className="relative bg-[#F5F5F5] rounded flex items-center justify-center h-[250px] overflow-hidden">
-                <span className="absolute top-3 left-3 bg-[#00FF66] text-white text-xs px-3 py-1 rounded">NEW</span>
-                <button className="absolute top-3 right-3 bg-white p-2 rounded-full">
-                  <LucideEye size={18} />
-                </button>
-                <img src="/path-to-image.png" className="w-40 h-40 object-contain" alt="product" />
-                <button className="absolute bottom-0 w-full bg-black text-white py-2 flex items-center justify-center gap-2">
-                   <LucideShoppingCart size={18} />
-                   <span className="text-xs">Add To Cart</span>
-                </button>
-              </div>
-              <div className="mt-4 space-y-2">
-                <h3 className="font-medium">ASUS FHD Gaming Laptop</h3>
-                <div className="flex gap-3 items-center">
-                  <span className="text-[#DB4444] font-medium">$960</span>
-                  <span className="text-gray-400 line-through text-sm">$1160</span>
-                </div>
-                <div className="flex text-yellow-400 text-xs">⭐⭐⭐⭐⭐ <span className="text-gray-400 ml-2">(65)</span></div>
-              </div>
-           </div>
-        </div>
-
+        <Button
+          variant="outlined"
+          onClick={handleMoveAllToCart}
+          disabled={wishlistItems.length === 0}
+        >
+          Move All To Bag
+        </Button>
       </div>
-    </PublicLayout>
+
+      {/* Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-4 gap-6 gap-y-10">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-[300px] rounded-sm bg-gray-100 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : wishlistItems.length === 0 ? (
+        <div className="text-center py-20 flex flex-col items-center gap-4">
+          <p className="text-gray-500 text-lg">Your wishlist is empty.</p>
+          <Link to="/all">
+            <Button>Browse Products</Button>
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-4 gap-6 gap-y-10">
+            {wishlistItems.map((item) => (
+              <WishlistItem
+                key={item.id}
+                item={item}
+                onAddToCart={() => handleAddToCart(item.product_id)}
+                onRemoveFromWishlist={() => handleRemove(item.product_id)}
+              />
+            ))}
+          </div>
+
+          {/* Show More */}
+          {hasMore && (
+            <div className="flex justify-center mt-10">
+              <Button variant="outlined" onClick={() => setPage((p) => p + 1)}>
+                Show More
+              </Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Just For You — static placeholder */}
+      <div className="mt-20">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-4 h-10 bg-[#DB4444] rounded-sm" />
+            <h2 className="text-2xl font-semibold">Just For You</h2>
+          </div>
+          <Link to="/all">
+            <Button variant="outlined">See All</Button>
+          </Link>
+        </div>
+        <p className="text-gray-400 text-sm italic">
+          Product recommendations coming soon.
+        </p>
+      </div>
+    </div>
   );
 }

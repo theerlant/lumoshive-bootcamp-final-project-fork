@@ -8,7 +8,7 @@ import { FeaturesBar } from "./home/FeaturesBar";
 
 export const HomePage = () => {
   return (
-    <div className="w-full flex flex-col mt-10">
+    <div className="w-full flex flex-col">
       {/* Hero Banner Carousel */}
       <BannerCarousel />
 
