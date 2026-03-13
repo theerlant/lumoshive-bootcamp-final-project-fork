@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { toast } from "react-toastify";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ export default function AllProductsPage() {
   const { categoryId: paramCategoryId } = useParams();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [allItems, setAllItems] = useState([]);
 
   // When a sidebar category is clicked, navigate to /category/:id (or /all for none)
   const handleCategorySelect = (id) => {
@@ -43,12 +44,20 @@ export default function AllProductsPage() {
       categoryId: selectedCategory ?? undefined,
     }),
   );
-  const products = Array.isArray(productData)
-    ? productData
-    : productData?.data || [];
-  const totalItems =
-    productData?.total ?? productData?.meta?.total ?? products.length;
-  const totalPages = Math.ceil(totalItems / PAGE_LIMIT);
+
+  useEffect(() => {
+    if (productData) {
+      const newProducts = productData?.data || [];
+      if (page === 1) {
+        setAllItems(newProducts);
+      } else {
+        setAllItems((prev) => [...prev, ...newProducts]);
+      }
+    }
+  }, [productData, page]);
+
+  const totalPages = productData?.pagination?.total_pages ?? 1;
+  const hasMore = page < totalPages;
 
   const makeHandlers = (product) => ({
     onAddToCart: () =>
@@ -120,7 +129,7 @@ export default function AllProductsPage() {
           </div>
 
           {/* Grid */}
-          {isLoading ? (
+          {isLoading && page === 1 ? (
             <div className="grid grid-cols-4 gap-6">
               {Array.from({ length: PAGE_LIMIT }).map((_, i) => (
                 <div
@@ -129,13 +138,13 @@ export default function AllProductsPage() {
                 />
               ))}
             </div>
-          ) : products.length === 0 ? (
+          ) : allItems.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
               No products found.
             </div>
           ) : (
             <div className="grid grid-cols-[repeat(4,minmax(200px,1fr))] gap-6 gap-y-10">
-              {products.map((product) => (
+              {allItems.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
@@ -145,37 +154,11 @@ export default function AllProductsPage() {
             </div>
           )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-4">
-              <Button
-                variant="outlined"
-                small
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                ← Prev
-              </Button>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setPage(i + 1)}
-                  className={`w-9 h-9 rounded-sm text-sm font-medium transition-colors ${
-                    page === i + 1
-                      ? "bg-[#DB4444] text-white"
-                      : "border border-black/20 hover:bg-gray-100"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <Button
-                variant="outlined"
-                small
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next →
+          {/* Show More */}
+          {hasMore && (
+            <div className="flex justify-center mt-4">
+              <Button onClick={() => setPage((p) => p + 1)} loading={isLoading}>
+                {isLoading ? "Loading..." : "Show More"}
               </Button>
             </div>
           )}
