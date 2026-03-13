@@ -25,3 +25,5 @@ dist-ssr
 
 #API & Secrets
 .env
+.vercel
+.env*.local
