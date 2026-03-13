@@ -23,7 +23,6 @@ import { MyCartPage } from "./pages/protected/checkout/MyCartPage";
 import { CheckoutPage } from "./pages/protected/checkout/CheckoutPage";
 import { CheckoutSuccessPage } from "./pages/protected/checkout/CheckoutSuccessPage";
 import AllProductsPage from "./pages/unprotected/products/AllProductsPage";
-import ByCategoryPage from "./pages/unprotected/products/ByCategoryPage";
 
 export const PublicRoutes = () => {
   return (
@@ -33,7 +32,7 @@ export const PublicRoutes = () => {
           <Route index element={<HomePage />} />
           <Route index element={<>HOME PAGE</>} />
           <Route path="all" element={<AllProductsPage />} />
-          <Route path="category/:categoryId" element={<ByCategoryPage />} />
+          <Route path="category/:categoryId" element={<AllProductsPage />} />
 
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />

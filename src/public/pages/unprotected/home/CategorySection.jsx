@@ -9,7 +9,7 @@ const ITEMS_PER_PAGE = 6;
 
 const CategoryCard = ({ category }) => (
   <Link
-    to={`/shop?category=${category.value}`}
+    to={`/category/${category.value}`}
     className="flex flex-col items-center justify-center gap-3 border border-black/15 rounded-sm aspect-square p-4 hover:bg-[#DB4444] hover:text-white hover:border-[#DB4444] transition-colors group cursor-pointer flex-1"
   >
     {category.icon ? (
@@ -34,9 +34,7 @@ export const CategorySection = () => {
     "/categories/select",
     categoryService.public.getForDropdown,
   );
-  const categories = Array.isArray(data)
-    ? Array.from(data).concat(data)
-    : data?.data || [];
+  const categories = Array.isArray(data) ? data : [];
 
   const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
   const visible = categories.slice(
