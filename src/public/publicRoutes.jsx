@@ -17,13 +17,18 @@ import { CreateAddressBookPage } from "./pages/protected/account/CreateAddressBo
 import { UpdateAddressBookPage } from "./pages/protected/account/UpdateAddressBookPage";
 import { MyOrdersPage } from "./pages/protected/account/MyOrdersPage";
 import { AccountLayout } from "./pages/protected/account/components/AccountLayout";
+import { HomePage } from "./pages/unprotected/HomePage";
+import { ProductDetailPage } from "./pages/unprotected/products/ProductDetailPage";
+import { MyCartPage } from "./pages/protected/checkout/MyCartPage";
+import { CheckoutPage } from "./pages/protected/checkout/CheckoutPage";
+import { CheckoutSuccessPage } from "./pages/protected/checkout/CheckoutSuccessPage";
 
 export const PublicRoutes = () => {
   return (
     <div className="font-public">
       <Routes>
         <Route element={<PublicLayout />}>
-          <Route index element={<>HOME PAGE</>} />
+          <Route index element={<HomePage />} />
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />
             <Route path="login" element={<PublicLoginPage />} />
@@ -31,8 +36,10 @@ export const PublicRoutes = () => {
             <Route path="forgot" element={<PublicForgotPasswordPage />} />
             <Route path="otp" element={<PublicOTPPage />} />
           </Route>
-          <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
+          <Route path="all" element={<>ALL PRODUCTS UNCATEGORIZED</>} />
+          <Route path="all/:id" element={<>CATEGORY BASED </>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
+          <Route path="product/:id" element={<ProductDetailPage />} />
           <Route element={<PublicProtectedRoutes />}>
             <Route path="me" element={<AccountLayout />}>
               <Route index element={<MyProfilePage />} />
@@ -44,6 +51,11 @@ export const PublicRoutes = () => {
               </Route>
             </Route>
             <Route path="wishlist" element={<>MY WISHLIST</>} />
+            <Route path="cart">
+              <Route index element={<MyCartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+            </Route>
+            <Route path="order-success/:id" element={<CheckoutSuccessPage />} />
           </Route>
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactUs />} />

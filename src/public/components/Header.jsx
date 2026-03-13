@@ -26,7 +26,7 @@ export const Header = () => {
     <>
       {/* Desktop Layout */}
       <header
-        className={`hidden lg:block sticky top-0 bg-white py-4 pt-8 border-b border-b-black/30 `}
+        className={`hidden lg:block sticky top-0 bg-white py-4 pt-8 border-b border-b-black/30 z-100`}
       >
         <div
           className={`px-8 md:px-12 lg:px-16 xl:px-24 2xl:px-48 flex items-center justify-between gap-4`}
@@ -77,7 +77,7 @@ export const Header = () => {
         </div>
       </header>
       {/* Mobile Layout */}
-      <header className="sticky lg:hidden top-0 z-10 bg-white">
+      <header className="sticky lg:hidden top-0 z-100 bg-white">
         <div className="flex justify-between px-8 md:px-12 lg:px-16 xl:px-24 py-8">
           <Logo />
           <button

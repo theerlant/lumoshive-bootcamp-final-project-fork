@@ -120,7 +120,7 @@ const QuickLinkSection = () => {
       <h2 className="text-xl font-medium mb-6">Quick Link</h2>
       <div className="flex flex-col gap-4">
         <Link to="/privacy-policy">Privacy Policy</Link>
-        <Link to="/terms">Privacy Policy</Link>
+        <Link to="/terms">Terms of Use</Link>
         <Link to="/faq">FAQ</Link>
         <Link to="/contact">Contact</Link>
       </div>
