@@ -1,32 +1,34 @@
 import { BannerCarousel } from "./home/BannerCarousel";
+import { CategoryCarousel } from "./home/CategoryCarousel";
 import { CategorySection } from "./home/CategorySection";
 import { BestSellerSection } from "./home/BestSellerSection";
-import { PromoBanner } from "./home/PromoBanner";
 import { ExploreSection } from "./home/ExploreSection";
 import { RecommendSection } from "./home/RecommendSection";
 import { FeaturesBar } from "./home/FeaturesBar";
 
 export const HomePage = () => {
   return (
-    <div className="w-full flex flex-col mt-10 pb-20">
+    <div className="w-full flex flex-col mt-10">
       {/* Hero Banner Carousel */}
       <BannerCarousel />
 
       {/* Browse By Category */}
       <CategorySection />
 
-      <hr className="my-14 border-black/10" />
+      <div className="my-14" />
 
       {/* Best Selling Products */}
       <BestSellerSection />
 
-      {/* Promo / Music Banner */}
-      <PromoBanner />
+      <div className="my-14" />
+
+      {/* Category carousel */}
+      <CategoryCarousel />
 
       {/* Explore Our Products */}
       <ExploreSection />
 
-      <hr className="my-14 border-black/10" />
+      <div className="my-14" />
 
       {/* Recommend Section */}
       <RecommendSection />

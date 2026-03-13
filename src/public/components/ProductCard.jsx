@@ -35,9 +35,12 @@ export const ProductCard = ({
   };
 
   return (
-    <div className="flex flex-col w-[270px]">
+    <div className="flex flex-col min-w-[200px] max-w-[250px]">
       <div className="relative h-[250px] group/image overflow-hidden">
-        <Link to={`/product/${product.id}`} className="block w-full h-full text-black">
+        <Link
+          to={`/product/${product.id}`}
+          className="block w-full h-full text-black"
+        >
           <img
             src={`http://103.150.116.241:8082${product.images?.[0]?.image_url}`}
             className="w-full h-full rounded-sm object-contain px-12 bg-[#F5F5F5] transition-opacity"

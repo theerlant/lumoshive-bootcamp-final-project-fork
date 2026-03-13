@@ -75,6 +75,19 @@ export const productService = {
         method: "GET",
       });
     },
+    getCategories: () => {
+      return request({
+        url: "/categories",
+        method: "GET",
+      });
+    },
+    addToCart: (productId, quantity = 1) => {
+  return request({
+    url: "/cart",
+    method: "POST",
+    data: { product_id: productId, quantity }
+  });
+}
   },
   admin: {
     create: (formData) => {
