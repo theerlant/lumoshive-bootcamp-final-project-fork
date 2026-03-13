@@ -141,6 +141,7 @@ export default function ComponentSandbox() {
         <h2 className="text-xl font-bold mb-4 text-blue-600">SECT 3</h2>
         <div className="flex flex-col gap-6 max-w-md">
           {/* Taruh component disini */}
+          
         </div>
       </section>
 
