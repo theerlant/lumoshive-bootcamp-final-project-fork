@@ -14,7 +14,7 @@ function App() {
             <Route path="/sandbox" element={<ComponentSandbox />} />
           )}
           <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="*" element={<PublicRoutes />} />
+          <Route path="/*" element={<PublicRoutes />} />
         </Routes>
       </BrowserRouter>
     </Provider>

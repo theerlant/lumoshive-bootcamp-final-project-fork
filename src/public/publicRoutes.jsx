@@ -3,6 +3,8 @@ import ContactUs from "./pages/unprotected/misc/ContactUsPage";
 import AboutPage from "./pages/unprotected/misc/AboutPage";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { PublicAuthLayout } from "./layouts/PublicAuthLayout";
+import AllProductsPage from "./pages/unprotected/products/AllProductsPage";
+import ByCategoryPage from "./pages/unprotected/products/ByCategoryPage";
 
 export const PublicRoutes = () => {
   return (
@@ -10,12 +12,16 @@ export const PublicRoutes = () => {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<>HOME PAGE</>} />
+          <Route path="products" element={<AllProductsPage />} />
+          <Route path="category/:categoryId" element={<ByCategoryPage />} />
+
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<>LOGIN</>} />
             <Route path="register" element={<>REGISTER</>} />
             <Route path="forgot" element={<>FORGOT PASSWORD</>} />
             <Route path="otp" element={<>OTP</>} />
           </Route>
+          
           <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
           <Route path="me">
