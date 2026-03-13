@@ -41,7 +41,7 @@ export const AdminDetailPromotionPage = () => {
       : `Rp ${Number(data.discount_value || 0).toLocaleString("id-ID")}`;
 
   return (
-    <div className="p-6">
+    <div>
       <PageHeader />
 
       <section>
@@ -177,7 +177,7 @@ export const AdminDetailPromotionPage = () => {
 const PageHeader = () => {
   return (
     <section className="mb-8">
-      <h1 className="text-2xl font-bold text-gray-800">Detail Promotion</h1>
+      <h1 className="text-2xl font-bold">Detail Promotion</h1>
       <div className="mt-1">
         <Breadcrumbs
           items={[

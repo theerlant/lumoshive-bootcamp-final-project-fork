@@ -65,7 +65,7 @@ const AdminAddBannerPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <div>
       <section className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Add New Banner</h1>
         <Breadcrumbs
@@ -77,7 +77,7 @@ const AdminAddBannerPage = () => {
         />
       </section>
 
-      <section className="bg-white p-8 rounded-lg border border-gray-100 w-full shadow-sm">
+      <section className="w-full">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-2 gap-x-12 gap-y-6"
