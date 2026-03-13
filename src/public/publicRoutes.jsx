@@ -33,7 +33,8 @@ export const PublicRoutes = () => {
             <Route path="forgot" element={<PublicForgotPasswordPage />} />
             <Route path="otp" element={<PublicOTPPage />} />
           </Route>
-          <Route path="all" element={<>ALL PRODUCTS, CATEGORY BY PARAM</>} />
+          <Route path="all" element={<>ALL PRODUCTS UNCATEGORIZED</>} />
+          <Route path="all/:id" element={<>CATEGORY BASED </>} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route element={<PublicProtectedRoutes />}>
