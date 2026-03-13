@@ -22,6 +22,8 @@ import { ProductDetailPage } from "./pages/unprotected/products/ProductDetailPag
 import { MyCartPage } from "./pages/protected/checkout/MyCartPage";
 import { CheckoutPage } from "./pages/protected/checkout/CheckoutPage";
 import { CheckoutSuccessPage } from "./pages/protected/checkout/CheckoutSuccessPage";
+import AllProductsPage from "./pages/unprotected/products/AllProductsPage";
+import ByCategoryPage from "./pages/unprotected/products/ByCategoryPage";
 
 export const PublicRoutes = () => {
   return (
@@ -29,6 +31,8 @@ export const PublicRoutes = () => {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
+          <Route index element={<>HOME PAGE</>} />
+
           <Route path="auth" element={<PublicAuthLayout />}>
             <Route index element={<PublicLoginPage />} />
             <Route path="login" element={<PublicLoginPage />} />
@@ -36,8 +40,8 @@ export const PublicRoutes = () => {
             <Route path="forgot" element={<PublicForgotPasswordPage />} />
             <Route path="otp" element={<PublicOTPPage />} />
           </Route>
-          <Route path="all" element={<>ALL PRODUCTS UNCATEGORIZED</>} />
-          <Route path="all/:id" element={<>CATEGORY BASED </>} />
+          <Route path="all" element={<AllProductsPage />} />
+          <Route path="category/:categoryId" element={<ByCategoryPage />} />
           <Route path="top" element={<>BEST PRODUCT API ERROR BRO</>} />
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route element={<PublicProtectedRoutes />}>
