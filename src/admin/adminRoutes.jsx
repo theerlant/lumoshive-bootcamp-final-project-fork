@@ -57,7 +57,7 @@ export default function AdminRoutes() {
             </Route>
             <Route path="banners">
               <Route index element={<AdminBannerListPage />} />
-              <Route path=":id" element={<AdminDetailBannerPage />} />
+              <Route path="detail/:id" element={<AdminDetailBannerPage />} />
               <Route path="add" element={<AdminAddBannerPage />} />
               <Route path="edit/:id" element={<AdminEditBannerPage />} />
             </Route>
