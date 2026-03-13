@@ -111,7 +111,7 @@ export const AdminEditPromotionPage = () => {
     );
 
   return (
-    <div className="p-6">
+    <div>
       <PageHeader />
 
       {errorText && (
@@ -148,7 +148,7 @@ export const AdminEditPromotionPage = () => {
 const PageHeader = () => {
   return (
     <section id="header" className="mb-8">
-      <h1 className="text-2xl font-bold text-gray-800">Edit Promotion</h1>
+      <h1 className="text-2xl font-bold">Edit Promotion</h1>
       <div className="mt-1">
         <Breadcrumbs
           items={[

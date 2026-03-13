@@ -60,7 +60,7 @@ export const AdminAddPromotionPage = () => {
     }
   };
   return (
-    <div className="p-6">
+    <div>
       <PageHeader />
 
       {error && (
