@@ -32,7 +32,7 @@ export const PublicRoutes = () => {
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
           <Route index element={<>HOME PAGE</>} />
-          <Route path="products" element={<AllProductsPage />} />
+          <Route path="all" element={<AllProductsPage />} />
           <Route path="category/:categoryId" element={<ByCategoryPage />} />
 
           <Route path="auth" element={<PublicAuthLayout />}>
